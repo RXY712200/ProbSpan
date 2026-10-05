@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.16)
+project(ProbSpan VERSION 1.0.0 LANGUAGES C)
+
+add_library(probspan STATIC src/probspan.c)
+target_compile_features(probspan PUBLIC c_std_11)
+set_target_properties(probspan PROPERTIES C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+target_include_directories(probspan PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+
+include(CTest)
+if(BUILD_TESTING)
+  add_executable(probspan_smoke tests/smoke.c)
+  set_target_properties(probspan_smoke PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+  target_link_libraries(probspan_smoke PRIVATE probspan)
+  add_test(NAME probspan_smoke COMMAND probspan_smoke)
+endif()

@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "exact": ["integers", "enums", "booleans", "raw values", "nulls", "object and array structure"],
+  "elementary_binary64": {"absolute_tolerance": 1e-12, "relative_tolerance": 1e-12},
+  "scipy_beta_cdf_ppf": {"absolute_tolerance": 1e-10, "relative_tolerance": 1e-10},
+  "note": "Classifications and gate decisions are exact even when their input floats use a tolerance. Tolerances do not replace reference branching."
+}
