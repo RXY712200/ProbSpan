@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import subprocess
 import sys
+from contextlib import contextmanager
 from dataclasses import asdict, is_dataclass, replace
 from datetime import UTC, datetime, timedelta
 from enum import Enum
@@ -27,6 +29,12 @@ def load_reference(reference_root: Path) -> None:
     ).strip()
     if head != BASELINE:
         raise SystemExit(f"Reference HEAD is {head}; expected {BASELINE}")
+    dirty = subprocess.check_output(
+        ["git", "-C", str(reference_root), "status", "--porcelain", "--untracked-files=no"],
+        text=True,
+    ).strip()
+    if dirty:
+        raise SystemExit("Reference checkout has tracked changes; oracle source is not frozen")
     sys.path.insert(0, str(reference_root / "src"))
 
 
@@ -48,10 +56,53 @@ def vector(group: str, case: str, inputs: dict, expected) -> dict:
     return {"group": group, "case": case, "input": plain(inputs), "expected": plain(expected)}
 
 
-def subjective_vectors():
-    import math
+def observed_call(call):
+    """Capture the actual result or the reference core's validation failure."""
+    from probability_calibration_tool.core.errors import CoreValidationError
 
-    from probability_calibration_tool.core import compute_subjective_estimate
+    try:
+        return {"value": call()}
+    except CoreValidationError as exc:
+        return {"error": type(exc).__name__, "code": exc.code}
+
+
+def constant_vectors():
+    from probability_calibration_tool.core import model_specs
+
+    names = (
+        "SUBJECTIVE_MODEL_VERSION",
+        "HISTORY_MODEL_VERSION",
+        "HISTORY_GATE_VERSION",
+        "ODDS_ANALYSIS_VERSION",
+        "STATS_VERSION",
+        "FLOAT_EPSILON",
+        "JEFFREYS_ALPHA",
+        "JEFFREYS_BETA",
+        "HISTORY_CREDIBLE_LEVEL",
+        "HISTORY_MIN_SAMPLE_SIZE",
+        "HISTORY_MAX_INTERVAL_WIDTH",
+        "SUBJECTIVE_MIN_PROBABILITY",
+        "SUBJECTIVE_LOW_BREAKPOINT",
+        "SUBJECTIVE_MID_HIGH_BREAKPOINT",
+        "SUBJECTIVE_HIGH_BREAKPOINT",
+        "SUBJECTIVE_VERY_HIGH_BREAKPOINT",
+        "SUBJECTIVE_MAX_PROBABILITY",
+        "SUBJECTIVE_FACTOR_LOW",
+        "SUBJECTIVE_FACTOR_MID",
+        "SUBJECTIVE_FACTOR_HIGH",
+        "SUBJECTIVE_FACTOR_MAX",
+        "LOG_FACTOR_LOW",
+        "LOG_FACTOR_MID",
+        "LOG_FACTOR_HIGH",
+        "LOG_FACTOR_MAX",
+    )
+    yield vector(
+        "constants", "model_specs_v1", {}, {name: getattr(model_specs, name) for name in names}
+    )
+
+
+def subjective_vectors():
+    from probability_calibration_tool.core import compute_subjective_estimate, model_specs
     from probability_calibration_tool.core.subjective import subjective_logit_half_width
 
     for raw in range(101):
@@ -61,19 +112,49 @@ def subjective_vectors():
 
     # Include both exact breakpoints and adjacent binary64 values. The 0.55
     # branch is deliberately asymmetric with the lower and upper segments.
-    for breakpoint in (0.01, 0.45, 0.55, 0.85, 0.95, 0.99):
+    for breakpoint in (
+        model_specs.SUBJECTIVE_MIN_PROBABILITY,
+        model_specs.SUBJECTIVE_LOW_BREAKPOINT,
+        model_specs.SUBJECTIVE_MID_HIGH_BREAKPOINT,
+        model_specs.SUBJECTIVE_HIGH_BREAKPOINT,
+        model_specs.SUBJECTIVE_VERY_HIGH_BREAKPOINT,
+        model_specs.SUBJECTIVE_MAX_PROBABILITY,
+    ):
         for side, probability in (
             ("below", math.nextafter(breakpoint, 0.0)),
             ("at", breakpoint),
             ("above", math.nextafter(breakpoint, 1.0)),
         ):
-            if 0.01 <= probability <= 0.99:
+            if (
+                model_specs.SUBJECTIVE_MIN_PROBABILITY
+                <= probability
+                <= model_specs.SUBJECTIVE_MAX_PROBABILITY
+            ):
                 yield vector(
                     "subjective_width",
                     f"{breakpoint}_{side}",
                     {"probability": probability},
                     subjective_logit_half_width(probability),
                 )
+
+    for raw in (-1, 101):
+        yield vector(
+            "subjective_validation",
+            f"raw_{raw}",
+            {"p_h_raw": raw},
+            observed_call(lambda raw=raw: compute_subjective_estimate(raw)),
+        )
+
+    for name, probability in (
+        ("below_minimum", math.nextafter(model_specs.SUBJECTIVE_MIN_PROBABILITY, 0.0)),
+        ("above_maximum", math.nextafter(model_specs.SUBJECTIVE_MAX_PROBABILITY, 1.0)),
+    ):
+        yield vector(
+            "subjective_width_validation",
+            name,
+            {"probability": probability},
+            observed_call(lambda probability=probability: subjective_logit_half_width(probability)),
+        )
 
 
 def history_vectors():
@@ -98,10 +179,19 @@ def history_vectors():
         history = compute_historical_estimate(wins, losses)
         yield vector("history", f"{wins}_{losses}", {"wins": wins, "losses": losses}, history)
 
+    for wins, losses in ((-1, 0), (0, -1)):
+        yield vector(
+            "history_validation",
+            f"{wins}_{losses}",
+            {"wins": wins, "losses": losses},
+            observed_call(
+                lambda wins=wins, losses=losses: compute_historical_estimate(wins, losses)
+            ),
+        )
+
 
 def odds_validation_vectors():
     from probability_calibration_tool.core import parse_odds_text
-    from probability_calibration_tool.core.errors import CoreValidationError
     from probability_calibration_tool.core.validation import validate_odds
 
     odds_texts = (
@@ -129,11 +219,12 @@ def odds_validation_vectors():
         "0.99",
     )
     for index, text in enumerate(odds_texts):
-        try:
-            expected = {"value": parse_odds_text(text)}
-        except CoreValidationError as exc:
-            expected = {"error": type(exc).__name__, "code": plain(exc.code)}
-        yield vector("odds_parse", str(index), {"text": text}, expected)
+        yield vector(
+            "odds_parse",
+            str(index),
+            {"text": text},
+            observed_call(lambda text=text: parse_odds_text(text)),
+        )
 
     numeric_odds = (
         ("one", 1),
@@ -146,14 +237,15 @@ def odds_validation_vectors():
         ("infinity", float("inf")),
     )
     for name, odds in numeric_odds:
-        try:
-            expected = {"value": validate_odds(odds)}
-        except CoreValidationError as exc:
-            expected = {"error": type(exc).__name__, "code": plain(exc.code)}
         # JSON has no NaN or infinity: the tag is a lossless description of
         # the constructed input, while validation still runs on the float.
         input_value = name if name in ("nan", "infinity") else odds
-        yield vector("odds_numeric", name, {"odds": input_value}, expected)
+        yield vector(
+            "odds_numeric",
+            name,
+            {"odds": input_value},
+            observed_call(lambda odds=odds: validate_odds(odds)),
+        )
 
 
 def classification_vectors():
@@ -236,6 +328,31 @@ def analysis_vectors():
                 analyze_historical_odds(history, win_odds, lose_odds),
             )
 
+    # Frozen order: a non-valid history returns None before odds validation.
+    # A valid history reaches validation and reports its actual failure code.
+    for name, wins, losses, win_odds, lose_odds in (
+        ("no_history_nan", 0, 0, float("nan"), 0.5),
+        ("insufficient_nan", 1, 0, float("nan"), 0.5),
+        ("valid_nan", 19, 1, float("nan"), 2.0),
+        ("valid_below_one", 19, 1, 0.5, 2.0),
+    ):
+        history = compute_historical_estimate(wins, losses)
+        yield vector(
+            "historical_odds_control_flow",
+            name,
+            {
+                "wins": wins,
+                "losses": losses,
+                "win_odds": "nan" if math.isnan(win_odds) else win_odds,
+                "lose_odds": lose_odds,
+            },
+            observed_call(
+                lambda history=history, win_odds=win_odds, lose_odds=lose_odds: (
+                    analyze_historical_odds(history, win_odds, lose_odds)
+                )
+            ),
+        )
+
 
 def model_relation_vectors():
     from probability_calibration_tool.core import classify_model_relation
@@ -272,9 +389,46 @@ class SequentialIds:
         return f"{self.next_value:032x}"
 
 
-def transition_vectors():
-    """Exercise the actual application service with deterministic clock and IDs."""
-    from probability_calibration_tool.application import CalculateCommand, RoundService
+class RoundFixture:
+    def __init__(self, service, clock):
+        self.service = service
+        self.clock = clock
+
+    def seed_history(self, wins, losses, character_id):
+        from probability_calibration_tool.application import CalculateCommand
+
+        command = CalculateCommand(character_id, False, 60, "2", "2")
+        for result in (True,) * wins + (False,) * losses:
+            view = self.service.calculate(command)
+            self.clock.advance()
+            self.service.complete_pending(view.round_id, result, True)
+            self.clock.advance()
+
+    def recalculate(self, view, command):
+        self.clock.advance()
+        return self.service.recalculate(view.round_id, command)
+
+    def record(self, case, command, view):
+        return vector(
+            "revision",
+            case,
+            {"command": command, "at": self.clock.now()},
+            {
+                "revision_count": view.revision_count,
+                "history_exposed": view.history_exposed,
+                "history_exposed_at": view.history_exposed_at,
+                "subjective_independence_compromised": view.subjective_independence_compromised,
+                "history_display_state": view.history.state,
+                "subjective_probability": view.subjective.probability,
+                "p_h_used": view.subjective.p_h_used,
+            },
+        )
+
+
+@contextmanager
+def round_fixture(histories=()):
+    """Create one isolated frozen RoundService run with repeatable provenance."""
+    from probability_calibration_tool.application import RoundService
     from probability_calibration_tool.persistence.database import create_connection
     from probability_calibration_tool.persistence.migrations import ensure_schema
     from probability_calibration_tool.persistence.unit_of_work import create_uow_factory
@@ -288,50 +442,95 @@ def transition_vectors():
             connection.close()
         clock = FixedClock()
         service = RoundService(create_uow_factory(database), clock, SequentialIds())
-        seed = CalculateCommand(1, False, 60, "2", "2")
-        for result in (True,) * 19 + (False,):
-            view = service.calculate(seed)
-            clock.advance()
-            service.complete_pending(view.round_id, result, True)
-            clock.advance()
+        fixture = RoundFixture(service, clock)
+        for character_id, wins, losses in histories:
+            fixture.seed_history(wins, losses, character_id)
+        yield fixture
 
-        def capture(name, view, command):
-            return vector(
-                "revision",
-                name,
-                {"command": command, "at": clock.now()},
-                {
-                    "revision_count": view.revision_count,
-                    "history_exposed": view.history_exposed,
-                    "history_exposed_at": view.history_exposed_at,
-                    "subjective_independence_compromised": view.subjective_independence_compromised,
-                    "history_display_state": view.history.state,
-                },
-            )
 
-        command = CalculateCommand(1, False, 0, "2", "2")
-        view = service.calculate(command)
-        yield capture("initial_hidden", view, command)
-        cases = (
-            ("first_exposure_and_raw_change", replace(command, reference_history=True, p_h_raw=1)),
-            ("odds_only", replace(command, reference_history=True, p_h_raw=1, win_odds_raw="4")),
-            ("reference_off", replace(command, reference_history=False, p_h_raw=1)),
-            ("raw_change_after_exposure", replace(command, reference_history=True, p_h_raw=2)),
-            ("restore_raw", replace(command, reference_history=True, p_h_raw=0)),
-            ("character_change", replace(command, character_id=2, reference_history=True)),
-            ("restore_character", replace(command, reference_history=True)),
-        )
-        for name, command in cases:
-            clock.advance()
-            view = service.recalculate(view.round_id, command)
-            yield capture(name, view, command)
+def transition_vectors():
+    """Freeze independent causal transitions through the actual RoundService."""
+    from probability_calibration_tool.application import CalculateCommand
 
-        clock.advance()
-        service.complete_pending(view.round_id, True, False)
-        clock.advance()
-        command = CalculateCommand(1, True, 70, "2", "3")
-        view = service.calculate(command)
-        yield capture("initial_visible", view, command)
+    hidden = CalculateCommand(1, False, 60, "2", "2")
+    visible = replace(hidden, reference_history=True)
+    ready = ((1, 19, 1),)
+
+    with round_fixture() as fixture:
+        view = fixture.service.calculate(visible)
+        yield fixture.record("no_history_initial", visible, view)
+
+    with round_fixture(((1, 1, 0),)) as fixture:
+        view = fixture.service.calculate(visible)
+        yield fixture.record("insufficient_initial", visible, view)
+
+    with round_fixture(ready) as fixture:
+        command = replace(hidden, p_h_raw=0)
+        view = fixture.service.calculate(command)
+        yield fixture.record("first_exposure_raw_before", command, view)
+        command = replace(command, reference_history=True, p_h_raw=1)
+        view = fixture.recalculate(view, command)
+        # The old exposure flag controls compromise: exposure acquired by this
+        # revision does not retroactively compromise the same revision.
+        yield fixture.record("first_exposure_raw_after", command, view)
+
+    with round_fixture(((2, 19, 1),)) as fixture:
+        view = fixture.service.calculate(hidden)
+        yield fixture.record("first_exposure_identity_before", hidden, view)
+        command = replace(visible, character_id=2)
+        view = fixture.recalculate(view, command)
+        yield fixture.record("first_exposure_identity_after", command, view)
+
+    with round_fixture(ready) as fixture:
+        view = fixture.service.calculate(visible)
+        yield fixture.record("exposed_identity_before", visible, view)
+        command = replace(visible, character_id=2)
+        view = fixture.recalculate(view, command)
+        yield fixture.record("exposed_identity_after", command, view)
+
+    with round_fixture(ready) as fixture:
+        command = replace(visible, p_h_raw=0)
+        view = fixture.service.calculate(command)
+        yield fixture.record("raw_zero_to_one_before", command, view)
+        command = replace(command, p_h_raw=1)
+        view = fixture.recalculate(view, command)
+        # Both raw values clamp to 1%, but the raw input itself determines
+        # whether independence was compromised after exposure.
+        yield fixture.record("raw_zero_to_one_after", command, view)
+
+    with round_fixture(((1, 19, 1), (3, 1, 0))) as fixture:
+        view = fixture.service.calculate(visible)
+        yield fixture.record("sticky_exposure_initial", visible, view)
+        command = replace(visible, reference_history=False)
+        view = fixture.recalculate(view, command)
+        yield fixture.record("sticky_exposure_hidden", command, view)
+        command = replace(visible, character_id=2)
+        view = fixture.recalculate(view, command)
+        yield fixture.record("sticky_exposure_no_history", command, view)
+        command = replace(visible, character_id=3)
+        view = fixture.recalculate(view, command)
+        yield fixture.record("sticky_exposure_insufficient", command, view)
+
+    with round_fixture(ready) as fixture:
+        view = fixture.service.calculate(visible)
+        yield fixture.record("noncompromising_initial", visible, view)
+        odds_changed = replace(visible, win_odds_raw="4")
+        for case, command in (
+            ("noncompromising_odds_only", odds_changed),
+            ("noncompromising_reference_off", replace(odds_changed, reference_history=False)),
+            ("noncompromising_reference_on", odds_changed),
+        ):
+            view = fixture.recalculate(view, command)
+            yield fixture.record(case, command, view)
+
+    with round_fixture(ready) as fixture:
+        view = fixture.service.calculate(visible)
+        yield fixture.record("sticky_compromise_initial", visible, view)
+        command = replace(visible, p_h_raw=70)
+        view = fixture.recalculate(view, command)
+        yield fixture.record("sticky_compromise_changed", command, view)
+        view = fixture.recalculate(view, visible)
+        yield fixture.record("sticky_compromise_restored", visible, view)
 
 
 def main():
@@ -344,6 +543,7 @@ def main():
     load_reference(args.reference_root.resolve())
     rows = [vector("metadata", "baseline", {}, {"commit": BASELINE})]
     for cases in (
+        constant_vectors(),
         subjective_vectors(),
         history_vectors(),
         odds_validation_vectors(),
@@ -358,12 +558,13 @@ def main():
         for row in rows
     )
     target = ROOT / "v1_vectors.jsonl"
+    expected_bytes = payload.encode("utf-8")
     if args.check:
-        if target.read_text(encoding="utf-8") != payload:
+        if target.read_bytes() != expected_bytes:
             raise SystemExit("Committed oracle differs from frozen reference output")
         print(f"Verified {len(rows)} reference vectors")
     else:
-        target.write_text(payload, encoding="utf-8", newline="\n")
+        target.write_bytes(expected_bytes)
         print(f"Wrote {len(rows)} reference vectors to {target}")
 
 
