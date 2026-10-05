@@ -4,4 +4,4 @@ ProbSpan is a portable C extraction and reimplementation of the probability and 
 
 This repository turns that application-internal core into a reusable standalone C module. Version 1.0 intentionally preserves the original behavior; it does not redesign the algorithms.
 
-The current checkout establishes the C11 build and a generated reference oracle. The mathematical engine is not implemented yet.
+The C11 library now provides the frozen subjective model, odds validation, and Jeffreys historical estimate, including its credible interval and readiness gate. The committed oracle is used for parity tests.

@@ -1,0 +1,30 @@
+#ifndef PROBSPAN_MODEL_V1_H
+#define PROBSPAN_MODEL_V1_H
+
+/* Frozen v1 policy values; the oracle's constants record detects drift. */
+#define PS_SUBJECTIVE_VERSION 1u
+#define PS_HISTORY_VERSION 1u
+#define PS_HISTORY_GATE_VERSION 1u
+#define PS_ODDS_ANALYSIS_VERSION 1u
+#define PS_STATS_VERSION 1u
+#define PS_FLOAT_EPSILON 1e-12
+
+#define PS_SUBJECTIVE_MIN 0.01
+#define PS_SUBJECTIVE_LOW 0.45
+#define PS_SUBJECTIVE_MID_HIGH 0.55
+#define PS_SUBJECTIVE_HIGH 0.85
+#define PS_SUBJECTIVE_VERY_HIGH 0.95
+#define PS_SUBJECTIVE_MAX 0.99
+
+#define PS_FACTOR_LOW 1.5
+#define PS_FACTOR_MID 2.0
+#define PS_FACTOR_HIGH 1.4
+#define PS_FACTOR_MAX 1.2
+
+#define PS_JEFFREYS_ALPHA 0.5
+#define PS_JEFFREYS_BETA 0.5
+#define PS_HISTORY_CREDIBLE_LEVEL 0.95
+#define PS_HISTORY_MIN_SAMPLE_SIZE 20u
+#define PS_HISTORY_MAX_INTERVAL_WIDTH 0.25
+
+#endif
