@@ -5,6 +5,7 @@ add_library(probspan STATIC
   src/probspan.c
   src/subjective.c
   src/odds.c
+  src/decimal.c
   src/historical.c
   src/beta.c
   src/beta_logit.c
@@ -51,11 +52,24 @@ if(BUILD_TESTING)
   endif()
   add_test(NAME probspan_large_numerics COMMAND probspan_large_numerics)
 
+  add_executable(probspan_decimal_parity tests/decimal_parity.c)
+  target_link_libraries(probspan_decimal_parity PRIVATE probspan)
+  target_include_directories(probspan_decimal_parity PRIVATE src tests)
+  set_target_properties(probspan_decimal_parity PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+  if(MSVC)
+    target_compile_options(probspan_decimal_parity PRIVATE /W4)
+  else()
+    target_compile_options(probspan_decimal_parity PRIVATE -Wall -Wextra -Wpedantic)
+  endif()
+  add_test(NAME probspan_decimal_parity COMMAND probspan_decimal_parity)
+
   find_package(Python3 COMPONENTS Interpreter QUIET)
   if(Python3_Interpreter_FOUND)
     add_test(NAME probspan_fixture_freshness
       COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/generate_fixtures.py --check)
     add_test(NAME probspan_large_fixture_freshness
       COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/generate_large_fixtures.py --check)
+    add_test(NAME probspan_decimal_fixture_freshness
+      COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/generate_decimal_fixtures.py --check)
   endif()
 endif()

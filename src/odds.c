@@ -3,6 +3,8 @@
 #include <math.h>
 #include <stddef.h>
 
+#include "decimal_private.h"
+
 probspan_status probspan_odds_validate(double odds, double *validated) {
     if (validated == NULL) {
         return PROBSPAN_INVALID_ARGUMENT;
@@ -14,44 +16,45 @@ probspan_status probspan_odds_validate(double odds, double *validated) {
     return PROBSPAN_OK;
 }
 
-probspan_status probspan_odds_parse(const char *text, double *validated) {
-    if (text == NULL || validated == NULL) {
-        return PROBSPAN_INVALID_ARGUMENT;
-    }
+static bool valid_decimal_syntax(const char *text) {
     if (*text == '\0') {
-        return PROBSPAN_ODDS_SYNTAX;
+        return false;
     }
 
-    /* Check ASCII grammar independently of range. Computing digits directly
-       avoids strtod's process-locale-dependent decimal mark. */
-    double value = 0.0;
-    double place = 0.1;
+    /* ASCII checks freeze the grammar independently of locale and conversion. */
     bool fractional = false;
     bool digit_before_dot = false;
     bool digit_after_dot = false;
     for (const unsigned char *cursor = (const unsigned char *)text; *cursor; ++cursor) {
         if (*cursor == '.') {
             if (fractional || !digit_before_dot) {
-                return PROBSPAN_ODDS_SYNTAX;
+                return false;
             }
             fractional = true;
             continue;
         }
         if (*cursor < '0' || *cursor > '9') {
-            return PROBSPAN_ODDS_SYNTAX;
+            return false;
         }
-        const unsigned digit = (unsigned)(*cursor - '0');
         if (fractional) {
             digit_after_dot = true;
-            value += digit * place;
-            place *= 0.1;
         } else {
             digit_before_dot = true;
-            value = value * 10.0 + digit;
         }
     }
     if (fractional && !digit_after_dot) {
-        return PROBSPAN_ODDS_SYNTAX;
+        return false;
     }
-    return probspan_odds_validate(value, validated);
+    return true;
+}
+
+probspan_status probspan_odds_parse(const char *text, double *validated) {
+    if (text == NULL || validated == NULL) {
+        return PROBSPAN_INVALID_ARGUMENT;
+    }
+    if (!valid_decimal_syntax(text)) { return PROBSPAN_ODDS_SYNTAX; }
+    /* Repeated binary64 digit arithmetic can round to a neighboring value.
+       The frozen Python float conversion instead rounds the complete decimal
+       once, to nearest with ties to even; keep that concern private. */
+    return probspan_odds_validate(ps_decimal_to_binary64(text), validated);
 }
