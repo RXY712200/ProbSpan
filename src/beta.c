@@ -1,4 +1,5 @@
 #include "beta_private.h"
+#include "beta_logit.h"
 
 #include <float.h>
 #include <math.h>
@@ -10,6 +11,15 @@
 #define PS_BETA_CF_RELATIVE_TOLERANCE (8.0 * DBL_EPSILON)
 #define PS_BETA_CF_TINY (DBL_MIN / DBL_EPSILON)
 #define PS_BETA_QUANTILE_MAX_ITERATIONS 200
+#define PS_BETA_LOGIT_SWITCH_SUM 10000.0
+#define PS_BETA_LOGIT_MIN_SHAPE 0.5
+
+static bool use_logit_integration(double alpha, double beta) {
+    /* The alternate integrator's documented tail bound requires both shapes
+       >=0.5. This is a numerical precondition, independent of model policy. */
+    return alpha >= PS_BETA_LOGIT_MIN_SHAPE && beta >= PS_BETA_LOGIT_MIN_SHAPE &&
+           alpha + beta > PS_BETA_LOGIT_SWITCH_SUM;
+}
 
 static double nonzero(double value) {
     if (fabs(value) < PS_BETA_CF_TINY) {
@@ -59,6 +69,12 @@ bool ps_beta_cdf(double x, double alpha, double beta, double *value) {
         *value = x;
         return true;
     }
+    /* Large shapes make the ordinary gamma normalization cancel and the
+       continued fraction slow. The transformed integral has stable scale
+       throughout the history domain and preserves the same beta law. */
+    if (use_logit_integration(alpha, beta)) {
+        return ps_beta_logit_cdf(x, alpha, beta, value);
+    }
 
     /* log-gamma keeps the beta normalization representable before exponentiation.
        Reflecting the upper tail avoids subtracting nearly equal numbers there. */
@@ -94,6 +110,9 @@ bool ps_beta_quantile(double probability, double alpha, double beta, double *val
     if (probability == 0.0 || probability == 1.0) {
         *value = probability;
         return true;
+    }
+    if (use_logit_integration(alpha, beta)) {
+        return ps_beta_logit_quantile(probability, alpha, beta, value);
     }
 
     /* Bisection is slower than unconstrained Newton iteration but never steps
