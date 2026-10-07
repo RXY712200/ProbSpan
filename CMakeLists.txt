@@ -13,6 +13,8 @@ add_library(probspan STATIC
   src/decision_policy.c
   src/subjective_analysis.c
   src/historical_analysis.c
+  src/provenance.c
+  src/analysis_composition.c
 )
 target_compile_features(probspan PUBLIC c_std_11)
 set_target_properties(probspan PROPERTIES C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
@@ -79,7 +81,19 @@ if(BUILD_TESTING)
   add_test(NAME probspan_analysis_parity COMMAND probspan_analysis_parity)
 
   find_package(Python3 COMPONENTS Interpreter QUIET)
+  add_executable(probspan_state_parity tests/state_parity.c)
+  target_link_libraries(probspan_state_parity PRIVATE probspan)
+  target_include_directories(probspan_state_parity PRIVATE tests)
+  set_target_properties(probspan_state_parity PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+  if(MSVC)
+    target_compile_options(probspan_state_parity PRIVATE /W4)
+  else()
+    target_compile_options(probspan_state_parity PRIVATE -Wall -Wextra -Wpedantic)
+  endif()
+  add_test(NAME probspan_state_parity COMMAND probspan_state_parity)
   if(Python3_Interpreter_FOUND)
+    add_test(NAME probspan_state_fixture_freshness
+      COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/generate_state_fixtures.py --check)
     add_test(NAME probspan_fixture_freshness
       COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/generate_fixtures.py --check)
     add_test(NAME probspan_large_fixture_freshness

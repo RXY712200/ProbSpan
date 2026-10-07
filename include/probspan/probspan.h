@@ -111,7 +111,37 @@ typedef struct {
     probspan_historical_side complement_event;
 } probspan_historical_analysis;
 
+typedef struct {
+    bool evidence_exposed;
+    bool subjective_independence_compromised;
+} probspan_provenance;
+
+/* A complete historical analysis fact, not a cache. Callers own storage and
+   must retain these independent versioned results rather than silently
+   recomputing them with a later model. */
+typedef struct {
+    probspan_subjective_result subjective;
+    double event_odds;
+    double complement_event_odds;
+    probspan_subjective_analysis subjective_analysis;
+    probspan_history_result history;
+    probspan_historical_analysis historical_analysis;
+    probspan_model_relation event_relation;
+    probspan_model_relation complement_event_relation;
+} probspan_analysis;
+
 unsigned probspan_abi_version(void);
+/* Non-OK returns leave output unchanged for both operations below.
+   Start with {false, false} and equal previous/current raw inputs for an
+   initial analysis. Exposure is an observed caller fact, not a display
+   request. Clocks and revision lifecycle remain caller responsibilities. */
+probspan_status probspan_provenance_transition(const probspan_provenance *previous,
+    int32_t previous_raw_percent, int32_t current_raw_percent,
+    bool subject_changed, bool evidence_exposed_now, probspan_provenance *result);
+probspan_status probspan_compose_analysis(int32_t raw_percent,
+    int64_t event_count, int64_t complement_count,
+    double event_odds, double complement_event_odds, probspan_analysis *result);
+
 /* A non-OK return leaves the caller's output object unchanged. */
 probspan_status probspan_subjective_half_width(double probability, double *half_width);
 probspan_status probspan_subjective_estimate(int32_t raw_percent,

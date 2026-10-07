@@ -5,6 +5,7 @@
 
 #include "model_v1.h"
 #include "probability_math.h"
+#include "subjective_input.h"
 
 static double logistic(double value) {
     return 1.0 / (1.0 + exp(-value));
@@ -50,7 +51,7 @@ probspan_status probspan_subjective_estimate(int32_t raw_percent,
     if (result == NULL) {
         return PROBSPAN_INVALID_ARGUMENT;
     }
-    if (raw_percent < 0 || raw_percent > 100) {
+    if (!ps_valid_raw_percent(raw_percent)) {
         return PROBSPAN_RAW_PROBABILITY;
     }
 

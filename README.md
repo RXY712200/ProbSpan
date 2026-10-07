@@ -7,3 +7,5 @@ This repository turns that application-internal core into a reusable standalone 
 The C11 library provides the frozen subjective model, odds validation, and Jeffreys historical estimate, including its credible interval and readiness gate. Step 3 adds independent event/complement EV analyses, subjective robust margins, posterior threshold probabilities, odds geometry, and model-relation classification. The committed oracle is used for parity tests.
 
 Extreme large-parameter cases use a separately authorized high-precision numerical reference where frozen SciPy becomes internally inconsistent. This changes evaluation only, not the v1 model. See the [Step 2 developer note](oracle/LARGE_NUMERICS.md).
+
+Step 4 adds pure evidence-exposure/independence provenance transitions and complete versioned analysis value objects suitable for caller persistence. Workflow, clocks, revision counting, and storage remain caller-owned. [Issue #1](https://github.com/RXY712200/ProbSpan/issues/1) defines the long-term product boundary.

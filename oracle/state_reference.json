@@ -1,0 +1,350 @@
+{
+  "cases": [
+    {
+      "case": "no_history_initial",
+      "current_raw": 60,
+      "evidence_exposed_now": false,
+      "expected": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "insufficient_initial",
+      "current_raw": 60,
+      "evidence_exposed_now": false,
+      "expected": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "first_exposure_raw_before",
+      "current_raw": 0,
+      "evidence_exposed_now": false,
+      "expected": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 0,
+      "subject_changed": false
+    },
+    {
+      "case": "first_exposure_raw_after",
+      "current_raw": 1,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 0,
+      "subject_changed": false
+    },
+    {
+      "case": "first_exposure_identity_before",
+      "current_raw": 60,
+      "evidence_exposed_now": false,
+      "expected": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "first_exposure_identity_after",
+      "current_raw": 60,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 60,
+      "subject_changed": true
+    },
+    {
+      "case": "exposed_identity_before",
+      "current_raw": 60,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "exposed_identity_after",
+      "current_raw": 60,
+      "evidence_exposed_now": false,
+      "expected": {
+        "compromised": true,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous_raw": 60,
+      "subject_changed": true
+    },
+    {
+      "case": "raw_zero_to_one_before",
+      "current_raw": 0,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 0,
+      "subject_changed": false
+    },
+    {
+      "case": "raw_zero_to_one_after",
+      "current_raw": 1,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": true,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous_raw": 0,
+      "subject_changed": false
+    },
+    {
+      "case": "sticky_exposure_initial",
+      "current_raw": 60,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "sticky_exposure_hidden",
+      "current_raw": 60,
+      "evidence_exposed_now": false,
+      "expected": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "sticky_exposure_no_history",
+      "current_raw": 60,
+      "evidence_exposed_now": false,
+      "expected": {
+        "compromised": true,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous_raw": 60,
+      "subject_changed": true
+    },
+    {
+      "case": "sticky_exposure_insufficient",
+      "current_raw": 60,
+      "evidence_exposed_now": false,
+      "expected": {
+        "compromised": true,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": true,
+        "exposed": true
+      },
+      "previous_raw": 60,
+      "subject_changed": true
+    },
+    {
+      "case": "noncompromising_initial",
+      "current_raw": 60,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "noncompromising_odds_only",
+      "current_raw": 60,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "noncompromising_reference_off",
+      "current_raw": 60,
+      "evidence_exposed_now": false,
+      "expected": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "noncompromising_reference_on",
+      "current_raw": 60,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "sticky_compromise_initial",
+      "current_raw": 60,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "sticky_compromise_changed",
+      "current_raw": 70,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": true,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "sticky_compromise_restored",
+      "current_raw": 60,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": true,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": true,
+        "exposed": true
+      },
+      "previous_raw": 70,
+      "subject_changed": false
+    },
+    {
+      "case": "initial_hidden",
+      "current_raw": 60,
+      "evidence_exposed_now": false,
+      "expected": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    },
+    {
+      "case": "first_exposure_unchanged",
+      "current_raw": 60,
+      "evidence_exposed_now": true,
+      "expected": {
+        "compromised": false,
+        "exposed": true
+      },
+      "previous": {
+        "compromised": false,
+        "exposed": false
+      },
+      "previous_raw": 60,
+      "subject_changed": false
+    }
+  ],
+  "reference_commit": "a581f84ccd217ed45789b3566347255f56ffbeac"
+}
