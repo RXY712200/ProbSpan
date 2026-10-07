@@ -5,6 +5,7 @@
 
 #include "beta_private.h"
 #include "model_v1.h"
+#include "history_model_private.h"
 
 probspan_status probspan_history_estimate(int64_t event_count, int64_t complement_count,
                                           probspan_history_result *result) {
@@ -27,8 +28,9 @@ probspan_status probspan_history_estimate(int64_t event_count, int64_t complemen
         return PROBSPAN_OK;
     }
 
-    const double alpha = (double)event_count + PS_JEFFREYS_ALPHA;
-    const double beta = (double)complement_count + PS_JEFFREYS_BETA;
+    double alpha;
+    double beta;
+    ps_history_shapes(event_count, complement_count, &alpha, &beta);
     const double tail = (1.0 - PS_HISTORY_CREDIBLE_LEVEL) / 2.0;
     double lower;
     double upper;

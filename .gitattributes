@@ -4,3 +4,6 @@ oracle/large_reference.json text eol=lf
 tests/large_fixtures.h text eol=lf
 oracle/decimal_vectors.jsonl text eol=lf
 tests/decimal_fixtures.h text eol=lf
+oracle/analysis_vectors.jsonl text eol=lf
+oracle/threshold_reference.json text eol=lf
+tests/analysis_fixtures.h text eol=lf

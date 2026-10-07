@@ -9,6 +9,10 @@ add_library(probspan STATIC
   src/historical.c
   src/beta.c
   src/beta_logit.c
+  src/decision_geometry.c
+  src/decision_policy.c
+  src/subjective_analysis.c
+  src/historical_analysis.c
 )
 target_compile_features(probspan PUBLIC c_std_11)
 set_target_properties(probspan PROPERTIES C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
@@ -63,6 +67,17 @@ if(BUILD_TESTING)
   endif()
   add_test(NAME probspan_decimal_parity COMMAND probspan_decimal_parity)
 
+  add_executable(probspan_analysis_parity tests/analysis_parity.c)
+  target_link_libraries(probspan_analysis_parity PRIVATE probspan)
+  target_include_directories(probspan_analysis_parity PRIVATE tests)
+  set_target_properties(probspan_analysis_parity PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+  if(MSVC)
+    target_compile_options(probspan_analysis_parity PRIVATE /W4)
+  else()
+    target_compile_options(probspan_analysis_parity PRIVATE -Wall -Wextra -Wpedantic)
+  endif()
+  add_test(NAME probspan_analysis_parity COMMAND probspan_analysis_parity)
+
   find_package(Python3 COMPONENTS Interpreter QUIET)
   if(Python3_Interpreter_FOUND)
     add_test(NAME probspan_fixture_freshness
@@ -71,5 +86,7 @@ if(BUILD_TESTING)
       COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/generate_large_fixtures.py --check)
     add_test(NAME probspan_decimal_fixture_freshness
       COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/generate_decimal_fixtures.py --check)
+    add_test(NAME probspan_analysis_fixture_freshness
+      COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/generate_analysis_fixtures.py --check)
   endif()
 endif()

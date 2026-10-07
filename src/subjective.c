@@ -4,10 +4,7 @@
 #include <stddef.h>
 
 #include "model_v1.h"
-
-static double logit(double probability) {
-    return log(probability / (1.0 - probability));
-}
+#include "probability_math.h"
 
 static double logistic(double value) {
     return 1.0 / (1.0 + exp(-value));
@@ -66,7 +63,7 @@ probspan_status probspan_subjective_estimate(int32_t raw_percent,
     if (status != PROBSPAN_OK) {
         return status;
     }
-    const double center_logit = logit(probability);
+    const double center_logit = ps_logit(probability);
     *result = (probspan_subjective_result){
         raw_percent, used_percent, probability,
         logistic(center_logit - half_width), logistic(center_logit + half_width),

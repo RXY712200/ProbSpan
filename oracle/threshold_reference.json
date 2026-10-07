@@ -1,0 +1,449 @@
+{
+  "cases": [
+    {
+      "complement_odds": 1.9999985857874376,
+      "complement_threshold_as_event": 0.49999964644660944,
+      "complements": 1000000000000,
+      "event_odds": 2.0000014142145623,
+      "event_threshold": 0.49999964644660944,
+      "events": 1000000000000,
+      "expected": {
+        "lose": {
+          "ev_center": -7.071062811947471e-07,
+          "ev_max": 6.787965631804838e-07,
+          "ev_min": -2.093009125569978e-06,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.15865525395137153
+        },
+        "win": {
+          "ev_center": 7.071072811726253e-07,
+          "ev_max": 2.0930120854245615e-06,
+          "ev_min": -6.787975231903332e-07,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.8413447460486285
+        }
+      }
+    },
+    {
+      "complement_odds": 2.0,
+      "complement_threshold_as_event": 0.5,
+      "complements": 1000000000000,
+      "event_odds": 2.0,
+      "event_threshold": 0.5,
+      "events": 1000000000000,
+      "expected": {
+        "lose": {
+          "ev_center": 0.0,
+          "ev_max": 1.3859038243690947e-06,
+          "ev_min": -1.3859038243690947e-06,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.5
+        },
+        "win": {
+          "ev_center": 0.0,
+          "ev_max": 1.3859038243690947e-06,
+          "ev_min": -1.3859038243690947e-06,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.5
+        }
+      }
+    },
+    {
+      "complement_odds": 2.0000014142145623,
+      "complement_threshold_as_event": 0.5000003535533906,
+      "complements": 1000000000000,
+      "event_odds": 1.9999985857874376,
+      "event_threshold": 0.5000003535533906,
+      "events": 1000000000000,
+      "expected": {
+        "lose": {
+          "ev_center": 7.071072811726253e-07,
+          "ev_max": 2.0930120854245615e-06,
+          "ev_min": -6.787975231903332e-07,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.8413447460486285
+        },
+        "win": {
+          "ev_center": -7.071062811947471e-07,
+          "ev_max": 6.787965631804838e-07,
+          "ev_min": -2.093009125569978e-06,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.15865525395137148
+        }
+      }
+    },
+    {
+      "complement_odds": 1.9999999985857864,
+      "complement_threshold_as_event": 0.4999999996464466,
+      "complements": 1000000000000000000,
+      "event_odds": 2.0000000014142136,
+      "event_threshold": 0.4999999996464466,
+      "events": 1000000000000000000,
+      "expected": {
+        "lose": {
+          "ev_center": -7.071068175434903e-10,
+          "ev_max": 6.787970185939685e-10,
+          "ev_min": -2.093010653680949e-09,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.1586552414901741
+        },
+        "win": {
+          "ev_center": 7.071068175434903e-10,
+          "ev_max": 2.093010653680949e-09,
+          "ev_min": -6.787970185939685e-10,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.8413447585098259
+        }
+      }
+    },
+    {
+      "complement_odds": 2.0,
+      "complement_threshold_as_event": 0.5,
+      "complements": 1000000000000000000,
+      "event_odds": 2.0,
+      "event_threshold": 0.5,
+      "events": 1000000000000000000,
+      "expected": {
+        "lose": {
+          "ev_center": 0.0,
+          "ev_max": 1.3859038361374587e-09,
+          "ev_min": -1.3859038361374587e-09,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.5
+        },
+        "win": {
+          "ev_center": 0.0,
+          "ev_max": 1.3859038361374587e-09,
+          "ev_min": -1.3859038361374587e-09,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.5
+        }
+      }
+    },
+    {
+      "complement_odds": 2.0000000014142136,
+      "complement_threshold_as_event": 0.5000000003535534,
+      "complements": 1000000000000000000,
+      "event_odds": 1.9999999985857864,
+      "event_threshold": 0.5000000003535534,
+      "events": 1000000000000000000,
+      "expected": {
+        "lose": {
+          "ev_center": 7.071068175434903e-10,
+          "ev_max": 2.093010653680949e-09,
+          "ev_min": -6.787970185939685e-10,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.8413447585098259
+        },
+        "win": {
+          "ev_center": -7.071068175434903e-10,
+          "ev_max": 6.787970185939685e-10,
+          "ev_min": -2.093010653680949e-09,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.15865524149017407
+        }
+      }
+    },
+    {
+      "complement_odds": 1.9999999995343387,
+      "complement_threshold_as_event": 0.4999999998835847,
+      "complements": 9223372036854775807,
+      "event_odds": 2.0000000004656613,
+      "event_threshold": 0.4999999998835847,
+      "events": 9223372036854775807,
+      "expected": {
+        "lose": {
+          "ev_center": -2.3283064365386963e-10,
+          "ev_max": 2.235089890945119e-10,
+          "ev_min": -6.891702764022511e-10,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.15865525393145705
+        },
+        "win": {
+          "ev_center": 2.3283064365386963e-10,
+          "ev_max": 6.891702764022511e-10,
+          "ev_min": -2.235089890945119e-10,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.8413447460685429
+        }
+      }
+    },
+    {
+      "complement_odds": 2.0,
+      "complement_threshold_as_event": 0.5,
+      "complements": 9223372036854775807,
+      "event_odds": 2.0,
+      "event_threshold": 0.5,
+      "events": 9223372036854775807,
+      "expected": {
+        "lose": {
+          "ev_center": 0.0,
+          "ev_max": 4.563396327483815e-10,
+          "ev_min": -4.563396327483815e-10,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.5
+        },
+        "win": {
+          "ev_center": 0.0,
+          "ev_max": 4.563396327483815e-10,
+          "ev_min": -4.563396327483815e-10,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.5
+        }
+      }
+    },
+    {
+      "complement_odds": 2.0000000004656613,
+      "complement_threshold_as_event": 0.5000000001164153,
+      "complements": 9223372036854775807,
+      "event_odds": 1.9999999995343387,
+      "event_threshold": 0.5000000001164153,
+      "events": 9223372036854775807,
+      "expected": {
+        "lose": {
+          "ev_center": 2.3283064365386963e-10,
+          "ev_max": 6.891702764022511e-10,
+          "ev_min": -2.235089890945119e-10,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.8413447460685429
+        },
+        "win": {
+          "ev_center": -2.3283064365386963e-10,
+          "ev_max": 2.235089890945119e-10,
+          "ev_min": -6.891702764022511e-10,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.15865525393145707
+        }
+      }
+    },
+    {
+      "complement_odds": 1.0009999999895822,
+      "complement_threshold_as_event": 0.0009990009886040596,
+      "complements": 9223372036854775807,
+      "event_odds": 1001.000010417708,
+      "event_threshold": 0.0009990009886040952,
+      "events": 9223372036854775,
+      "expected": {
+        "lose": {
+          "ev_center": -1.040734165513868e-11,
+          "ev_max": 9.990452909391934e-12,
+          "ev_min": -3.0805247241971756e-11,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.1586544223283876
+        },
+        "win": {
+          "ev_center": 1.0407300798931374e-08,
+          "ev_max": 3.080523525156309e-08,
+          "ev_min": -9.990633653700343e-09,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.8413447500302736
+        }
+      }
+    },
+    {
+      "complement_odds": 1.001,
+      "complement_threshold_as_event": 0.0009990009990008542,
+      "complements": 9223372036854775807,
+      "event_odds": 1001.0,
+      "event_threshold": 0.000999000999000999,
+      "events": 9223372036854775,
+      "expected": {
+        "lose": {
+          "ev_center": -1.1102230246251565e-16,
+          "ev_max": 2.039768354222815e-11,
+          "ev_min": -2.039801660913554e-11,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.49999444249798114
+        },
+        "win": {
+          "ev_center": 0.0,
+          "ev_max": 2.0397934452631716e-08,
+          "ev_min": -2.039793423058711e-08,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.4999999994478289
+        }
+      }
+    },
+    {
+      "complement_odds": 1.0010000000104178,
+      "complement_threshold_as_event": 0.0009990010093979818,
+      "complements": 9223372036854775807,
+      "event_odds": 1000.9999895822923,
+      "event_threshold": 0.0009990010093979026,
+      "events": 9223372036854775,
+      "expected": {
+        "lose": {
+          "ev_center": 1.0407452677441142e-11,
+          "ev_max": 3.080535826427422e-11,
+          "ev_min": -9.990563931694396e-12,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.841346585979124
+        },
+        "win": {
+          "ev_center": -1.0407300354842164e-08,
+          "ev_max": 9.990633875744948e-09,
+          "ev_min": -3.080523436338467e-08,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.1586552560236737
+        }
+      }
+    },
+    {
+      "complement_odds": 1.0,
+      "complement_threshold_as_event": 0.0,
+      "complements": 9223372036854775807,
+      "event_odds": 3.6893488147419103e+19,
+      "event_threshold": 2.710505431213761e-20,
+      "events": 0,
+      "expected": {
+        "lose": {
+          "ev_center": 0.0,
+          "ev_max": 0.0,
+          "ev_min": 0.0,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.0
+        },
+        "win": {
+          "ev_center": 1.0,
+          "ev_max": 9.047772374629778,
+          "ev_min": -0.9980358617656495,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.4795001221869535
+        }
+      }
+    },
+    {
+      "complement_odds": 1.0,
+      "complement_threshold_as_event": 0.0,
+      "complements": 9223372036854775807,
+      "event_odds": 1.8446744073709552e+19,
+      "event_threshold": 5.421010862427522e-20,
+      "events": 0,
+      "expected": {
+        "lose": {
+          "ev_center": 0.0,
+          "ev_max": 0.0,
+          "ev_min": 0.0,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.0
+        },
+        "win": {
+          "ev_center": 0.0,
+          "ev_max": 4.023886187314889,
+          "ev_min": -0.9990179308828248,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.31731050786291415
+        }
+      }
+    },
+    {
+      "complement_odds": 1.0,
+      "complement_threshold_as_event": 0.0,
+      "complements": 9223372036854775807,
+      "event_odds": 7.640891576956013e+18,
+      "event_threshold": 1.3087477945844392e-19,
+      "events": 0,
+      "expected": {
+        "lose": {
+          "ev_center": 0.0,
+          "ev_max": 0.0,
+          "ev_min": 0.0,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.0
+        },
+        "win": {
+          "ev_center": -0.585786437626905,
+          "ev_max": 1.0809617946046863,
+          "ev_min": -0.9995932136524782,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.12023834065689731
+        }
+      }
+    },
+    {
+      "complement_odds": 1000.9999895822923,
+      "complement_threshold_as_event": 0.9990009989906021,
+      "complements": 9223372036854775,
+      "event_odds": 1.0010000000104178,
+      "event_threshold": 0.999000998990602,
+      "events": 9223372036854775807,
+      "expected": {
+        "lose": {
+          "ev_center": -1.0407334216644415e-08,
+          "ev_max": 9.990631655298898e-09,
+          "ev_min": -3.080518895526296e-08,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.15865599787533669
+        },
+        "win": {
+          "ev_center": 1.0407452677441142e-11,
+          "ev_max": 3.080535826427422e-11,
+          "ev_min": -9.990563931694396e-12,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.841346585979124
+        }
+      }
+    },
+    {
+      "complement_odds": 1001.0,
+      "complement_threshold_as_event": 0.999000999000999,
+      "complements": 9223372036854775,
+      "event_odds": 1.001,
+      "event_threshold": 0.9990009990009991,
+      "events": 9223372036854775807,
+      "expected": {
+        "lose": {
+          "ev_center": -3.3861802251067274e-14,
+          "ev_max": 2.0397932232185667e-08,
+          "ev_min": -2.0397888822465404e-08,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.500001297436532
+        },
+        "win": {
+          "ev_center": -1.1102230246251565e-16,
+          "ev_max": 2.039768354222815e-11,
+          "ev_min": -2.039801660913554e-11,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.4999944424979812
+        }
+      }
+    },
+    {
+      "complement_odds": 1001.000010417708,
+      "complement_threshold_as_event": 0.9990009990113959,
+      "complements": 9223372036854775,
+      "event_odds": 1.0009999999895822,
+      "event_threshold": 0.9990009990113959,
+      "events": 9223372036854775807,
+      "expected": {
+        "lose": {
+          "ev_center": 1.040726682610682e-08,
+          "ev_max": 3.0805233253161646e-08,
+          "ev_min": -9.990588245578635e-09,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.8413455776716124
+        },
+        "win": {
+          "ev_center": -1.040734165513868e-11,
+          "ev_max": 9.990452909391934e-12,
+          "ev_min": -3.0805247241971756e-11,
+          "ev_state": "crosses_threshold",
+          "threshold_posterior_probability": 0.15865442232838756
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "absolute_tolerance": 1e-10,
+    "cdf_inputs": "Exact represented binary64 thresholds and shapes; exact integer-count model for intervals",
+    "commit": "a581f84ccd217ed45789b3566347255f56ffbeac",
+    "complement_formula": "BetaCDF(1-1/complement_odds; events+0.5, complements+0.5)",
+    "decimal_precision": 80,
+    "event_formula": "1-BetaCDF(1/event_odds; events+0.5, complements+0.5)",
+    "method": "Accepted exact Beta integral with tanh-sinh quadrature and log-gamma normalization",
+    "policy": "Accepted Step 2 large-parameter numerical reference exception only",
+    "relative_tolerance": 1e-10,
+    "tool": "mpmath",
+    "tool_version": "1.3.0"
+  }
+}
