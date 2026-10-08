@@ -25,7 +25,12 @@ static uint64_t representation(double value) {
 static void check_vectors(void) {
     for (size_t i = 0; i < COUNT(decimal_cases); ++i) {
         const decimal_case *item = &decimal_cases[i];
-        CHECK(representation(ps_decimal_to_binary64(item->text)) == item->bits);
+        const uint64_t converted = representation(ps_decimal_to_binary64(item->text));
+        if (converted != item->bits) {
+            fprintf(stderr, "Decimal vector %zu, rounding mode %d: actual %016" PRIx64
+                " expected %016" PRIx64 "\n", i, fegetround(), converted, item->bits);
+            exit(EXIT_FAILURE);
+        }
         double actual = 7.0;
         CHECK(probspan_odds_parse(item->text, &actual) == item->status);
         if (item->status == PROBSPAN_OK) { CHECK(representation(actual) == item->bits); }

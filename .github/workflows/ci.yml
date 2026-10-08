@@ -20,7 +20,7 @@ jobs:
           - { name: macOS AppleClang, os: macos-latest, compiler: clang, sanitize: false }
           - { name: Linux GCC ASan UBSan, os: ubuntu-latest, compiler: gcc, sanitize: true }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - name: Configure
         shell: pwsh
         run: |
