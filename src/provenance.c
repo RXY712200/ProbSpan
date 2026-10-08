@@ -7,6 +7,11 @@ probspan_status probspan_provenance_transition(const probspan_provenance *previo
     int32_t previous_raw_percent, int32_t current_raw_percent,
     bool subject_changed, bool evidence_exposed_now, probspan_provenance *result) {
     if (previous == NULL || result == NULL) { return PROBSPAN_INVALID_ARGUMENT; }
+    /* Public structs are caller-constructible. Reject an unreachable state
+       rather than propagating a compromised claim without prior exposure. */
+    if (previous->subjective_independence_compromised && !previous->evidence_exposed) {
+        return PROBSPAN_INVALID_ARGUMENT;
+    }
     if (!ps_valid_raw_percent(previous_raw_percent) || !ps_valid_raw_percent(current_raw_percent)) {
         return PROBSPAN_RAW_PROBABILITY;
     }

@@ -1,0 +1,59 @@
+name: Portable C11
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: Windows MSVC, os: windows-latest, compiler: '', sanitize: false }
+          - { name: Linux GCC, os: ubuntu-latest, compiler: gcc, sanitize: false }
+          - { name: Linux Clang, os: ubuntu-latest, compiler: clang, sanitize: false }
+          - { name: macOS AppleClang, os: macos-latest, compiler: clang, sanitize: false }
+          - { name: Linux GCC ASan UBSan, os: ubuntu-latest, compiler: gcc, sanitize: true }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        shell: pwsh
+        run: |
+          $options = @('-DPROBSPAN_BUILD_EXAMPLES=ON', '-DCMAKE_BUILD_TYPE=Debug')
+          if ('${{ matrix.compiler }}') { $options += '-DCMAKE_C_COMPILER=${{ matrix.compiler }}' }
+          if ('${{ matrix.sanitize }}' -eq 'true') {
+            $options += '-DCMAKE_C_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer'
+            $options += '-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined'
+          }
+          cmake -S . -B build @options
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build and test
+        shell: pwsh
+        run: |
+          cmake --build build --config Debug --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ctest --test-dir build -C Debug --output-on-failure
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Install and test external consumer
+        shell: pwsh
+        run: |
+          $prefix = Join-Path $env:RUNNER_TEMP 'probspan-install'
+          cmake --install build --config Debug --prefix $prefix
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $options = @("-DCMAKE_PREFIX_PATH=$prefix", '-DCMAKE_BUILD_TYPE=Debug')
+          if ('${{ matrix.compiler }}') { $options += '-DCMAKE_C_COMPILER=${{ matrix.compiler }}' }
+          if ('${{ matrix.sanitize }}' -eq 'true') {
+            $options += '-DCMAKE_C_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer'
+            $options += '-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined'
+          }
+          cmake -S tests/consumer -B consumer-build @options
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build consumer-build --config Debug --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ctest --test-dir consumer-build -C Debug --output-on-failure
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

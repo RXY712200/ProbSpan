@@ -1,12 +1,11 @@
 #include "beta_logit.h"
+#include "gamma_private.h"
 
 #include <float.h>
 #include <math.h>
 
-#define LOG_SQRT_TWO_PI 0.91893853320467274178
 #define SERIES_SMALL_ARGUMENT 0.125
 #define SERIES_MAX_TERMS 40
-#define STIRLING_MIN_ARGUMENT 8.0
 #define CDF_CENTERED_FRACTION_LIMIT 0.1
 #define LOGIT_TAIL_LIMIT 64.0
 #define QUADRATURE_PANEL_WIDTH 2.0
@@ -64,23 +63,6 @@ static double expm1_minus_x(double x) {
     return sum;
 }
 
-/* Stirling's remainder, DLMF 5.11.1. This evaluates only the small correction,
-   never a difference of enormous log-gamma values. At z>=8 the omitted term
-   after z^-17 is below 1e-17, well below the integration tolerance; small z
-   uses the C math runtime. */
-static double stirling_remainder(double z) {
-    if (z < STIRLING_MIN_ARGUMENT) {
-        return lgamma(z) - ((z - 0.5) * log(z) - z + LOG_SQRT_TWO_PI);
-    }
-    const double inverse = 1.0 / z;
-    const double square = inverse * inverse;
-    return inverse * (1.0 / 12.0 + square * (-1.0 / 360.0 +
-           square * (1.0 / 1260.0 + square * (-1.0 / 1680.0 +
-           square * (1.0 / 1188.0 + square * (-691.0 / 360360.0 +
-           square * (1.0 / 156.0 + square * (-3617.0 / 122400.0 +
-           square * (43867.0 / 244188.0)))))))));
-}
-
 static logit_density make_density(double alpha, double beta) {
     const double sum = alpha + beta;
     const double center = alpha / sum;
@@ -91,8 +73,8 @@ static logit_density make_density(double alpha, double beta) {
                                    center * sum_roundoff(alpha, beta, sum)) / sum;
     logit_density density = {
         alpha, sum, center, center_roundoff, sqrt(1.0 / alpha + 1.0 / beta),
-        -LOG_SQRT_TWO_PI - stirling_remainder(alpha) -
-        stirling_remainder(beta) + stirling_remainder(sum)
+        -PS_LOG_SQRT_TWO_PI - ps_stirling_remainder(alpha) -
+        ps_stirling_remainder(beta) + ps_stirling_remainder(sum)
     };
     return density;
 }

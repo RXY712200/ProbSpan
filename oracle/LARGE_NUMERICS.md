@@ -68,4 +68,7 @@ CDFs to bracket the target, with probability tolerance 1e-10. Complementary
 identities use the same bracket rule when subtraction from one rounds the
 argument. High-precision generation checks the identities directly.
 
-Full numerical and compatibility documentation remains scheduled for Step 5.
+Full numerical and compatibility contracts are in [Numerical contract](../docs/NUMERICAL_CONTRACT.md)
+and [Compatibility](../docs/COMPATIBILITY.md). The final reentrancy audit extracted
+the shared Stirling remainder and removed hidden signgam effects from log-Gamma
+evaluation; the accepted model, references, tolerances, and stress cases remain unchanged.

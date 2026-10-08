@@ -34,4 +34,5 @@ python tests/generate_analysis_fixtures.py --check
 Generation never uses C outputs as expected values. Committed C fixtures need
 no Python to compile or run. Shared logit and Jeffreys-shape helpers preserve
 Step 2's exact arithmetic while avoiding duplicate formulas in the new layer.
-Full documentation remains Step 5 work.
+Full documentation is now in [Behavior specification](../docs/BEHAVIOR_SPEC.md),
+[Numerical contract](../docs/NUMERICAL_CONTRACT.md), and [Testing](../docs/TESTING.md).

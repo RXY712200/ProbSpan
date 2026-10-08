@@ -35,4 +35,6 @@ separate from composition: neither alters mathematical estimates. Callers retain
 the returned independent model/gate/analysis versions and derived results as
 historical facts; future models must not silently reinterpret stored results.
 Raw-domain validation is shared with estimation without changing accepted rules.
-Full documentation remains outside Step 4.
+Full API and state documentation is now in [API](../docs/API.md) and
+[Provenance](../docs/PROVENANCE.md). Final API hardening rejects unreachable
+compromised-without-exposure inputs; all 23 reachable expected transitions are unchanged.

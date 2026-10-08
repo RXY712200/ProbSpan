@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 project(ProbSpan VERSION 1.0.0 LANGUAGES C)
 
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+option(PROBSPAN_BUILD_EXAMPLES "Build examples using the public API" OFF)
+
 add_library(probspan STATIC
   src/probspan.c
   src/subjective.c
@@ -8,6 +12,7 @@ add_library(probspan STATIC
   src/decimal.c
   src/historical.c
   src/beta.c
+  src/gamma.c
   src/beta_logit.c
   src/decision_geometry.c
   src/decision_policy.c
@@ -18,9 +23,32 @@ add_library(probspan STATIC
 )
 target_compile_features(probspan PUBLIC c_std_11)
 set_target_properties(probspan PROPERTIES C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
-target_include_directories(probspan PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+add_library(ProbSpan::probspan ALIAS probspan)
+target_include_directories(probspan PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 if(NOT MSVC)
   target_link_libraries(probspan PUBLIC m)
+endif()
+
+install(TARGETS probspan EXPORT ProbSpanTargets
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(DIRECTORY include/probspan DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+set(PROBSPAN_PACKAGE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/ProbSpan)
+configure_package_config_file(cmake/ProbSpanConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/ProbSpanConfig.cmake
+  INSTALL_DESTINATION ${PROBSPAN_PACKAGE_DIR})
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/ProbSpanConfigVersion.cmake
+  VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion)
+install(EXPORT ProbSpanTargets NAMESPACE ProbSpan:: DESTINATION ${PROBSPAN_PACKAGE_DIR})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ProbSpanConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/ProbSpanConfigVersion.cmake DESTINATION ${PROBSPAN_PACKAGE_DIR})
+
+if(PROBSPAN_BUILD_EXAMPLES)
+  add_executable(probspan_decision_example examples/decision.c)
+  add_executable(probspan_provenance_example examples/provenance.c)
+  target_link_libraries(probspan_decision_example PRIVATE ProbSpan::probspan)
+  target_link_libraries(probspan_provenance_example PRIVATE ProbSpan::probspan)
 endif()
 
 if(MSVC)
@@ -31,10 +59,24 @@ endif()
 
 include(CTest)
 if(BUILD_TESTING)
+  if(PROBSPAN_BUILD_EXAMPLES)
+    add_test(NAME probspan_decision_example COMMAND probspan_decision_example)
+    add_test(NAME probspan_provenance_example COMMAND probspan_provenance_example)
+  endif()
   add_executable(probspan_smoke tests/smoke.c)
   set_target_properties(probspan_smoke PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
   target_link_libraries(probspan_smoke PRIVATE probspan)
   add_test(NAME probspan_smoke COMMAND probspan_smoke)
+
+  add_executable(probspan_api_contract tests/api_contract.c)
+  target_link_libraries(probspan_api_contract PRIVATE probspan)
+  set_target_properties(probspan_api_contract PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+  if(MSVC)
+    target_compile_options(probspan_api_contract PRIVATE /W4)
+  else()
+    target_compile_options(probspan_api_contract PRIVATE -Wall -Wextra -Wpedantic)
+  endif()
+  add_test(NAME probspan_api_contract COMMAND probspan_api_contract)
 
   add_executable(probspan_oracle_parity tests/oracle_parity.c)
   target_link_libraries(probspan_oracle_parity PRIVATE probspan)

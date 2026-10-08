@@ -1,5 +1,6 @@
 #include "beta_private.h"
 #include "beta_logit.h"
+#include "gamma_private.h"
 
 #include <float.h>
 #include <math.h>
@@ -78,7 +79,8 @@ bool ps_beta_cdf(double x, double alpha, double beta, double *value) {
 
     /* log-gamma keeps the beta normalization representable before exponentiation.
        Reflecting the upper tail avoids subtracting nearly equal numbers there. */
-    const double log_front = lgamma(alpha + beta) - lgamma(alpha) - lgamma(beta) +
+    const double log_front = ps_log_gamma_positive(alpha + beta) -
+                             ps_log_gamma_positive(alpha) - ps_log_gamma_positive(beta) +
                              alpha * log(x) + beta * log1p(-x);
     const double front = exp(log_front);
     double fraction;

@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+project(ProbSpanInstalledConsumer LANGUAGES C)
+find_package(ProbSpan 1.0 CONFIG REQUIRED)
+add_executable(consumer main.c)
+target_link_libraries(consumer PRIVATE ProbSpan::probspan)
+enable_testing()
+add_test(NAME installed_consumer COMMAND consumer)

@@ -4,6 +4,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+/* Product release version; independent of ABI and model/gate versions. */
+#define PROBSPAN_VERSION_MAJOR 1
+#define PROBSPAN_VERSION_MINOR 0
+#define PROBSPAN_VERSION_PATCH 0
+#define PROBSPAN_VERSION_STRING "1.0.0"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -113,6 +119,7 @@ typedef struct {
 
 typedef struct {
     bool evidence_exposed;
+    /* Reachable states require compromised => evidence_exposed. */
     bool subjective_independence_compromised;
 } probspan_provenance;
 
@@ -134,7 +141,9 @@ unsigned probspan_abi_version(void);
 /* Non-OK returns leave output unchanged for both operations below.
    Start with {false, false} and equal previous/current raw inputs for an
    initial analysis. Exposure is an observed caller fact, not a display
-   request. Clocks and revision lifecycle remain caller responsibilities. */
+   request. Clocks and revision lifecycle remain caller responsibilities.
+   An invalid previous state (compromised but not exposed) is rejected with
+   INVALID_ARGUMENT, including when result aliases previous. */
 probspan_status probspan_provenance_transition(const probspan_provenance *previous,
     int32_t previous_raw_percent, int32_t current_raw_percent,
     bool subject_changed, bool evidence_exposed_now, probspan_provenance *result);
