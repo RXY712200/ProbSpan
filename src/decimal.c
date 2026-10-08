@@ -143,6 +143,10 @@ static int compare_midpoint(const decimal_view *input, uint64_t encoding) {
 }
 
 static double value_from_encoding(uint64_t encoding) {
+    /* Clang's unsigned-integer conversion can reconstruct zero via exact
+       cancellation, yielding -0 under downward rounding. A nonnegative
+       decimal's zero encoding must remain +0 in every caller rounding mode. */
+    if (encoding == 0) { return 0.0; }
     if (encoding == BINARY64_INFINITY) { return INFINITY; }
     uint64_t significand;
     int exponent;

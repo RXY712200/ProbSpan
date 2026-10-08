@@ -25,6 +25,11 @@ rounded values below 1. Four rounding modes and a comma locale are tested.
 That parser guarantee does **not** make `log`, `exp`, division, Beta integration,
 or all other arithmetic rounding-mode independent.
 
+Zero encoding is returned explicitly as positive zero. The Linux Clang audit
+found that unsigned-integer-to-double reconstruction could yield negative zero
+under downward rounding; preserving the chosen nonnegative decimal encoding
+requires this branch. Exact rounding cells, grammar, and reference bits are unchanged.
+
 ## Tolerance and branch contract
 
 `oracle/numerical_policy.json` is the authoritative accepted parity policy:

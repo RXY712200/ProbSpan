@@ -20,6 +20,8 @@ independent audit; this entry does not assert that a tag/release was published.
 - Product version macros for 1.0.0 and ABI version 1.
 - Reentrancy audit fix: private positive log-Gamma evaluation avoids libm's
   potentially shared signgam state; unchanged reference/tolerance parity required.
+- Portability audit fix: positive-zero decimal reconstruction is explicit under
+  downward rounding; Linux Clang exposed a signed-zero conversion artifact.
 - Static-library install/export package `ProbSpan::probspan`, public examples,
   installed external consumer, and focused compiler/platform/sanitizer CI.
 - Frozen-reference, corrected high-precision, bit-exact decimal, safety,
