@@ -72,3 +72,7 @@ Full numerical and compatibility contracts are in [Numerical contract](../docs/N
 and [Compatibility](../docs/COMPATIBILITY.md). The final reentrancy audit extracted
 the shared Stirling remainder and removed hidden signgam effects from log-Gamma
 evaluation; the accepted model, references, tolerances, and stress cases remain unchanged.
+
+## Status in v1.0.0
+
+The high-precision large-parameter reference is part of the **accepted v1.0 numerical contract**, not a future alternative probability model. Its derivation and limitations are specified in [Numerical contract](../docs/NUMERICAL_CONTRACT.md). Further stress coverage must be added as separate reproducible cases without changing the frozen Jeffreys, gate, or model-version behavior.

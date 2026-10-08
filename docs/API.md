@@ -117,3 +117,24 @@ A saved result is what that model returned then. A future model must not
 silently recompute/relabel it as the original analysis. The library has no
 storage/migration API. Store provenance separately if needed; it describes
 independence and does not alter mathematical outputs.
+
+## Integration patterns and failure handling
+
+The one-shot composer is the preferred entry point when both sides' odds and history counts are already available. When user input arrives as text, first call `probspan_odds_parse` for each odds string and only compose after both conversions succeed. Do not assume a `probspan_history_result` is valid for betting-oriented posterior thresholds merely because its numerical interval exists: `state == PROBSPAN_VALID` is the availability gate.
+
+```c
+double event_odds, complement_odds;
+probspan_analysis analysis;
+if (probspan_odds_parse("2.00", &event_odds) != PROBSPAN_OK ||
+    probspan_odds_parse("3.00", &complement_odds) != PROBSPAN_OK) {
+    /* Reject the input and leave previous UI/application data unchanged. */
+    return;
+}
+if (probspan_compose_analysis(60, 19, 1, event_odds, complement_odds, &analysis)
+    != PROBSPAN_OK) { return; }
+/* Store or display analysis. Only read historical sides when available. */
+```
+
+The snippet is intended inside a caller function returning `void`; check `probspan_status` explicitly in applications that need error reporting. Error statuses describe input or numerical failures; `NO_HISTORY`, `INSUFFICIENT`, unavailable S and historical unavailability are valid *results*, not errors.
+
+**Compatibility rule:** raw struct layouts and numeric enum representations are not a stable disk format or cross-toolchain FFI ABI. A binding must map documented field meanings and availability, and an application wishing to preserve an old analysis must save all meaningful derived fields rather than silently recalculating them with future algorithms. The [versioned model specification](BEHAVIOR_SPEC.md) remains authoritative for rules and branch precedence.

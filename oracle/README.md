@@ -12,3 +12,9 @@ uv run python /path/to/ProbSpan/oracle/generate.py --reference-root . --check
 Each JSON Lines record identifies a behavior group and case, the inputs, and the observed output. Validation records carry the frozen exception class and code; historical odds records also freeze the rule that unavailable history returns `null` before odds validation. `null` represents unavailable results. Enum strings, flags, integers, raw values, and structure are exact. `numerical_policy.json` defines tolerances for C parity checks; the generator's `--check` compares committed reference text byte for byte in the locked reference environment. See [testing documentation](../docs/TESTING.md) for the complete estimate, decision, state, exact-decimal, corrected-reference, and fixture audit.
 
 The source and tests agree on the behavior sampled here. In particular, the subjective width is the frozen piecewise function, and a first exposure during recalculation does not retroactively compromise that same revision. These cases should not be replaced with a newly inferred model.
+
+## Release interpretation
+
+Generated reference datasets are **development evidence**, not runtime assets and not new models. `v1_vectors.jsonl`, `analysis_vectors.jsonl`, `decimal_vectors.jsonl`, and `state_reference.json` are tied to the frozen original source commit; `large_reference.json` and `threshold_reference.json` document the separately authorized high-precision correction for inconsistent extreme SciPy evaluation. Generated C fixture headers are committed to allow C-only tests.
+
+Never replace accepted reference values just to match a new C implementation. See [the v1 numerical contract](../docs/NUMERICAL_CONTRACT.md), [testing](../docs/TESTING.md), and [contribution rules](../CONTRIBUTING.md).

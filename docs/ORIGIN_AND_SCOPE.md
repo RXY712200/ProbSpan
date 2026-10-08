@@ -31,6 +31,4 @@ machine learning, probability fusion, databases, serialization engines, clocks,
 and revision ledgers. Internal Beta/decimal algorithms support this narrow model.
 
 This origin statement makes no global-originality or trademark-clearance claim.
-No license is inferred from authorship or copied from another repository. The
-owner has not chosen a license; this remains release metadata requiring a
-separate owner decision, without blocking technical candidate validation.
+The author explicitly selected the MIT License for ProbSpan v1.0; see [LICENSE](../LICENSE). This repository does not claim that its MIT license automatically changes the separate upstream application's licensing, or that unrelated third-party dependencies inherit MIT.

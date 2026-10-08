@@ -116,6 +116,12 @@ suppress a finding or remove a failing platform to conceal a defect.
 
 Final audit also inspects runtime allocation, globals, locale/I/O/environment
 access, public application leakage, exported package paths, and unchanged
-accepted reference/test data. A candidate is complete only after remote main
-matches the pushed SHA and the workflow on that SHA succeeds. Tag/release
-publication remains deferred to independent final audit.
+accepted reference/test data. Release approval requires review of the exact tagged commit and successful CI on that same commit. A green workflow does not substitute for verifying the model/fixture contracts, external consumer, or release metadata. See [the release checklist](RELEASING.md).
+
+## Release evidence and review workflow
+
+Release work should keep a reproducible trail: the final source SHA, a successful CI run on that exact SHA, the unchanged authoritative reference blobs, and the final docs/license/version status. The portable CI workflow is [`.github/workflows/ci.yml`](../.github/workflows/ci.yml). It exercises five jobs: Windows MSVC, Linux GCC, Linux Clang, macOS AppleClang and Linux GCC with ASan/UBSan. The installed consumer test verifies that only public installed headers and the exported CMake package are needed.
+
+**Triage when a job fails:** (1) reproduce its configure/build command; (2) identify whether behavior or a compiler/ABI/locale assumption differs; (3) check discrete states separately from elementary and Beta tolerances; (4) preserve all frozen datasets; (5) repair source or platform integration rather than removing the failing target. If frozen SciPy is internally inconsistent in an extreme numeric region, follow the separately documented high-precision reference exception—not a silent oracle overwrite.
+
+For contributions, follow [CONTRIBUTING.md](../CONTRIBUTING.md). For tagging and a GitHub Release, follow [RELEASING.md](RELEASING.md).

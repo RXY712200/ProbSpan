@@ -38,3 +38,7 @@ Raw-domain validation is shared with estimation without changing accepted rules.
 Full API and state documentation is now in [API](../docs/API.md) and
 [Provenance](../docs/PROVENANCE.md). Final API hardening rejects unreachable
 compromised-without-exposure inputs; all 23 reachable expected transitions are unchanged.
+
+## Release status
+
+The portable provenance projection and composer parity are frozen in v1.0.0. The source application's lifecycle, timestamps and persistence records remain outside the C API; new provenance changes require both reference-derived evidence and a review against [Issue #1](https://github.com/RXY712200/ProbSpan/issues/1). See [Provenance](../docs/PROVENANCE.md) and [API](../docs/API.md).

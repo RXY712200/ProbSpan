@@ -38,6 +38,12 @@ ABI number 1 is not a promise of one binary layout across compilers, architectur
 or build settings. Rebuild static consumers with compatible headers/toolchains;
 never serialize raw struct bytes. See [API persistence guidance](API.md#persistence-and-replay).
 
-No license decision has been supplied; licensing remains unchanged and requires
-owner choice. Technical candidate readiness is separate from redistribution
-permission and final tag authorization.
+Source and accompanying documentation are licensed under the MIT License (see [LICENSE](../LICENSE)); third-party development tools retain their own licenses. A Git tag identifies the exact release commit; an independently rebuilt static library still depends on the consumer's own target toolchain and binary64 environment.
+
+## Reproducibility versus cross-platform bit identity
+
+The exact decimal parser has its own bit-exact contract, including tests under all four IEEE rounding modes. The **rest of the numerical library** uses the documented standard environment, elementary/Beta tolerances and exact decision-state comparisons. Cross-toolchain CTest success is concrete evidence for the tested machines, not a proof that arbitrary embedded libm implementations or non-default rounding/flush modes satisfy the same numerical envelope.
+
+External language bindings should preserve `int32_t`, `int64_t`, `uint64_t`, `bool`, `double` and explicit enum mappings; they should not marshal whole structs as a version-independent binary serialization format. ABI version 1 describes this library's public contract generation, **not** universal C struct layout identity.
+
+Current release support is a **static C11 library**. Shared/DLL distribution, non-default floating environments and additional target architectures are future work only if testing justifies a concrete supported contract; these capabilities are not silently promised by v1.0.

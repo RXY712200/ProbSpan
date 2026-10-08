@@ -120,3 +120,11 @@ with accepted probability tolerance; complement identities also use brackets
 where subtraction rounds x. High-precision generation checks identities on
 exact real arguments. Such representable-x limits are documented, not hidden
 by claiming arbitrary precision at runtime.
+
+## Error policy and verification scope
+
+Most mathematical outputs are checked against committed reference values within a defined absolute-plus-relative tolerance; an out-of-range/nonfinite odds input is rejected before analysis. When the private Beta solver cannot establish a trustworthy value, the public API returns `PROBSPAN_NUMERICAL_FAILURE` and leaves the relevant output object unchanged, rather than silently emitting an unvalidated estimate. This defensive status is not a legitimate way to reject large but otherwise valid counts without a demonstrated numerical failure.
+
+Reproducibility is strongest for the exact decimal parser and discrete policy states. Credible intervals, positive-EV posterior probabilities and S scores depend on standard libm and the accepted tolerance contract. High-precision reference fixtures explicitly distinguish exact integer-count Beta parameters from already-rounded binary64 arguments; mixing the two is especially misleading near extreme concentrated posterior thresholds.
+
+The independently observed finite-precision **quantile-resolution limit** remains a known constraint, not a change to the Jeffreys distribution. Tracking additional extreme architectures and environments should occur as explicitly scoped follow-up issues, without relaxing the currently accepted parity tolerances.

@@ -101,3 +101,11 @@ Clocks, lifecycle, storage belong to callers. Complete aggregate nests estimates
 odds, analyses, relations, availability, and independent versions as historical
 facts. See [API replay guidance](API.md#persistence-and-replay) and
 [provenance](PROVENANCE.md).
+
+## Interpreting an analysis without crossing model boundaries
+
+A composed result contains **two independent interpretations** of the same event odds. The subjective side uses the user-entered probability and its fixed logit-width interval. The historical side uses only observed event/complement counts and Jeffreys' Beta posterior; its EV and threshold masses are unavailable unless the historical gate is VALID. Their relationship is a classification of EV states, not a reweighted probability.
+
+For example, a caller can analyze raw subjective 60%, historical counts 19 events and 1 complement, and gross odds 2.0 / 3.0. The composer preserves the raw 60 rather than replacing it with a posterior-derived percentage; it reports separately computed event and complement EV ranges and model relations. To reproduce the exact binary64 outputs, use the committed C fixture and the [numerical contract](NUMERICAL_CONTRACT.md), rather than rounding intermediate probabilities by hand.
+
+**Data provenance is orthogonal to these formulas.** Evidence exposure/compromise flags can explain whether a revised subjective estimate remains information-independent. They never modify the probability, EV or model-relation outputs. See [Provenance](PROVENANCE.md).

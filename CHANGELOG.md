@@ -1,9 +1,10 @@
 # Changelog
 
-## 1.0.0 — release candidate — 2026-10-08
+This file tracks published source/API contracts and significant compatibility corrections. Experimental fixture and reference changes do not implicitly create new model versions.
 
-Intended first-version date: 2026-10-08. Final release sealing remains pending
-independent audit; this entry does not assert that a tag/release was published.
+## 1.0.0 — 2026-10-08
+
+First stable public source/API contract. See [the API reference](docs/API.md), [numerical contract](docs/NUMERICAL_CONTRACT.md) and [release procedure](docs/RELEASING.md).
 
 - Extracted/reimplemented the author's frozen Probability Calibration Tool
   behavior at `a581f84ccd217ed45789b3566347255f56ffbeac` in portable C11.
@@ -27,5 +28,4 @@ independent audit; this entry does not assert that a tag/release was published.
 - Frozen-reference, corrected high-precision, bit-exact decimal, safety,
   composition, fixture freshness, stress, warning/static-analysis tests and docs.
 
-No earlier ProbSpan releases are implied. Licensing is unchanged; owner choice
-is required. No runtime workflow, persistence, clock, or probability fusion.
+No earlier ProbSpan releases are implied. The source is distributed under the MIT License; no runtime workflow, persistence, clock, or probability fusion is included.

@@ -61,3 +61,13 @@ Callers own storage, clocks, subject identity, lifecycle, and presentation.
 ProbSpan accepts mathematical inputs/explicit facts and returns values without
 I/O or allocation. Independent versions let callers preserve historical facts.
 There is no singleton, hidden state, lock, automatic migration, or reset policy.
+
+## Execution flow and invariants
+
+`probspan_compose_analysis` is a value composer. It obtains the independent subjective and historical estimates, validates both odds, delegates to the two side analyzers, and classifies each relation. It does not mutate provenance or call a persistence adapter. The caller may separately invoke `probspan_provenance_transition` with observed information-exposure facts.
+
+The **numerical evaluation boundary** is private: Beta functions, gamma normalization, logit integration and decimal midpoint logic cannot be called through the installed public header. This prevents consumers from depending on internal numerical strategies that may legitimately change while the v1 decision contract stays fixed.
+
+**Review checklist for any change:** identify whether it affects (a) formula/branch semantics, (b) a private numerical implementation, (c) API/ABI/source compatibility, or (d) development tooling only. An implementation correction must leave frozen datasets intact unless a separate, explicitly documented high-precision reference exception has been authorized. Avoid broadening the library with unrelated general statistics or application workflow machinery.
+
+Development Python utilities read the frozen source checkout or independent high-precision references. They do not run during installed-library use; generated C fixtures allow the runtime tests to compile without a Python interpreter.

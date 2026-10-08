@@ -36,3 +36,7 @@ no Python to compile or run. Shared logit and Jeffreys-shape helpers preserve
 Step 2's exact arithmetic while avoiding duplicate formulas in the new layer.
 Full documentation is now in [Behavior specification](../docs/BEHAVIOR_SPEC.md),
 [Numerical contract](../docs/NUMERICAL_CONTRACT.md), and [Testing](../docs/TESTING.md).
+
+## Release status
+
+These Step 3 reference additions are frozen in the v1.0.0 release. They confirm that subjective and historical EV decisions remain independent and that large-parameter threshold evaluations use only the explicitly authorized corrected numerical reference. See [Behavior specification](../docs/BEHAVIOR_SPEC.md), [Testing](../docs/TESTING.md), and [Numerical contract](../docs/NUMERICAL_CONTRACT.md).

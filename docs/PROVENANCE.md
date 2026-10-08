@@ -56,3 +56,11 @@ First exposure is observable as old.exposed=false/new.exposed=true; callers may
 attach their own clock data or count operations outside ProbSpan. The library
 assigns no timestamps, lifecycle numbers, or storage records. See
 [example](../examples/provenance.c) and [API](API.md).
+
+## Integration contract
+
+The library cannot observe an application screen, a data feed, a user's attention, or the provenance of a file. The caller must determine whether a *valid relevant evidential result was actually exposed*, and pass that factual boolean. Merely requesting or scheduling an exposure does not set it. This separation is required for both mathematical correctness and the product boundary in [Issue #1](https://github.com/RXY712200/ProbSpan/issues/1).
+
+Once `subjective_independence_compromised` becomes true, subsequent transitions of the **same logical decision** retain the compromised state. A caller starting a genuinely new independent decision initializes a new state object; it must not silently erase exposure history on an existing decision. Revision counters, event timestamps and audit record persistence remain caller responsibilities.
+
+The C API intentionally carries no confidence score for provenance: these booleans encode causal state from caller-supplied facts, **not proof that a human decision was independent**. Validate facts at the application boundary.

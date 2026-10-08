@@ -64,3 +64,12 @@ For CI ASan/UBSan, configure C and executable linker flags with
 `-fsanitize=address,undefined -fno-omit-frame-pointer` on a supporting toolchain,
 and give the installed consumer the corresponding sanitizer linkage. Local
 MinGW lacks these runtime libraries; the Linux sanitizer job supplies coverage.
+
+## Production integration notes
+
+1. Pin a released Git commit or version tag and run the installed consumer test before integrating with a different compiler, CRT, architecture, or target ABI.
+2. For downstream CMake projects, prefer an installed prefix with `find_package(ProbSpan 1.0 CONFIG REQUIRED)` and `ProbSpan::probspan`; do not include headers from `src/` or treat private numerical helpers as public.
+3. Preserve binary64 and safe floating-point compiler options. The library is reentrant for independent calls, but a caller must not concurrently mutate the same output struct.
+4. Linking the static archive copies code into the consumer binary; no ProbSpan service, runtime Python environment, database, or assets are required.
+
+The root project installs only the public header, static archive and CMake package. License and contributor information live in the source release: [LICENSE](../LICENSE), [Contributing](../CONTRIBUTING.md). The development/release workflow is described in [RELEASING](RELEASING.md).
