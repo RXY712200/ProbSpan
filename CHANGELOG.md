@@ -2,7 +2,7 @@
 
 This file tracks published source/API contracts and significant compatibility corrections. Experimental fixture and reference changes do not implicitly create new model versions.
 
-## 1.0.0 — 2026-10-08
+## 1.0.0 — 2026-10-20
 
 First stable public source/API contract. See [the API reference](docs/API.md), [numerical contract](docs/NUMERICAL_CONTRACT.md) and [release procedure](docs/RELEASING.md).
 
