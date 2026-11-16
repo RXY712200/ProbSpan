@@ -142,6 +142,147 @@ int main(void) {
 
 先读公共头与本篇，再按症状定位：raw/clamp 查 subjective；计数/可用性查 historical；极端后验查 beta/beta_logit/gamma；文本末位不符查 odds/decimal；补事件方向或 EV 边界查 decision_geometry/policy；S 查 subjective_analysis；历史阈值质量查 historical_analysis；暴露顺序查 provenance；多错误优先级查 composition。每次沿 [源码—断言映射](IMPLEMENTATION_VALIDATION.zh-CN.md) 找到对应测试，区分“公式错误”“浮点表示限制”“不可用正常结果”“输入语义不足”。
 
-## 11. 后续维护要求
+<a id="api-choice"></a>
+
+## 11. 按任务选择入口，而不是强迫所有输入齐全
+
+| 用户手中有什么/要回答什么 | 调用顺序 | 何时停止 | 不要补造什么 |
+| --- | --- | --- | --- |
+| 只有整数主观百分数，要模型区间 | subjective_estimate | 估计成功即可展示主观字段 | 不需要 0/0 伪历史或默认赔率 |
+| 研究分段 d(p)，已有归一化 p | subjective_half_width | 得到 logit 半宽 | 不把整数 60 当 p=60 |
+| 只有合格二元计数，要后验 | history_estimate | 看 has_estimate 后读取均值/区间 | 不要求主观值、赔率或 provenance |
+| 用户输入文本赔率 | odds_parse | OK 才持有有效 double | 不先用 atof，否则错误文法可能被吞掉 |
+| 已有 double 赔率 | odds_validate | 范围通过 | 不需要先转文本再解析 |
+| 主观估计与两赔率，要 EV/S | estimate→analyze_subjective | 按侧检查 has_robust_margin | 不伪造估计对象来包装外部模型 |
+| 历史估计与两赔率，要后验正 EV 质量 | history_estimate→analyze_historical | 看 available；false 是正常结果 | 不手动将 INSUFFICIENT 改为 VALID |
+| 已有合法 EV 端点，要分类 | classify_ev | 得到状态；它不认证端点 | 不把 OK 当数值输入已校验 |
+| 只研究赔率组合的窗口 | classify_odds_combination | 得到几何类别 | 不将窗口存在解释为实际 p 在其中 |
+| 已有两个模型的 EV 状态 | classify_model_relation | 得到关系 | 不平均概率，也不自动选择赢家 |
+| 输入全齐，要完整分析事实 | compose_analysis | 所有委托成功后才取新结果 | 不期待失败时保留本次部分结果 |
+| 记录实际暴露后是否改判断 | provenance_transition | 保存新状态与应用修订记录 | 不把显示请求当已暴露事实 |
+| 启动时检查链接 ABI | abi_version | 与支持 ABI 对照 | 不据此推导所有模型版本 |
+
+表中省略的前缀均为 `probspan_`。13 个入口都来自公共头，未引入数据库或任意模型路由器。调用选择与真实输入语义的责任在应用；函数名含 history 并不意味着它访问历史存储。
+
+<a id="separate-sequence"></a>
+
+## 12. 完整分步调用：19/1 历史、60% 主观与不对称赔率
+
+场景：应用已经审核一组可比的二元观察，有 19 次事件、1 次补事件；用户在看这组证据前报 raw=60。赔率文本是 2.00、3.00。应用需要分别保留两个模型，再比较结论，而不是将历史均值取代主观概率。
+
+下面是独立的完整 C 程序；每一步先检查状态，最后才读取其输出。`STEP` 是示例的应用局部宏，不属于 ProbSpan API。
+
+```c
+#include <stdio.h>
+#include <probspan/probspan.h>
+
+#define STEP(call) do { if ((call) != PROBSPAN_OK) return 1; } while (0)
+
+int main(void) {
+    double oe, oc;
+    probspan_subjective_result s;
+    probspan_history_result h;
+    probspan_subjective_analysis sa;
+    probspan_historical_analysis ha;
+    probspan_model_relation er, cr;
+    probspan_provenance pv = {false, false};
+
+    STEP(probspan_subjective_estimate(60, &s));
+    STEP(probspan_history_estimate(19, 1, &h));
+    STEP(probspan_odds_parse("2.00", &oe));
+    STEP(probspan_odds_parse("3.00", &oc));
+    STEP(probspan_analyze_subjective(&s, oe, oc, &sa));
+    STEP(probspan_analyze_historical(&h, oe, oc, &ha));
+    STEP(probspan_classify_model_relation(sa.event.ev.state, ha.available,
+        ha.available ? ha.event.ev.state : PROBSPAN_CROSSES_THRESHOLD, &er));
+    STEP(probspan_classify_model_relation(sa.complement_event.ev.state, ha.available,
+        ha.available ? ha.complement_event.ev.state : PROBSPAN_CROSSES_THRESHOLD, &cr));
+
+    printf("subjective %.9f [%.9f, %.9f] d=%.9f\n",
+           s.probability, s.lower, s.upper, s.logit_half_width);
+    if (h.has_estimate) {
+        printf("history %.9f [%.9f, %.9f] ready=%d\n",
+               h.probability, h.lower, h.upper, (int)h.statistically_ready);
+    }
+    printf("subjective EV event=[%.9f, %.9f] complement=[%.9f, %.9f]\n",
+           sa.event.ev.minimum, sa.event.ev.maximum,
+           sa.complement_event.ev.minimum, sa.complement_event.ev.maximum);
+    if (ha.available) {
+        printf("posterior positive EV event=%.9f complement=%.9f\n",
+               ha.event.positive_ev_probability,
+               ha.complement_event.positive_ev_probability);
+    }
+    printf("relations event=%d complement=%d\n", (int)er, (int)cr);
+
+    /* 应用确认用户实际看到证据后，才记录 exposure。 */
+    STEP(probspan_provenance_transition(&pv, 60, 60, false, true, &pv));
+    STEP(probspan_provenance_transition(&pv, 60, 70, false, false, &pv));
+    printf("exposed=%d compromised=%d\n", (int)pv.evidence_exposed,
+           (int)pv.subjective_independence_compromised);
+    return 0;
+}
+```
+
+调用链中的实际中间事实：
+
+1. subjective.c：raw=used=60，p=.6，落入 [.55,.85] 平台，d=log(2)。logit 中心 log(1.5)，下/上界理论值 3/7 和 3/4；打印的是 libm 与 binary64 求值，不应硬编码小数尾位作跨平台保证。
+2. historical.c：n=20，a=19.5、b=1.5，均值 19.5/21≈.928571；a+b=21，没有超过 10000，故两分位走普通 Beta CDF 二分。区间宽度满足 gate，历史决策可用；这里不能只因 n=20 就省略宽度条件。
+3. odds.c→decimal.c：两个完整文法通过，各舍入为精确可表示的 2 和 3。事件阈值 .5、补事件自身阈值约 1/3、换成事件坐标约 2/3。倒数和约 .833333，类别 DOUBLE_POSITIVE_WINDOW；窗口不保证主观区间整体位于其内。
+4. decision_geometry.c：主观事件区间 EV≈[-.142857,.5]，补事件概率区间 [.25,4/7]，补事件 EV≈[-.25,.714286]，两侧均 CROSSES_THRESHOLD。S 事件约 .584963，补事件约 .415037，均为有符号半宽倍数；不是概率。
+5. historical_analysis.c：在同一 Beta 后验上分别查询 `.5` 与 `1-1/3`。事件后验正 EV 质量接近 1，补事件很小；历史事件 EV 区间为稳健正、补事件稳健负，但两者与主观的关系仍为 UNCERTAIN，因为主观两侧跨阈值。不是 CONFLICT，也不是“主观中心与历史中心不一样所以冲突”。
+6. provenance.c：首次实际暴露后 `{true,false}`；下一次 raw 60→70 后 `{true,true}`。该状态不改变前面保存的 s/h/sa/ha；新分析若要使用 70，必须重新调用估计/分析，并另存新修订事实。
+
+上述步次与 compose_analysis 内部顺序一致（组合器接收的是 double，不解析文本，也不转移 provenance）。若历史不可用，条件表达式刻意不读 ha 两侧；给 relation 的占位枚举不意味着那个历史分类真实存在。对照 [state_parity.c::check_composition](../tests/state_parity.c)，其中正常结果逐字段与分步调用相等；错误时比较不变的旧输出，二者不是同一比较任务。
+
+<a id="history-states"></a>
+
+## 13. 将同一集成依次放入无历史、稀疏与就绪状态
+
+| 输入 e/c | estimate 成功后的事实 | 后续历史分析 | 合理界面/调用层解释 |
+| --- | --- | --- | --- |
+| 0/0 | NO_HISTORY；has_estimate=false；两个版本仍有意义 | OK，available=false，甚至不检查坏赔率 | 没有经验估计；不得显示零值占位为 p=0 |
+| 1/0 | INSUFFICIENT；有 Beta(1.5,.5) 均值 .75 和宽区间 | OK，available=false | 可以展示估计与不确定性，不能读取历史 EV 两侧 |
+| 12/8 | n=20、均值≈.595238；宽度约 .405451> .25，仍不足 | OK，available=false | 已到样本下限但精度门槛未过；不是函数失败 |
+| 19/1 | n=20、均值≈.928571；宽度达标 | OK 且 available=true（赔率也有效） | 只说统计就绪；来源可比性仍需外部审核 |
+
+对 0/0 和 1/0，单历史分析器可以忽略 NaN 赔率；完整组合器却仍返回 ODDS_RANGE，因为主观分析需要赔率。这是两条调用路线的职责差异，不能以“统一错误风格”消掉短路。后验存在与可做历史决策是独立问题，故不要用 `s==OK` 代替三层条件：估计 has_estimate、gate state、分析 available。
+
+主观独立流程不读取 e/c：raw=0 与 raw=1 都用 p=.01，但 raw 身份不同；raw=100 用 .99。调用者应保留 raw 的输入事实。暴露之后从 raw 0 改到 1，尽管数学输入相同，provenance 仍算修订；从 1 改回 0 不清除 compromised。没有“撤销看到证据”的 API。
+
+<a id="interpretation"></a>
+
+## 14. 六种输出分别回答不同问题
+
+| 输出 | 它回答什么 | 它不回答什么 |
+| --- | --- | --- |
+| probability | 主观规则的中心或 Jeffreys 后验均值 | 不是两个模型融合后的最优值 |
+| lower/upper | 该模型定义的区间 | 主观区间不是抽样置信区间；历史可信区间也不是下一次 0/1 结果的区间 |
+| statistically_ready/state | 历史样本/区间宽度过 gate 吗 | 不证明独立、无偏、适用、可迁移 |
+| positive_ev_probability | 模型下未知 p 落在正 EV 区域的后验质量 | 不是未来事件概率、下注获胜频率或保证获利 |
+| ev.state | 给定赔率，整个区间是否严格越过 epsilon | 不由 center 的正负单独决定，不是概率评分 |
+| model_relation | 两个可用模型的 EV 分类如何相对 | 不裁决谁正确，不创建第三个概率 |
+
+实际应用应同时呈现 availability 与模型标签，避免把空白数值填成 0。若要长期存储，保存输入、版本、有意义字段和可用性；当前对象可被赋值复制，不借用库内部缓存。数据库事务、修订 ID、结果兑现、训练记录与 UI 状态都属于外部应用。
+
+<a id="handoff"></a>
+
+## 15. 生命周期、资源与 AI 维护交接
+
+运行时不 malloc、不发起 I/O，没有 init/shutdown，也没有藏在全局的历史。通常标量操作成本固定，但 Beta 求解有明确迭代/积分上限；赔率字符串可任意长，完整文法扫描至少随长度增长。无堆分配不等于无栈使用、无 libm 成本或硬实时保证。不同调用者对象可重入；同一对象并发写仍是 C 数据竞争。库不替调用者恢复浮点环境，也不承诺 fast-math/FTZ 等任意环境保持现行数值契约。
+
+输出对象只需正常 C 对齐、足够大小且在调用期间存活。除 provenance 的完整同对象别名外，不利用强制类型转换制造不同结构之间的部分重叠；没有这种别名的公共保证。字符串结束符必须可读；空字符串可被拒绝，但缺少结束符的无效内存不是可安全检测的文法错误。
+
+| 要改的子系统 | AI/维护者先读 | 源码和最小相关验证 | 必须先问清的边界 |
+| --- | --- | --- | --- |
+| 主观模型/宽度 | API §4.2–4.3、内部 §3、行为规范 | subjective.c、oracle_parity/check_subjective | 是数值求值还是新模型？不得改冻结半宽冒充修复 |
+| 历史/gate/Beta | API §4.4/4.11、内部 §4–7、数值契约 | historical/beta/beta_logit/gamma、large_numerics | 计数表示、分位分辨率、独立参考与 gate 分开 |
+| 赔率文本 | API §4.5–4.6、内部十进制章节 | odds/decimal、decimal_parity | 文法、舍入和公共范围三个层次都保持 |
+| 决策 | API §4.7–4.11、内部 §9 | geometry/policy/两分析器、analysis_parity | EPS、补事件坐标、S 可用性与不融合 |
+| provenance/组合 | API §4.12–4.13、PROVENANCE | provenance/composition、api_contract/state_parity | 旧暴露因果与失败不提交，不加入工作流 |
+| 安装/未来功能 | 验证指南、CONTRIBUTING、账本 | CMake/consumer/CI 静态检查及获准测试 | 未批准提案不实施；版本/tag/release 需独立授权 |
+
+排错时先记录具体 API、输入、状态、字段可用性和环境；随后按内部指南的 helper 路线定位，最后按验证指南复现。不要先改 oracle 或输出常量。若单项输入都合理而组合失败，应检查多错误优先级与返回状态，不猜测是哪一个模型“更不可靠”。
+
+## 16. 后续维护要求
 
 改公共 API/字段、行为、内部调用、数学或数值求值、校验错误、测试/夹具、CMake、平台、版本/兼容性/发布行为，必须在同一分支/PR 更新受影响的四篇指南、权威契约、README 导航与账本。删除或改写过时描述，明确历史与现行差别；没有文档影响时说明依据。检查 API 对齐、实际测试断言、链接和所有者批准边界；绿色测试不证明文档准确。这是维护政策，不是已实现的 CI 强制机制。账本 ID 不复用、不删除；解决/延期/拒绝均保留决定与证据。详见 [CONTRIBUTING](../CONTRIBUTING.md) 和 [AGENTS](../AGENTS.md)。

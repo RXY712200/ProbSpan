@@ -210,6 +210,80 @@ probspan_status probspan_compose_analysis(int32_t raw_percent,
 
 此表描述正常 estimate→analyze 路径，不为手工伪造结构作保证。API 的错误保持保证不是字段可用性的替代品。
 
-## 6. 维护与审查
+<a id="call-cases"></a>
+
+## 6. 每个函数的正例、反例与检查入口
+
+此表补充 §4 的精确签名和字段目录。变量须为正常有效的 C 对象，示例的非 NULL 地址不是“任意内存都可用”的许可；省略的函数前缀均为 `probspan_`。返回码同样省略 PROBSPAN_。每个返回错误的调用都不写输出；ABI 查询没有输出参数。
+
+| 函数 | 正例及预期 | 反例及实际结果 | 特殊分支/接口协作 | 实现与精确测试入口 |
+| --- | --- | --- | --- | --- |
+| abi_version | `abi_version()==1u` | 没有输入错误案例；不要将 1 当 1.0.0 字符串 | 不查询动态模型选择 | probspan.c；smoke main、api_contract main |
+| subjective_half_width | `.45→log(1.5)`；`.55/.85→log(2)` | `half_width(NAN,&d)→SUBJECTIVE_DOMAIN`；`(NAN,NULL)→INVALID_ARGUMENT` | 输出域是 logit 宽，不是 p 的宽；估计器在 clamp 后调用 | subjective.c；oracle_parity/check_subjective、api_contract/check_precedence_and_safety |
+| subjective_estimate | `0→raw=0,used=1`；`100→raw=100,used=99` | `(-1,&s)→RAW_PROBABILITY`；`(-1,NULL)→INVALID_ARGUMENT` | 输出可传 analyze_subjective；半宽域错误对合法 raw 的正常内部路径不可达 | subjective.c；oracle_parity/check_subjective、check_api_arguments |
+| history_estimate | `(0,0,&h)→OK+NO_HISTORY`；`(1,0)→均值.75` | `(-1,0,&h)→HISTORY_COUNTS`；同输入输出 NULL 时先 INVALID_ARGUMENT | 大计数不能仅因大而拒绝；实际求解失败才 NUMERICAL_FAILURE | historical.c；oracle_parity/check_history、large_numerics/check_reference/check_stress |
+| odds_validate | `(1,&o)→OK,o=1`；`(2.5,&o)→2.5` | `(INFINITY,&o)→ODDS_RANGE`；`(NAN,NULL)→INVALID_ARGUMENT` | 有限 DBL_MAX 也在数值域；不承诺所有派生超越函数逐位一致 | odds.c；oracle_parity/check_odds、api_contract/check_precedence_and_safety |
+| odds_parse | `"0002.50"→2.5` | `"2."→ODDS_SYNTAX`；`"0.5"→ODDS_RANGE`；`"invalid",NULL→INVALID_ARGUMENT` | 先扫描全串，再精确转换，再检查舍入值>=1；无 malloc 错误码 | odds.c/decimal.c；decimal_parity/check_vectors、oracle_parity/check_odds |
+| classify_ev | `(-.1,.2)→CROSSES_THRESHOLD`；`(2e-12,.1)→ROBUST_POSITIVE` | `(0,0,NULL)→INVALID_ARGUMENT`；`(NAN,NAN,&v)→OK+CROSSES_THRESHOLD` 是源码推导，不是数值认证 | 逆序 `(1,-1)` 会因第一个分支得到正，说明不能依赖它检查区间 | decision_policy.c；analysis_parity/check_classifiers；NaN/逆序例用于解释实际分支，不声称已有专门断言 |
+| classify_odds_combination | `(2,2)→CRITICAL`；`(3,3)→DOUBLE_POSITIVE_WINDOW` | `(.5,2,&g)→ODDS_RANGE`；`(NAN,NAN,NULL)→INVALID_ARGUMENT` | 先事件后补事件；不需要 p，不能从类别推导实际 EV 状态 | geometry/policy；analysis_parity/check_geometry/check_classifiers |
+| classify_model_relation | `(POS,false,无效历史枚举,&r)→HISTORY_UNAVAILABLE` | `(POS,true,无效历史枚举,&r)→INVALID_ARGUMENT` | 只允许三个合法 subjective 枚举；无历史也不忽略非法主观状态 | policy；api_contract/check_precedence_and_safety、analysis_parity/check_classifiers |
+| analyze_subjective | estimate(60) 后 `(s,2,3)→两侧 EV/S`；对应赔率 1 则仅该侧 S 不可用 | `s.lower>s.probability→INVALID_ARGUMENT`；合法 s 加赔率 .5→ODDS_RANGE | 不核对 raw/used/model_version 与区间的模型一致性；需来源可靠估计对象 | subjective_analysis/geometry；analysis_parity/check_subjective/check_arguments |
+| analyze_historical | estimate(12,8) 后坏赔率仍 `OK+available=false`；estimate(19,1) 后有效赔率给质量 | 输入 history=NULL→INVALID_ARGUMENT；VALID 但 has_estimate=false 即使赔率 NaN 也先 INVALID_ARGUMENT | state!=VALID 包括未知枚举都短路，这是实现事实而非鼓励伪造状态 | historical_analysis；analysis_parity/check_histories/check_arguments |
+| provenance_transition | 初值 false/false，同 raw 首次暴露→true/false；之后 raw 变→true/true | 旧 false/true 且 raw=-1/101→INVALID_ARGUMENT，先于 RAW_PROBABILITY | 允许 previous==result，含错误保持；不允许用更换 used 隐藏 raw 修订 | provenance.c；api_contract/check_provenance_invariant、state_parity/check_provenance |
+| compose_analysis | `(60,19,1,2,3,&a)→完整事实`；`(60,0,0,2,3)→主观可用/历史不可用` | `(-1,-1,-1,NAN,NAN,&a)→RAW_PROBABILITY`；输出 NULL 时优先 INVALID_ARGUMENT | 没有文本输入，不返回 ODDS_SYNTAX；不包含 provenance 转移 | composition；state_parity/check_composition、api_contract/check_precedence_and_safety |
+
+POS 在本表仅是 `PROBSPAN_ROBUST_POSITIVE` 的排版缩写，不是 C 标识。所有实际结构/枚举/参数名仍以 §2–4 和公共头为准。字段检查后的源内调用可能返回防御性错误；“可达状态码”应区分公共函数直接收到不合规对象与正常 estimate→analyze 路径，不能为展示每个错误而伪造合法输入必然失败。
+
+<a id="precedence-matrix"></a>
+
+## 7. 多错误、字段访问与所有权的交叉矩阵
+
+| 同时存在的条件 | 实际状态/顺序 | 可以据此确认什么 | 不可以确认什么 |
+| --- | --- | --- | --- |
+| 任意 API 输出 NULL 且数值非法 | 带状态函数先 INVALID_ARGUMENT | 输出前提未满足 | 尚未到数值范围校验 |
+| parse 文法非法且转换本应越界 | ODDS_SYNTAX，转换不执行 | 完整文法失败 | 不是“范围也已认证” |
+| compose raw 非法、计数负、赔率 NaN | RAW_PROBABILITY | 主观输入最先失败 | 未检查后续计数/赔率 |
+| compose raw 合法、计数负、赔率 NaN | HISTORY_COUNTS | 计数先于赔率 | 没有本次可提交分析 |
+| compose 无历史、赔率 NaN | ODDS_RANGE | 主观分析仍需赔率 | 不会因历史短路跳过整个组合 |
+| analyze_historical 非 VALID、赔率 NaN | OK + unavailable | 该路径未解释概率/赔率 | 不证明 NaN 是合法赔率 |
+| analyze_historical VALID、坏区间、坏赔率 | INVALID_ARGUMENT | 对象检查先于赔率 | 不能区分所有内部字段是否真实来自模型 |
+| relation history unavailable、历史枚举坏 | OK + HISTORY_UNAVAILABLE | 历史枚举未读取为有效状态 | 主观枚举仍必须合法 |
+| provenance 旧状态非法且 raw 非法 | INVALID_ARGUMENT | 不变量先于 raw | 不会修复旧状态或重置标记 |
+
+前三类多错误及 provenance 的具体回归直接见 api_contract/check_precedence_and_safety、check_provenance_invariant；分析器对象/赔率顺序由实现与 analysis_parity/check_arguments 共同定位，不把所有表格组合冒称已经逐一测试。
+
+| 输出族 | 成功后仍要检查 | 可读字段 | 禁止推断 |
+| --- | --- | --- | --- |
+| subjective_result | 无额外 availability | 所有定义字段 | used 不等于 raw 的外部事实 |
+| history_result | has_estimate | false 时只读计数、n、state、flags、versions；true 才读概率/区间 | INSUFFICIENT 不等于后验不存在 |
+| subjective_analysis | 各侧 has_robust_margin | geometry、两侧 ev 始终有意义；S 按侧标记 | 不能因一侧 S false 隐藏另一侧全部结果 |
+| historical_analysis | available | false 时两侧均不可解释；true 才读 EV/质量 | 内部初始化为零不赋予其数值意义 |
+| analysis | 各嵌套对象的上述条件 | 输入、独立版本、关系及条件允许字段 | 总 OK 不提升嵌套可用性 |
+| 任一非 OK 输出 | 本次状态 | 只可按之前成功调用保留的事实使用旧对象 | 未初始化旧对象不是可读回退值 |
+
+指针/别名边界：所有对象必须足够大、对齐、可读/可写且调用期间存活。数值入参按值传递；例如 `odds_validate(o,&o)` 合理。provenance 明确支持完整同类型原地更新；其他跨类型输入/输出不通过强制转换重叠，公共契约没有为任意部分重叠提供保证。估计结构可复制后跨调用保存，分析器只在调用期间读取它；没有借出的内部缓存、引用计数或析构入口。无需为了结果生命周期锁住整个库，但同一共享对象访问必须由调用者同步。
+
+<a id="cmake-consumer"></a>
+
+## 8. 安装消费者、C/C++ 与结果封装
+
+完整 CMake 消费者如下；这是应用自己的两文件工程，不是新库接口：
+
+```cmake
+cmake_minimum_required(VERSION 3.16)
+project(probspan_app LANGUAGES C)
+find_package(ProbSpan 1.0 CONFIG REQUIRED)
+add_executable(app main.c)
+target_link_libraries(app PRIVATE ProbSpan::probspan)
+set_target_properties(app PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED YES)
+```
+
+main.c 可直接使用导读的 history-only 或分步完整程序。先按验证指南安装到独立 prefix，再 `cmake -S <app-dir> -B <app-build> -DCMAKE_PREFIX_PATH=<prefix>`，build 并运行。不要直接 include `src/` 来解决 package 配置错误；m 的传递链接由导出目标处理，私有 Beta/decimal 不属于已安装 API。
+
+C++ 工程可用 `project(... LANGUAGES CXX)` 并链接同一 C 库，公共头中的 extern C 保持函数链接名；bool/int64_t 类型来自头，不能自己复制一份“相同布局”声明。没有异常回调或 C++ 资源对象，返回状态由应用处理。本次是否实际编译 C++ 消费者必须看验证记录，不能由 extern C 字样推出实测通过。
+
+应用封装应存储“状态 + 各字段 availability + 各模型版本”，而不是仅保存几个 double。产品版本描述发行，ABI 描述链接接口，模型版本描述数学行为，gate_version 描述历史准入统计规则，analysis_version 描述赔率分析。它们当前都出现数字 1 不代表未来同步增加；historical_analysis 自身没有版本字段，应连同来源 history 与相关分析上下文一起保存，不能臆造字段。持久 schema、字节序、未知版本处理和分析事实不可变性由外部负责。
+
+## 9. 维护与审查
 
 公共 API/字段、函数行为、内部调用、数学/数值、校验/错误、测试/夹具、CMake、平台、版本/兼容性/发布行为改变时，须同一分支/PR 审查并更新四篇指南、权威契约、README 与账本；改写过时解释，保留明确标注的历史而非矛盾现行描述。核对 13 函数及类型目录、实际断言和可用性优先级；无文档影响须说明。绿色测试不是文档准确性证明，政策不自动成为 CI 检查。账本 ID 永不删除/复用，完成记录提交、测试、首次版本与剩余限制；延期/拒绝保留原因。模型/版本/发布/提案须经所有者批准，见 [维护规则](../CONTRIBUTING.md)。

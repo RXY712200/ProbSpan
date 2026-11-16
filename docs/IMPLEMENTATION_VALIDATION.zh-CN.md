@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | 源码审查 | 公共头、全部 14 C/9 私有 H、CMake、CI、示例、consumer、参考生成器与现有规范 | 仅阅读不等于执行通过 |
 | 断言审查 | 下表测试函数及比较规则 | 有断言不等于覆盖所有输入 |
-| 本地实际执行 | Windows x64 MSYS2 UCRT64 GCC 16.2.0，14/14、C-only 9/9、安装 consumer 1/1 | 未在本次重跑所有 CI 平台、sanitizer 或冻结 Python 原应用 |
+| 初轮本地实际执行 | 初轮文档提交 1a864b4：Windows x64 MSYS2 UCRT64 GCC 16.2.0，14/14、C-only 9/9、安装 consumer 1/1 | 第二轮运行独立记录在下文，不复制初轮结果冒充复测 |
 | 历史 CI | [run 39358543092](https://github.com/RXY712200/ProbSpan/actions/runs/39358543092)，API 查得 completed/success，head_sha 与基线相同 | 不把历史运行说成本次重新运行 |
 | 未验证/研究限制 | ARM/嵌入式/替代 libm、任意浮点标志、无限输入域、实际历史适用性 | 没有形式证明、普适预测保证或任意架构逐位相同保证 |
 
@@ -92,7 +92,7 @@ python tests/decimal_differential.py --reference-root <frozen-checkout> --execut
 
 large_numerics 的 190 个历史 stress、570 分位数、950 主 CDF 探针覆盖 10^k、2^53 邻域及 INT64_MAX 的平衡/偏斜模式；另有邻接/互补调用，所以 950 不是所有内部 CDF 求值总数。
 
-## 6. 本次实际命令与结果
+## 6. 初轮（1a864b4）实际命令与结果
 
 在既有 C: 仓库的忽略目录 `build/` 中执行，未迁移工作区。PowerShell 将 MSYS2 UCRT64 放到当前进程 PATH，使用原生 CMake 与 GCC 16.2.0；未修改全局配置。
 
@@ -142,6 +142,286 @@ ctest --test-dir build/docs-audit-consumer --output-on-failure
 
 本次文档检查应分别核对：公共头 13 函数、5 枚举、10 结构及 4 版本宏；14 C/9 H 模块出现；相对 Markdown 文件及本地锚点存在；A01–E48 正式章节各恰一次；README 五入口；变更仅八个授权 Markdown。工具的名称/链接检查不能证明每句话的数学解释正确，仍需逐篇复读和独立审查。
 
-本次实际结构检查结果：13 个归一化函数签名与头文件一致，所有枚举值和结构字段标识均在 API 参考出现；生产模块均有映射；289 个相对链接/显式锚点无缺失；Markdown 表格列数与代码围栏检查通过；48 个候选 ID 各一个正式章节，另 4 个 R 修复条目，52 条各有连续 1–18 项；README 五入口及八文件变更白名单检查通过。`git diff --check` 无错误。C 的 decimal 日志实际报告 41 向量、4 个舍入模式、逗号 locale passed。上述计数是本次检查快照，后续增删链接应重新计算，不把数字当固定兼容契约。
+初轮 1a864b4 实际结构检查结果：13 个归一化函数签名与头文件一致，所有枚举值和结构字段标识均在 API 参考出现；生产模块均有映射；289 个相对链接/显式锚点无缺失；Markdown 表格列数与代码围栏检查通过；48 个候选 ID 各一个正式章节，另 4 个 R 修复条目，52 条各有连续 1–18 项；README 五入口及八文件变更白名单检查通过。`git diff --check` 无错误。C 的 decimal 日志实际报告 41 向量、4 个舍入模式、逗号 locale passed。上述计数是初轮快照，第二轮的新增链接需重新计算，不把数字当固定兼容契约。
 
 公共 API/字段、行为、内部调用、数学/数值、错误校验、测试/夹具、CMake、平台、版本/兼容性/发布改变，必须同一分支/PR 更新受影响四指南、权威契约、README 与账本，替换过时解释，区分历史。无文档影响要说明；绿色测试不建立文档准确性，这些政策没有自动新增 CI gate。账本解决记录提交、测试、首次版本、剩余限制，延期/拒绝保留原因，ID 不删除/复用；所有者未批准的功能/模型/发布不得实施。见 [CONTRIBUTING](../CONTRIBUTING.md)。
+
+<a id="assertion-cases"></a>
+
+## 10. 从具体输入走到源码与真实断言
+
+| 场景/最小输入 | 源码分支及应观察结果 | 测试中的实际断言/限制 |
+| --- | --- | --- |
+| raw=-1 与输出NULL同时存在 | subjective_estimate 先指针，INVALID_ARGUMENT | api_contract/check_precedence_and_safety 直接调用 `(-1,NULL)`；非NULL错误用 UNCHANGED 保存字节对照 |
+| raw=0/100 | 保留raw，用1/99计算 | oracle_parity/check_subjective 对 fixture 每个字段/版本；不能只比 probability 忽略 raw |
+| e/c=0/0 | historical n==0，无估计 | api_contract 组合 `(0,0,0,1,1)` 检查 has_estimate/available/S flags 与关系；oracle历史向量补充单项 |
+| e/c=12/8 | n达20但宽度>.25，仍不足 | 本轮导读示例实测；不属于13个普通history冻结向量。冻结的10/10、18/2等另有同类gate不足断言，不将相似场景覆盖冒充同一个输入 |
+| 无历史对象概率设NaN、赔率NaN/-1 | analyze_historical 提前不可用，OK/available=false | analysis_parity/check_arguments 明确设置 history.state=NO_HISTORY，三概率NaN，调用坏赔率检查短路 |
+| VALID但has_estimate=false | 分析器对象校验失败、输出不改 | 同 check_arguments 检查 INVALID_ARGUMENT 且预设 historical_output.available 保持true；该断言只直接检查标志，不宣称这里用memcmp检查全部字节 |
+| EV恰好±epsilon | 严格不等号，不跨越则CROSSES_THRESHOLD | analysis_parity/check_classifiers 与冻结22向量；普通数值容差不能替代状态精确一致 |
+| unavailable + 非法historical枚举 | relation忽略历史枚举，但仍查主观 | api_contract 显式999枚举在 available=false 成功，true失败且relation不改 |
+| predecessor={false,true} | provenance不变量早于raw，原地同样失败 | check_provenance_invariant 的 changed/exposed 两布尔笛卡尔积、两种输出别名及非法raw；UNCHANGED比较整对象 |
+| 已暴露raw 0→1 | used均1但raw不同，compromised粘滞 | api_contract 先 `(false,false),0→1,subject_changed=true,now=true` 只exposed，再1→0触发compromised；state_parity另含23冻结事实 |
+| 极窄大参数分位 | 检查邻接x的CDF夹住q，不强求残差零 | large_numerics/check_quantile_bracket 的 below<=q+1e-10 且 above>=q-1e-10；允许量化，而非放弃逆函数约束 |
+| 互补运算丢失tiny x | 按1-x相邻点界验证，往返精确时才查直接和 | large_numerics/check_complement 中 `1-complement==x` 条件保护直接互补恒等式 |
+| 精确decimal中点与极长尾 | 位型相等而非close_enough | decimal_parity/check_vectors 用memcpy取uint64位型；stream_vectors输出原转换位型及公共状态，差分工具不由C生成期望 |
+| compose失败 | 首错误立即返回，结果字节不变 | api_contract预设0xa5，依次制造raw/count/odds错误，UNCHANGED比全对象；state_parity正常926组合逐字段比较，性质不同 |
+
+测试缺口也需准确：NaN/逆序输入 classify_ev 的表格结果是直接源码推导，不能声称22条向量必然覆盖每个NaN排列；Gamma normalizer主要经Beta间接验证；没有每个static helper独立单测，更没有穷举数学输入。源内失败上限的存在不意味着本轮人为触发了每个数值失败分支。
+
+<a id="reproduce-family"></a>
+
+## 11. 新维护者的最小复现命令
+
+先配置并构建，再用锚定正则运行单个 CTest，避免名称部分匹配带入其他测试。以下是可复现指令菜单，不是声称本轮每条菜单都被重复执行：
+
+```text
+ctest --test-dir build/docs-depth -N
+ctest --test-dir build/docs-depth -R "^probspan_oracle_parity$" -V
+ctest --test-dir build/docs-depth -R "^probspan_large_numerics$" -V
+ctest --test-dir build/docs-depth -R "^probspan_decimal_parity$" -V
+ctest --test-dir build/docs-depth -R "^probspan_analysis_parity$" -V
+ctest --test-dir build/docs-depth -R "^probspan_state_parity$" -V
+ctest --test-dir build/docs-depth -R "^probspan_api_contract$" -V
+ctest --test-dir build/docs-depth -R "fixture_freshness$" --output-on-failure
+ctest --test-dir build/docs-depth-consumer -R "^installed_consumer$" -V
+```
+
+Windows 原生exe在单配置目录下，可直接 `build/docs-depth/probspan_decimal_parity.exe`；Linux/macOS去.exe；MSVC多配置通常还有Debug子目录，CTest需`-C Debug`。库没有单独“运行”命令；要运行的是测试/consumer。若只构建目标，可 `cmake --build build/docs-depth --target probspan_large_numerics`，但首次配置仍需有效编译器。
+
+### 11.1 数值失败诊断顺序
+
+1. 固定source SHA、编译器版本、构建类型/flags、double表示与输入。禁用意外fast-math，确认失败属于当前编译产物而非旧prefix。
+2. 普通参考失败先看 actual/expected/绝对误差，核对 elementary 1e-12+1e-12*abs(ref) 或 Beta 1e-10+1e-10*abs(ref)。离散状态错即失败，不可因浮点“够近”放行。
+3. 大计数先记录原int64、double a/b与x；switch要求两形状>=.5且sum>10000。若CDF中间失败，按普通fraction或logit panel/root路线查iteration、tol/depth、有限性；保持模型与参考不变。
+4. 分位失败打印x及 nextafter 两邻居，按check_quantile_bracket看是否夹q；互补失败检查1-x往返是否改变实数输入。不能混合精确整数参数参考与已rounded参数CDF。
+5. 十进制失败记录完整输入（长串可另保存长度和哈希）、向量index、fegetround、actual/expected十六进制位型。先区分文法/范围/位型；locale unavailable不等于逗号locale通过。检查远尾非零和+0，不用数值容差掩盖1 ulp错误。
+6. 若确有新数值缺陷，先最小复现、独立参考和契约审查，再获批修实现。本次文档范围不授权改源码、夹具或容差。
+
+### 11.2 API/状态失败诊断顺序
+
+先记录函数入口、有效指针和前态字节，再核对第一个校验步骤。组合失败按 raw→count→odds 委托顺序；单历史分析先看state是否VALID；关系先查主观枚举，再按available决定是否看历史。provenance排查old exposed与now是否被混淆、raw是否误用used、非法旧值是否被自动修正。正常值逐字段比较，失败保持才对同一预置对象作字节快照，不能以padding相等认证正常分析。
+
+### 11.3 安装失败诊断顺序
+
+找不到ProbSpanConfig：确认实际install prefix和CMAKE_PREFIX_PATH而非源树目录；inspect安装日志是否含lib/cmake/ProbSpan。找不到header：确认include/probspan/probspan.h并通过导出目标传播目录。链接数学符号失败：确认链接ProbSpan::probspan且非MSVC导出的m依赖未被绕开。多配置找不到archive：配置/build/install/consumer选择同一Debug或Release。旧模型结果：核对运行时ABI与头版本，排除旧prefix/旧exe。不要添加src include路径掩盖package问题。
+
+fixture freshness失败仅说明已提交参考与生成C头不一致；先读diff及生成器输入，不直接运行无--check生成命令覆盖。原Python模型重放需精确HEAD、tracked clean和锁定依赖；mpmath高精度生成又是独立层。基础C-only通过并不证明这些开发环境均已可用。
+
+<a id="depth-results"></a>
+
+## 12. 第二轮深度扩展的实际运行与观察
+
+第二轮从文档commit `1a864b4e0d129f62398d993bffab045fa3740fff` 开始，生产源码仍是 fdfaddfb，所有新增运行产物位于忽略的build/内。原C:仓库未搬移，D:\ProbSpan仍不存在。以下记录与§6初轮执行分开。
+
+```powershell
+$env:PATH = 'D:\msys64\ucrt64\bin;' + $env:PATH
+cmake -S . -B build/docs-depth -G 'MinGW Makefiles' -DPROBSPAN_BUILD_EXAMPLES=ON
+cmake --build build/docs-depth -j4
+ctest --test-dir build/docs-depth --output-on-failure
+cmake --install build/docs-depth --prefix "$PWD/build/docs-depth-install"
+cmake -S tests/consumer -B build/docs-depth-consumer -G 'MinGW Makefiles' `
+  "-DCMAKE_PREFIX_PATH=$PWD/build/docs-depth-install"
+cmake --build build/docs-depth-consumer -j4
+ctest --test-dir build/docs-depth-consumer --output-on-failure
+```
+
+本轮上述实际执行为 GCC 16.2.0 / Windows x64：14/14 与安装consumer 1/1通过。导读三个完整C程序均逐一从Markdown提取，以`gcc -std=c11 -Wall -Wextra -Wpedantic`、安装include/archive和-lm编译并运行；未修改原测试。分步程序实际结果如下，打印小数为观察值，不是新增逐位兼容常量：
+
+```text
+subjective 0.600000000 [0.428571429, 0.750000000] d=0.693147181
+history 0.928571429 [0.789181364, 0.994550967] ready=1
+subjective EV event=[-0.142857143, 0.500000000] complement=[-0.250000000, 0.714285714]
+posterior positive EV event=0.999995042 complement=0.001130297
+relations event=3 complement=3
+exposed=1 compromised=1
+```
+
+枚举3是PROBSPAN_UNCERTAIN，不能称为CONFLICT。history-only程序均值.595238、区间[.383920,.789371]、ready=0，与n到20但宽度未达标一致。本轮尚未重放冻结Python、6099原parser差分或80/60位独立参考；本地未运行ASan/UBSan/其他架构。新PR自动CI若运行，是远程证据，必须以其实际head SHA和状态另查，不替代这些记录。
+
+本轮还实际执行独立C-only配置`build/docs-depth-c-only`（`-DCMAKE_DISABLE_FIND_PACKAGE_Python3=TRUE -DPROBSPAN_BUILD_EXAMPLES=ON`），build后CTest 9/9通过。API指南的CMake片段与history-only main.c组成临时消费者，以安装prefix配置/build/运行成功；另将工程改为LANGUAGES CXX、main.cpp、CXX_STANDARD=11，GNU C++ 16.2.0编译链接同一C静态库并运行成功。这两个临时工程都在忽略的build/docs-depth下，没有改仓库consumer测试或新增永久源文件。C++这一个实例不证明全部C++编译器/ABI组合。
+
+### 12.1 重现三个Markdown完整程序的提取/编译
+
+以下在仓库根执行（Python脚本中的gcc路径是本机实例，其他平台需替换）。它只写忽略的build目录，不生成/改写oracle：
+
+```python
+from pathlib import Path
+import re
+import subprocess
+
+guide = Path("docs/IMPLEMENTATION_WALKTHROUGH.zh-CN.md").read_text(encoding="utf-8")
+out = Path("build/docs-depth/examples")
+out.mkdir(parents=True, exist_ok=True)
+for i, code in enumerate(re.findall(r"```c\n(.*?)```", guide, re.S), 1):
+    source = out / f"walk-{i}.c"
+    source.write_text(code, encoding="utf-8")
+    executable = source.with_suffix(".exe")
+    subprocess.run(["D:/msys64/ucrt64/bin/gcc.exe", "-std=c11", "-Wall",
+        "-Wextra", "-Wpedantic", "-Ibuild/docs-depth-install/include", str(source),
+        "build/docs-depth-install/lib/libprobspan.a", "-lm", "-o", str(executable)], check=True)
+    subprocess.run([str(executable.resolve())], check=True)
+```
+
+`re.findall` 针对本导读完整 c 围栏，API签名围栏不参与；未来若导读加入非完整片段，要调整提取规则而非声称所有围栏均可独立编译。显示终端如出现编码乱码，先核对原Markdown为UTF-8与终端编码；不得为修终端输出转换/损坏文档内容。
+
+<a id="depth-audit"></a>
+
+## 13. 第二轮审查清单、逐轮修补与可复算覆盖
+
+### 13.1 清单规则与当前参考
+
+Pass 0在大段编辑前按公共头、全部生产函数/私有头、七个C测试断言、oracle/数值政策、CMake/示例/consumer、维护规则与52账本条目建立下列80项：CRITICAL 30、CORE DEPTH 36、SUPPORTING DEPTH 14。按有实质解释且有证据指针记1，否则0；只出现函数名不计覆盖。分母不是“所有可能知识”，比例不是正确概率或独立PASS。某项内部发现新反例/次序限制仍纳入该项原有语义验收，不删项抬分；若出现不同的新增重要要求应另加ID再重算。
+
+本轮直接取当前LayerKeySort GitHub默认分支四文件，记录返回blob以避免与其文中自己的生产基线混淆：
+
+| 文档 | 当前读取的Git blob |
+| --- | --- |
+| WALKTHROUGH | `1e5bdce013cd7ed644771ea98be63fa474243296` |
+| API_REFERENCE | `af6728f880ff4b81b752a670ac0e1130e6532551` |
+| INTERNALS | `767a4688cf98a13c938949f948c97134b0d3bb18` |
+| VALIDATION | `a15165adbb6580db7427ccc3541cf8ff6347dd62` |
+
+借鉴的是按真实操作展开、helper不变量、所有权边界、具体断言及未测范围分开陈述；其Full源码基线70d7f0ef与本项目fdfaddfb不是同一对象，不复制排序机制、内存保证或测试数量。
+
+### 13.2 完整二值清单
+
+P0初始；P1扩写后；P2新维护者问答修补后；P3跨文档修补后；P4最终一致性回归。每行按同一标准，数字1表示本清单意义的covered，0表示not-covered。最后两轮均不代表独立验收。
+
+| ID | 类别 | 必须回答的实质问题 | P0 | P1 | P2 | P3 | P4 | 证据指针 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C01 | CRITICAL | abi_version 的数值、生命周期与无错误路径 | 1 | 1 | 1 | 1 | 1 | [API §4.1、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C02 | CRITICAL | subjective_half_width 的域、NULL 优先级和边界 | 1 | 1 | 1 | 1 | 1 | [API §4.2、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C03 | CRITICAL | subjective_estimate 的 raw/used、失败保持 | 1 | 1 | 1 | 1 | 1 | [API §4.3、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C04 | CRITICAL | history_estimate 的计数域、求解失败与 gate | 1 | 1 | 1 | 1 | 1 | [API §4.4、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C05 | CRITICAL | odds_validate 的有限/范围与输出 | 1 | 1 | 1 | 1 | 1 | [API §4.5、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C06 | CRITICAL | odds_parse 的文法→转换→范围 | 1 | 1 | 1 | 1 | 1 | [API §4.6、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C07 | CRITICAL | classify_ev 的非校验行为 | 1 | 1 | 1 | 1 | 1 | [API §4.7、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C08 | CRITICAL | classify_odds_combination 的临界带 | 1 | 1 | 1 | 1 | 1 | [API §4.8、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C09 | CRITICAL | classify_model_relation 的枚举与可用性优先 | 1 | 1 | 1 | 1 | 1 | [API §4.9、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C10 | CRITICAL | analyze_subjective 的对象局部校验与 S | 1 | 1 | 1 | 1 | 1 | [API §4.10、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C11 | CRITICAL | analyze_historical 的短路和后验质量 | 1 | 1 | 1 | 1 | 1 | [API §4.11、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C12 | CRITICAL | provenance_transition 的不变量/别名/旧暴露 | 1 | 1 | 1 | 1 | 1 | [API §4.12、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C13 | CRITICAL | compose_analysis 的委托与一次提交 | 1 | 1 | 1 | 1 | 1 | [API §4.13、正反例](IMPLEMENTATION_API_REFERENCE.zh-CN.md#call-cases)；对应实现/断言见本篇§3/§10 |
+| C14 | CRITICAL | 五枚举全部值与意义 | 1 | 1 | 1 | 1 | 1 | [API §2–3](IMPLEMENTATION_API_REFERENCE.zh-CN.md)；公共头声明逐项核对 |
+| C15 | CRITICAL | 十结构所有字段与读条件 | 1 | 1 | 1 | 1 | 1 | [API §2–3](IMPLEMENTATION_API_REFERENCE.zh-CN.md)；公共头声明逐项核对 |
+| C16 | CRITICAL | 产品/ABI/模型/gate/分析版本区分 | 1 | 1 | 1 | 1 | 1 | [API §2–3](IMPLEMENTATION_API_REFERENCE.zh-CN.md)；公共头声明逐项核对 |
+| C17 | CRITICAL | 跨 API 多重错误优先级可复现 | 0 | 1 | 1 | 1 | 1 | [API错误/访问矩阵](IMPLEMENTATION_API_REFERENCE.zh-CN.md#precedence-matrix)；本篇§10 |
+| C18 | CRITICAL | 状态到字段访问矩阵 | 1 | 1 | 1 | 1 | 1 | [API错误/访问矩阵](IMPLEMENTATION_API_REFERENCE.zh-CN.md#precedence-matrix)；本篇§10 |
+| C19 | CRITICAL | 伪造估计对象校验的范围 | 0 | 1 | 1 | 1 | 1 | [API错误/访问矩阵](IMPLEMENTATION_API_REFERENCE.zh-CN.md#precedence-matrix)；本篇§10 |
+| C20 | CRITICAL | 指针/别名与 C 生命周期边界 | 0 | 1 | 1 | 1 | 1 | [API错误/访问矩阵](IMPLEMENTATION_API_REFERENCE.zh-CN.md#precedence-matrix)；本篇§10 |
+| C21 | CRITICAL | raw 端点及主观数学区间含义 | 1 | 1 | 1 | 1 | 1 | [API错误/访问矩阵](IMPLEMENTATION_API_REFERENCE.zh-CN.md#precedence-matrix)；本篇§10 |
+| C22 | CRITICAL | 事件/补事件坐标与分类 | 1 | 1 | 1 | 1 | 1 | [API错误/访问矩阵](IMPLEMENTATION_API_REFERENCE.zh-CN.md#precedence-matrix)；本篇§10 |
+| C23 | CRITICAL | 正 EV 后验概率与未来事件概率分离 | 1 | 1 | 1 | 1 | 1 | [API错误/访问矩阵](IMPLEMENTATION_API_REFERENCE.zh-CN.md#precedence-matrix)；本篇§10 |
+| C24 | CRITICAL | 普通 Beta 与 transformed-logit 派发 | 1 | 1 | 1 | 1 | 1 | [内部普通Beta](IMPLEMENTATION_INTERNALS.zh-CN.md#ordinary-beta-steps)与[logit细节](IMPLEMENTATION_INTERNALS.zh-CN.md#logit-detail) |
+| C25 | CRITICAL | 精确十进制含零/溢出边界 | 1 | 1 | 1 | 1 | 1 | [内部decimal](IMPLEMENTATION_INTERNALS.zh-CN.md#decimal-detail)；decimal_parity |
+| C26 | CRITICAL | 具体源码—函数—断言映射 | 0 | 1 | 1 | 1 | 1 | [本篇断言案例](#assertion-cases)；tests七个C入口 |
+| C27 | CRITICAL | 冻结/修正参考与 freshness 区别 | 1 | 1 | 1 | 1 | 1 | 本篇§4–5/§11；oracle README、numerical_policy及生成器 |
+| C28 | CRITICAL | 52 永久条目与完成/提案区分 | 1 | 1 | 1 | 1 | 1 | [账本](TECHNICAL_DEBT.zh-CN.md)52条、18字段及44个反例增补 |
+| C29 | CRITICAL | R01–R04 精确提交归因 | 0 | 0 | 0 | 1 | 1 | [提交链](TECHNICAL_DEBT.zh-CN.md#repair-history)；git show与远程tag/Release只读检查 |
+| C30 | CRITICAL | 同 PR 文档维护、授权边界与有效导航 | 1 | 1 | 1 | 1 | 1 | [AGENTS](../AGENTS.md)、[CONTRIBUTING](../CONTRIBUTING.md)、README五入口及链接检查 |
+| D01 | CORE DEPTH | 23 文件职责和实际依赖边界 | 1 | 1 | 1 | 1 | 1 | [导读完整流程](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#separate-sequence)、[状态场景](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#history-states)、[入口选择](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#api-choice) |
+| D02 | CORE DEPTH | 分步完整调用的中间值/最终值 | 0 | 0 | 1 | 1 | 1 | [导读完整流程](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#separate-sequence)、[状态场景](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#history-states)、[入口选择](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#api-choice) |
+| D03 | CORE DEPTH | 主观独立路径及节点行为 | 1 | 1 | 1 | 1 | 1 | [导读完整流程](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#separate-sequence)、[状态场景](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#history-states)、[入口选择](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#api-choice) |
+| D04 | CORE DEPTH | 无历史流程和字段禁读 | 0 | 1 | 1 | 1 | 1 | [导读完整流程](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#separate-sequence)、[状态场景](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#history-states)、[入口选择](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#api-choice) |
+| D05 | CORE DEPTH | 稀疏后验存在但分析不可用 | 1 | 1 | 1 | 1 | 1 | [导读完整流程](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#separate-sequence)、[状态场景](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#history-states)、[入口选择](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#api-choice) |
+| D06 | CORE DEPTH | VALID 历史门槛和阈值质量 | 1 | 1 | 1 | 1 | 1 | [导读完整流程](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#separate-sequence)、[状态场景](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#history-states)、[入口选择](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#api-choice) |
+| D07 | CORE DEPTH | 补事件完整数值计算 | 1 | 1 | 1 | 1 | 1 | [导读完整流程](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#separate-sequence)、[状态场景](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#history-states)、[入口选择](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#api-choice) |
+| D08 | CORE DEPTH | 暴露→修改→改回的连续状态 | 0 | 1 | 1 | 1 | 1 | [导读完整流程](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#separate-sequence)、[状态场景](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#history-states)、[入口选择](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#api-choice) |
+| D09 | CORE DEPTH | 任务到 13 公共函数选择表 | 0 | 1 | 1 | 1 | 1 | [导读完整流程](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#separate-sequence)、[状态场景](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#history-states)、[入口选择](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#api-choice) |
+| D10 | CORE DEPTH | 真实应用分步集成可编译例 | 0 | 1 | 1 | 1 | 1 | [导读完整流程](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#separate-sequence)、[状态场景](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#history-states)、[入口选择](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#api-choice) |
+| D11 | CORE DEPTH | 时间/空间/共享对象限制 | 0 | 1 | 1 | 1 | 1 | [导读交接](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#handoff)、[内部成本/定位](IMPLEMENTATION_INTERNALS.zh-CN.md#cost-and-change) |
+| D12 | CORE DEPTH | 症状→私有函数→测试的调试路线 | 0 | 1 | 1 | 1 | 1 | [导读交接](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#handoff)、[内部成本/定位](IMPLEMENTATION_INTERNALS.zh-CN.md#cost-and-change) |
+| D13 | CORE DEPTH | 分段求值顺序与非对称性 | 1 | 1 | 1 | 1 | 1 | 内部§3–4、§12 helper图谱；subjective/historical原始源码 |
+| D14 | CORE DEPTH | 计数 shapes/求和/均值求值 | 1 | 1 | 1 | 1 | 1 | 内部§3–4、§12 helper图谱；subjective/historical原始源码 |
+| D15 | CORE DEPTH | use_logit_integration 严格切换 | 0 | 1 | 1 | 1 | 1 | [普通Beta逐步](IMPLEMENTATION_INTERNALS.zh-CN.md#ordinary-beta-steps)；beta.c与large_numerics |
+| D16 | CORE DEPTH | nonzero 符号和 tiny | 0 | 1 | 1 | 1 | 1 | [普通Beta逐步](IMPLEMENTATION_INTERNALS.zh-CN.md#ordinary-beta-steps)；beta.c与large_numerics |
+| D17 | CORE DEPTH | beta_fraction 两个系数及收敛 | 0 | 1 | 1 | 1 | 1 | [普通Beta逐步](IMPLEMENTATION_INTERNALS.zh-CN.md#ordinary-beta-steps)；beta.c与large_numerics |
+| D18 | CORE DEPTH | ps_beta_cdf log-front 与反射 | 0 | 1 | 1 | 1 | 1 | [普通Beta逐步](IMPLEMENTATION_INTERNALS.zh-CN.md#ordinary-beta-steps)；beta.c与large_numerics |
+| D19 | CORE DEPTH | ps_beta_quantile 邻接停止 | 0 | 1 | 1 | 1 | 1 | [普通Beta逐步](IMPLEMENTATION_INTERNALS.zh-CN.md#ordinary-beta-steps)；beta.c与large_numerics |
+| D20 | CORE DEPTH | Gamma 小/大参数与 signgam | 1 | 1 | 1 | 1 | 1 | 内部§6/§12；gamma.c/a085776 patch、间接Beta回归 |
+| D21 | CORE DEPTH | sum_roundoff 与中心补偿 | 0 | 1 | 1 | 1 | 1 | [logit逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#logit-detail)；beta_logit.c/large_numerics |
+| D22 | CORE DEPTH | 两小量级数及停止 | 0 | 1 | 1 | 1 | 1 | [logit逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#logit-detail)；beta_logit.c/large_numerics |
+| D23 | CORE DEPTH | make_density/density_at 的消差 | 0 | 1 | 1 | 1 | 1 | [logit逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#logit-detail)；beta_logit.c/large_numerics |
+| D24 | CORE DEPTH | gauss_panel 节点映射与尺度 | 0 | 1 | 1 | 1 | 1 | [logit逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#logit-detail)；beta_logit.c/large_numerics |
+| D25 | CORE DEPTH | adaptive_panel 预算/深度/失败 | 0 | 1 | 1 | 1 | 1 | [logit逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#logit-detail)；beta_logit.c/large_numerics |
+| D26 | CORE DEPTH | integrate 面板划分与零长度 | 0 | 1 | 1 | 1 | 1 | [logit逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#logit-detail)；beta_logit.c/large_numerics |
+| D27 | CORE DEPTH | transformed_cdf 尾部支路 | 0 | 1 | 1 | 1 | 1 | [logit逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#logit-detail)；beta_logit.c/large_numerics |
+| D28 | CORE DEPTH | centered_difference 乘法残差 | 0 | 1 | 1 | 1 | 1 | [logit逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#logit-detail)；beta_logit.c/large_numerics |
+| D29 | CORE DEPTH | probability_at 两种回映射 | 0 | 1 | 1 | 1 | 1 | [logit逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#logit-detail)；beta_logit.c/large_numerics |
+| D30 | CORE DEPTH | logit quantile 安全 Newton | 0 | 1 | 1 | 1 | 1 | [logit逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#logit-detail)；beta_logit.c/large_numerics |
+| D31 | CORE DEPTH | valid_decimal_syntax/view_decimal 状态 | 0 | 1 | 1 | 1 | 1 | [十进制逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#decimal-detail)；odds/decimal源码与exact-bit |
+| D32 | CORE DEPTH | integer_from/multiply/digits 不变量 | 0 | 1 | 1 | 1 | 1 | [十进制逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#decimal-detail)；odds/decimal源码与exact-bit |
+| D33 | CORE DEPTH | compare_midpoint 包括远端尾数 | 0 | 1 | 1 | 1 | 1 | [十进制逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#decimal-detail)；odds/decimal源码与exact-bit |
+| D34 | CORE DEPTH | decode/value 编码含次正规与正零 | 0 | 1 | 1 | 1 | 1 | [十进制逐层](IMPLEMENTATION_INTERNALS.zh-CN.md#decimal-detail)；odds/decimal源码与exact-bit |
+| D35 | CORE DEPTH | analyze_side/posterior_probability 家族 | 1 | 1 | 1 | 1 | 1 | [决策/提交](IMPLEMENTATION_INTERNALS.zh-CN.md#composition-detail)；analysis/state/api_contract |
+| D36 | CORE DEPTH | 组合错误和局部结果提交细节 | 0 | 1 | 1 | 1 | 1 | [决策/提交](IMPLEMENTATION_INTERNALS.zh-CN.md#composition-detail)；analysis/state/api_contract |
+| S01 | SUPPORTING DEPTH | 安装 CMake 消费者示例 | 0 | 1 | 1 | 1 | 1 | [API CMake工程](IMPLEMENTATION_API_REFERENCE.zh-CN.md#cmake-consumer)；本篇§12实测 |
+| S02 | SUPPORTING DEPTH | C/C++ ABI 与编译链接解释 | 0 | 1 | 1 | 1 | 1 | 同上extern C解释与C++11安装消费者实测 |
+| S03 | SUPPORTING DEPTH | 单测试族最小复现命令 | 0 | 0 | 1 | 1 | 1 | [单族复现](#reproduce-family)；CTest真实注册名 |
+| S04 | SUPPORTING DEPTH | 数值失败分层诊断 | 0 | 0 | 1 | 1 | 1 | 本篇§11.1；large_numerics/decimal诊断 |
+| S05 | SUPPORTING DEPTH | 状态/参数失败分层诊断 | 0 | 0 | 1 | 1 | 1 | 本篇§11.2；api_contract/state的具体assert |
+| S06 | SUPPORTING DEPTH | 安装失败诊断 | 0 | 0 | 1 | 1 | 1 | 本篇§11.3；安装consumer实际构建 |
+| S07 | SUPPORTING DEPTH | 每个未解决条目的首要反例 | 0 | 0 | 1 | 1 | 1 | 账本每个未解决条目的第二轮反例；不声称实验已执行 |
+| S08 | SUPPORTING DEPTH | 每个未解决条目的实验/归属/决定 | 0 | 0 | 1 | 1 | 1 | 账本每条增补的价值检验/归属/具体所有者门槛 |
+| S09 | SUPPORTING DEPTH | 看似简化但破坏兼容的改动 | 0 | 1 | 1 | 1 | 1 | [不兼容简化表](IMPLEMENTATION_INTERNALS.zh-CN.md#cost-and-change) |
+| S10 | SUPPORTING DEPTH | AI 维护者分子系统阅读路线 | 1 | 1 | 1 | 1 | 1 | [AI分子系统交接](IMPLEMENTATION_WALKTHROUGH.zh-CN.md#handoff) |
+| S11 | SUPPORTING DEPTH | 当前 LayerKeySort 四指南复查 | 1 | 1 | 1 | 1 | 1 | 本节四份当前GitHub参考的blob标识与实际内容复查 |
+| S12 | SUPPORTING DEPTH | 本轮执行/历史/未测边界 | 1 | 0 | 1 | 1 | 1 | 本篇§1/§6/§12，初轮与二轮/历史CI分层 |
+| S13 | SUPPORTING DEPTH | 可复算审计清单与通过条件 | 0 | 0 | 0 | 1 | 1 | 本节80项二值表、轮次集合与复算脚本 |
+| S14 | SUPPORTING DEPTH | 全分步例实际编译和输出比对 | 0 | 0 | 1 | 1 | 1 | 本篇§12，三个完整C例的实际编译和观测输出 |
+
+### 13.3 逐轮真实发现与修补记录
+
+| 阶段 | CRITICAL | 全部清单覆盖 | 实际发现与处理 |
+| --- | --- | --- | --- |
+| P0 建清单 | 25/30 | 37/80（46.25%） | 目录/符号已齐但缺分步数值、私有递推和诊断；R03引入SHA错误；以更强行动标准重新评价旧稿 |
+| P1 初始扩写并对源码复读 | 29/30 | 69/80（86.25%） | 增入口选择、完整分步程序、13函数正反例、全部helper图谱；R03先改正，完整历史链审查/测试诊断/44项反例/本轮实测记录仍未完成 |
+| P2 敌对新维护者审查及修补 | 29/30 | 78/80（97.50%） | 无会话条件下逐一回答下表问题，补单测试复现/三类失败诊断/真实断言/44项反例与实验归属；实际编译示例、C-only与安装消费者；C29和S13仍留0等待历史链复核及本节可复算记录 |
+| P3 跨文档一致性审查及修补 | 30/30 | 80/80（100%） | 逐commit核对R01–R04，区分引入/诊断/后续RC/正式发布；纠正C初始化器文字次序不能推出求值次序、12/8示例不属13冻结向量；分离初轮289链接/两示例与二轮实测；本节记录清单和轮次，不再仅报百分比 |
+| P4 最终定向回归 | 30/30 | 80/80（100%） | 重核头/全部私有函数/52条目/链接锚点/README/维护规则、允许diff与空白；修正右尾明确为1-integral、helper表的小量条件明确取绝对值；复核后无已知事实矛盾或阻止维护的重大歧义；运行证据不外推到未测平台 |
+
+P3明确是P1之后的第二次实质审查与修补，P4再做最终一致性检查；没有机械重写已正确段落。当前本清单剩余未覆盖项为0。有限清单的100%不等于文档绝对完备、数学形式证明或隐藏缺陷概率为0；源代码/数学解释仍等待所有者与独立审查。
+
+### 13.4 不依赖会话的敌对问答定位
+
+| 新人提问 | 仓库内可用回答/行动 |
+| --- | --- |
+| 没有主观值如何用？ | 导读history-only完整程序，直接history_estimate，无需填默认赔率 |
+| 为什么有posterior仍INSUFFICIENT？ | 导读§13的1/0、12/8；API可用性矩阵，n与宽度双gate |
+| 字段何时能读？ | API§3、§5、§7；失败不读取本次输出、成功按嵌套flags |
+| 数字/分类从何函数来？ | 导读完整分步程序和内部helper图谱，追到geometry/policy或Beta |
+| CDF/quantile究竟走哪条？ | 内部§13–14，先记录a/b、switch，再查反射/普通二分或积分Newton |
+| 赔率为何拒绝？ | API parse正反例、内部§15词法→精确转换→范围；长串坏尾仍文法先失败 |
+| 如何复现一类测试？ | 本篇§11锚定CTest命令；源码函数和行号随提交定位 |
+| 改数学函数如何不换模型？ | 内部§17不兼容简化表、数值契约、独立参考和账本审批 |
+| 旧修复证据在哪？ | 账本R01–R04及repair-history真实git show链，不仅看closed Issue |
+| 提案获批了吗？ | 账本状态、TBD版本和具体所有者门槛；第三方库不是批准证据 |
+| 改源文件后同步哪里？ | 导读handoff、AGENTS/CONTRIBUTING及本篇维护门槛；同PR替换过时段落 |
+| 如何看待绿色测试？ | 本篇证据分层；覆盖图不是穷举、oracle新鲜度不是重算独立参考 |
+
+### 13.5 可复算轮次计数
+
+在仓库根将下面代码送入Python即可从本节同一80行复算；它不按文字印象猜覆盖。语义覆盖仍需人工沿证据复核，脚本只检查计数、ID唯一性和关键gate。
+
+~~~python
+from pathlib import Path
+import re
+
+text = Path("docs/IMPLEMENTATION_VALIDATION.zh-CN.md").read_text(encoding="utf-8")
+pattern = r"^\| ([CDS]\d{2}) \| (CRITICAL|CORE DEPTH|SUPPORTING DEPTH) \| ([^|]+) \| ([01]) \| ([01]) \| ([01]) \| ([01]) \| ([01]) \|"
+rows = re.findall(pattern, text, re.M)
+assert len(rows) == 80 and len({r[0] for r in rows}) == 80
+for column, name in enumerate(("P0", "P1", "P2", "P3", "P4"), 3):
+    covered = sum(int(r[column]) for r in rows)
+    critical = sum(int(r[column]) for r in rows if r[1] == "CRITICAL")
+    print(name, f"{covered}/80", f"critical {critical}/30")
+assert all(r[7] == "1" for r in rows if r[1] == "CRITICAL")
+assert sum(int(r[7]) for r in rows) / len(rows) >= 0.90
+~~~
+
+新增行为/证据或独立审查发现反例时，重新打开相应项；历史轮次不回写成“从来没有缺口”。下次基线变化保留本轮记录并追加新一轮，不能把这些数字当跨版本自动成立的认证。
+
+### 13.6 第二轮最终结构检查结果
+
+实际检查13个签名与头归一化一致，五枚举/十结构全部字段及四产品宏齐全；14个生产C、九私有头、44个非公共函数定义（含三个inline）均有对应解释。52个canonical ID各一次且18字段完整，44个未解决条目各有反例/实验增补；R03引入SHA及R01/R02/R04证据角色已与git show核对。380个相对Markdown链接/显式锚点全部有效，表格列数、行首代码围栏闭合检查通过。README五入口、AGENTS/CONTRIBUTING同PR维护规则保留；本轮diff仅修改五份指南/账本，未改另外三份入口/政策文件，因为既有导航/规则仍适用。`git diff --check`通过。头/名称/链接检查是结构证据，语义覆盖另由逐轮源/断言复核支持，不把自动名称出现计数直接当完整解释。
