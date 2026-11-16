@@ -4,6 +4,17 @@
 
 [![Portable C11 CI](https://github.com/RXY712200/ProbSpan/actions/workflows/ci.yml/badge.svg)](https://github.com/RXY712200/ProbSpan/actions/workflows/ci.yml)
 
+## 中文源码指南与永久问题账本
+
+首次阅读建议按以下顺序；指南基于实际 v1.0.0 源码，将现行行为、验证证据与未批准提案分开：
+
+1. [完整实现导读](docs/IMPLEMENTATION_WALKTHROUGH.zh-CN.md)：产品边界、模块地图、完整调用路径与独立使用示例。
+2. [全部公共 API 契约](docs/IMPLEMENTATION_API_REFERENCE.zh-CN.md)：13 个函数、所有公共类型/字段、错误优先级与可用性。
+3. [内部数学与源码实现](docs/IMPLEMENTATION_INTERNALS.zh-CN.md)：冻结参数、Beta/Gamma、精确十进制、决策与因果不变量。
+4. [验证与可复现证据](docs/IMPLEMENTATION_VALIDATION.zh-CN.md)：源码到断言、参考数据、实际执行与未验证边界。
+
+[永久技术债务与研究账本](docs/TECHNICAL_DEBT.zh-CN.md) 保留已完成修复、已知限制、研究方向、48 个候选改进、未来所有者决定及不绑定版本的规划记录。账本不是实施或发布授权。维护规则见 [CONTRIBUTING.md](CONTRIBUTING.md) 与 [AGENTS.md](AGENTS.md)。
+
 ProbSpan combines an independent **subjective probability**, **historical event counts**, and **gross-return odds** into clearly separated uncertainty estimates, expected-value intervals, threshold probabilities, and model-relationship classifications. It does **not** combine the two probability models into a supposed best estimate, place bets, or make decisions on the caller's behalf.
 
 ```text
