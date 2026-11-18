@@ -1,6 +1,6 @@
 # ProbSpan 验证地图与可复现证据
 
-独立的 [Preview 设备历史参考测试](PREVIEW_DEVICE_HISTORY.zh-CN.md) 包含调用方证据准入、自适应积分参考及已安装 v1 消费者。它采用单独依赖与 CI 工作流，下面仍记录 v1 证据与冻结验证边界。
+下文第 1–13 节保存 v1 的源码映射与历史执行记录。合并的 [Preview 设备历史参考](PREVIEW_DEVICE_HISTORY.zh-CN.md) 使用独立的依赖和工作流，见[第 14 节的 RC 证据及断言地图](#preview-device-history-validation)。
 
 ## 1. 审查基线和证据等级
 
@@ -427,3 +427,43 @@ assert sum(int(r[7]) for r in rows) / len(rows) >= 0.90
 ### 13.6 第二轮最终结构检查结果
 
 实际检查13个签名与头归一化一致，五枚举/十结构全部字段及四产品宏齐全；14个生产C、九私有头、44个非公共函数定义（含三个inline）均有对应解释。52个canonical ID各一次且18字段完整，44个未解决条目各有反例/实验增补；R03引入SHA及R01/R02/R04证据角色已与git show核对。380个相对Markdown链接/显式锚点全部有效，表格列数、行首代码围栏闭合检查通过。README五入口、AGENTS/CONTRIBUTING同PR维护规则保留；本轮diff仅修改五份指南/账本，未改另外三份入口/政策文件，因为既有导航/规则仍适用。`git diff --check`通过。头/名称/链接检查是结构证据，语义覆盖另由逐轮源/断言复核支持，不把自动名称出现计数直接当完整解释。
+
+<a id="preview-device-history-validation"></a>
+
+## 14. RC 审查：最终源码清单与调用方参考的断言地图
+
+### 三个证据基线
+
+1. 稳定源码 `fdfaddfb58486004ee1cc02c0f4a5c640cd17c7c` 为 v1.0.0 标签目标。PR #11 引入经审查的四篇源码指南。第 1–13 节原有执行、覆盖计数和说明以各自记录的提交为准。
+2. Preview 第一、二单元由 PR #12/#13 引入，分别留下适用性框架和合成研究。第三单元实现提交为 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，PR #14 合并为本次起点 `27d18c0611a73b96596552ad967b94222b24a5ad`。原 [Portable C11](https://github.com/RXY712200/ProbSpan/actions/runs/44270682085) 和 [可选参考](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759) push 运行对应实现提交，不作为 RC 的 CI。合并提交的 [Portable C11](https://github.com/RXY712200/ProbSpan/actions/runs/44280313554) 成功，旧的可选工作流过滤条件没有在该 main push 产生运行。
+3. 本次 RC 工作树以合并提交为起点，逐项查过源码、条件检查、结果类型与断言。未改模型或准备材料中的产品版本。最终候选的精确 SHA 和 CI 由 PR 的远端提交与运行绑定，避免把本文件所在提交 ID 写进自身。旧的已验证资料保留原用途。
+
+| 范围 | 实际源码、构建、依赖 | 验证与限制 |
+| --- | --- | --- |
+| 安装的稳定核心 | 唯一公共头、13 个函数、ABI 1、14 个 C 实现和 9 个私有头。根 CMake 为静态 C11，仅标准 C 与所需数学库 | 相对稳定标签，`src/`、`include/`、根 CMake/`cmake/`、`tests/`、`oracle/`、`examples/` 和数学契约无差异。原有 14 CTest 及独立安装消费者复验。 |
+| 冻结模型与参考 | Jeffreys 与 readiness、主观宽度、赔率转换、EV 和 provenance 沿用 v1。冻结历史与大形状例外见[数值契约](NUMERICAL_CONTRACT.md) | 运行已提交夹具的 C 断言，并对五份 C 夹具执行 freshness。未重建冻结上游、未改独立高精度政策或容差。 |
+| 调用方参考 | `integrations/device_history/`。证据审查与进程适配用 Python 标准库，两层后验用固定 NumPy 2.4.4 / SciPy 1.17.1。独立消费者使用安装的 1.0.0 公共包 | 可选工作流 checkout 精确 PR 头，先安装根包，再单独构建消费者、执行 Python 断言和示例。根安装没有此模块、解释器或 Python 包。 |
+| 研究证据 | `research/preview_history.py` 与已记录 JSON。Phase II 生成器可复现，原结果不作为 v1 oracle | 参考测试重放 mix-shift 首个合成重复，不重跑全套 Phase II 研究。现场适用性、跨未披露群集的独立性、采样校正、估计权重及通用可移植数值保证仍未验证。 |
+| 部署与发布 | 根安装包含档案、公共头和 CMake config/version/targets。源码分发才包含研究与可选集成。既有 v1.0.0 Release 公开、非预发行，无上传平台二进制 | [发布说明](RELEASING.md)列出候选版本选择与精确 1.0.0 消费者的元数据依赖。没有发现需要改动稳定源码的阻断。候选命名与产品打包范围待决定。 |
+
+### 生产函数与具体断言
+
+下表测试在 [test_device_history.py](../integrations/device_history/test_device_history.py) 中，`device_batch` 来自[可执行示例](../integrations/device_history/example.py)。测试构造合成记录或变更单个字段。拒绝辅助断言同时核对状态、原因、无计数、零纳入和无数值可用。表中「静态检查」明确未执行的极端/防御分支。
+
+| 源码职责 | 对应测试及实际断言 |
+| --- | --- |
+| [evidence.py](../integrations/device_history/evidence.py) `review/_check_declaration/_known/_hour` | `test_strict_and_pool_counts`：严格 (3,3)、池化 (6,4) 及两范围。 `test_declaration_and_zero_target`：三种非支持声明、空引用的 `declaration_evidence_unknown`、路径假设不相容、缺来源、来源旧工艺、经声明零目标仅使用 (3,1)。`test_missing_context_and_path_mismatch`：范围缺修订、截止未知、严格路径带来源或权重拒绝。 |
+| `_visible/_validate` | `test_cutoff_excludes_later_outcome_even_on_same_identity`：冲突标签迟到时不计数也不参加冲突审查，缺可用时刻则弃权。`test_definitions_regime_censoring_and_identity`：错定义/时距、同设备错工艺、50 小时空/假补事件、时刻矛盾及未知周期键。 `test_missing_context_and_path_mismatch`：错层、条件缺失、整数非布尔。 |
+| `_select`、回执的纳入/排除 | `test_duplicates_and_conflicts`：同一规范键跨查询折叠一次，结果 (1,1)，冲突标签或跨源/目标重叠无计数。 `test_unmodelled_dependence_preserves_records`：共同簇或同设备异周期两条均暂扣且别名数为零。 `test_target_weights_and_support`：两层正权重缺支持弃权，零权重层排除三条后 (1,2)/(0,0)。计数聚合超过 INT64_MAX 是静态检查，C 入口另有解析超限断言。 |
+| `_weight_pair` 与已知总体 | `test_target_weights_and_support`：未知、不归一、负数、NaN、错长度及布尔；`test_known_heterogeneous_and_population_change`：同记录反转目标权，均值方向正确，非样本构成替代。 |
+| [standardization.py](../integrations/device_history/standardization.py) `standardize/_shapes/_moments` | `test_known_heterogeneous_and_population_change` 对 (2,18)/(9,11) 和两组固定权用 Fraction 核对两次均值和方差。 `test_boundary_and_budget_failure` 核对均值 .5、方差 .03125、镜像区间、零权重直接 Beta。 `test_numerical_range_failure_preserves_review`：10,001 条保留有效回执但无估计。 |
+| `_inverse_grid/_invert/_quantile_brackets` 的数值成功 | `test_known_heterogeneous_and_population_change`、`test_boundary_and_budget_failure`：半整数 Beta 递推、变换后的独立积分和求根得到的两端落在精度包络内，零权重用独立单 Beta 求根。 `test_phase_two_mix_shift`：种子 902618 的首重复，目标 20、来源 320、生成真值 .09。与相同记录的 Phase II Monte Carlo 核对均值和两端；这项比对不替代独立求根。 |
+| `standardize/_inverse_grid/_invert/_quantile_brackets` 的数值拒绝 | `test_boundary_and_budget_failure` 将可求解样例限于 256 个分箱，确认 `numerical_budget_exhausted` 且无估计。 `test_numerical_faults_do_not_expose_estimates` 拒绝超下限预算，并注入网格、单 Beta、后续 CDF 故障，分别核对 `beta_grid_failure`、`beta_quantile_failure`、`cdf_failure`。 `cdf_bracket_failure`、`invalid_numeric_result` 是静态检查的内部结果防线。 |
+| [v1.py](../integrations/device_history/v1.py) `estimate_v1/_check_payload`，以及 [v1_consumer.c](../integrations/device_history/v1_consumer.c) `main/state_name/read_count` | `test_installed_v1_values_and_states` 真正调用已安装档案，空结果无估计，18/2 和 19/1 分别为 INSUFFICIENT 与 VALID，核对均值与 readiness，池化 29/1。 `test_consumer_input_and_failure_boundary` 执行缺参数、负数、语法和超限请求且无 stdout，通过 mock 核对 C 错误无估计、畸形 JSON 对象为消费失败。C 内部错误在适配层用协议注入，未声称 C 求解器实际失败。版本、超时、损坏输出的其他分支源码检查。 |
+| `example.py` `device_batch/main` 与独立 CMake | 可执行示例脚本同时走三条路径，stdout 为结构化回执和估计。测试复用可重复的设备/周期/层生成器。CI 为 CMake 配置独立安装前缀并执行真实程序。 |
+
+### RC 实际运行与未验证边界
+
+在 Windows x64、UCRT64 GCC 16.2.0、CMake 4.4.3、Python 3.13.14、上述固定依赖的临时环境，按[参考构建命令](PREVIEW_DEVICE_HISTORY.zh-CN.md)用 MinGW Makefiles 构建 Release 并启用 examples/Python。实际退出结果为根 CTest 14/14、安装原消费者 1/1、独立参考 unittest 15/15，可执行示例三个状态为 ok。参考消费者以 `-Wall -Wextra -Wpedantic -Werror` 构建。实查安装只有公共头、静态 archive 和四个 CMake 文件。旧模型 readiness、provenance、十进制与浮点断言仍来自 v1 专项测试。新故障注入独立于冻结 fixtures。
+
+可选 CI 在 Ubuntu 执行上述参考断言，根 Portable C11 跑 Windows MSVC、Linux GCC/Clang、macOS AppleClang 和 Linux GNU ASan/UBSan，以及各自安装消费者。RC 分支 push 和两份参考/验证文档路径触发可选 workflow，CI 证据从实际运行读取得出。没有实测可选消费者的 MSVC/macOS 运行，没有验证部署数据或任意 SciPy/浮点配置。首次 RC 归因以提交与可复现结果为准，本地自审和绿色 CI 不代替独立接受。

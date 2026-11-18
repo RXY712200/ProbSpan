@@ -1,15 +1,19 @@
 name: Preview device history
 on:
   push:
-    branches: ['preview/**']
+    branches: ['preview/**', 'docs/rc-stabilization']
     paths:
       - 'integrations/device_history/**'
       - 'research/preview_history.py'
+      - 'docs/PREVIEW_DEVICE_HISTORY.zh-CN.md'
+      - 'docs/IMPLEMENTATION_VALIDATION.zh-CN.md'
       - '.github/workflows/device-history-preview.yml'
   pull_request:
     paths:
       - 'integrations/device_history/**'
       - 'research/preview_history.py'
+      - 'docs/PREVIEW_DEVICE_HISTORY.zh-CN.md'
+      - 'docs/IMPLEMENTATION_VALIDATION.zh-CN.md'
       - '.github/workflows/device-history-preview.yml'
 
 permissions:

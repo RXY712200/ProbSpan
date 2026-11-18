@@ -5,7 +5,9 @@ from fractions import Fraction as F
 from math import asin, cos, exp, lgamma, pi, sin, sqrt
 import os
 from pathlib import Path as FilePath
+import subprocess
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 from scipy.integrate import quad
@@ -179,6 +181,29 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(result.counts, (Counts(1, 2), Counts(0, 0)))
         self.assertEqual(result.target_audit.zero_weight, 3)
 
+    def test_missing_context_and_path_mismatch(self):
+        target_dec = declaration(Assumption.TARGET_SHARED)
+        no_scope = replace(self.target, scope=replace(self.target.scope, revision=""))
+        self.reject(review(Path.STRICT, no_scope, target_dec, cutoff_hour=100),
+                    "scope_unknown", Applicability.UNKNOWN)
+        for options, reason, status in (
+            (dict(cutoff_hour=None), "cutoff_unknown", Applicability.UNKNOWN),
+            (dict(cutoff_hour=100, source=self.source), "strict_disallows_source",
+             Applicability.INCOMPATIBLE),
+            (dict(cutoff_hour=100, weights=(.5, .5)), "weights_require_standardization",
+             Applicability.INCOMPATIBLE),
+        ):
+            with self.subTest(reason=reason):
+                self.reject(review(Path.STRICT, self.target, target_dec, **options),
+                            reason, status)
+        for row, reason, status in (
+            (replace(self.row, stratum="other"), "unknown_stratum", Applicability.INCOMPATIBLE),
+            (replace(self.row, conditions=""), "observation_context_unknown", Applicability.UNKNOWN),
+            (replace(self.row, failed=1), "invalid_outcome", Applicability.INCOMPATIBLE),
+        ):
+            with self.subTest(reason=reason):
+                self.reject(self.strict(row), reason, status)
+
 
 class NumericalTests(unittest.TestCase):
     def check_limits(self, counts, weights, expected):
@@ -235,6 +260,25 @@ class NumericalTests(unittest.TestCase):
         self.assertIs(result.review, r)
         self.assertIsNone(result.estimate)
 
+    def test_numerical_faults_do_not_expose_estimates(self):
+        batch = device_batch("target", [(0, 1), (1, 1)])
+        dec = declaration(Assumption.TARGET_STRATIFIED)
+        both = review(Path.STANDARD, batch, dec, cutoff_hour=100, weights=(.5, .5))
+        one = review(Path.STANDARD, batch, dec, cutoff_hour=100, weights=(1, 0))
+        self.assertEqual(standardize(both, max_bins=255).status, "invalid_numerical_budget")
+        module = "integrations.device_history.standardization"
+        with patch(f"{module}.betaincinv", side_effect=lambda *args: np.zeros_like(args[-1])):
+            for receipt, reason in ((both, "beta_grid_failure"), (one, "beta_quantile_failure")):
+                failed = standardize(receipt)
+                self.assertEqual(failed.status, reason)
+                self.assertIsNone(failed.estimate)
+        # A valid inverse-grid round trip must not mask a failed CDF at
+        # the next inversion step. Allow the first vector evaluation only.
+        with patch(f"{module}.betainc", side_effect=[np.arange(257) / 256, np.array([np.nan])]):
+            failed = standardize(both)
+        self.assertEqual(failed.status, "cdf_failure")
+        self.assertIsNone(failed.estimate)
+
     def test_phase_two_mix_shift(self):
         case = next(c for c in SCENARIOS if c.name == "mix_shift")
         rows, truth = generate(case, np.random.default_rng([902618, SCENARIOS.index(case), 0]))
@@ -264,6 +308,22 @@ class NumericalTests(unittest.TestCase):
 
 
 class InstalledV1Tests(unittest.TestCase):
+    def test_consumer_input_and_failure_boundary(self):
+        executable = FilePath(os.environ["PROBSPAN_DEVICE_CONSUMER"])
+        for args in ([], ["-1", "0"], ["1x", "0"], ["9223372036854775808", "0"]):
+            completed = subprocess.run([str(executable), *args], capture_output=True)
+            self.assertNotEqual(completed.returncode, 0)
+            self.assertEqual(completed.stdout, b"")
+        r = review(Path.STRICT, device_batch("target", [(1, 2), (0, 0)]),
+                   declaration(Assumption.TARGET_SHARED), cutoff_hour=100)
+        for stdout, reason in (('{"c_status":7,"estimate":{"mean":1}}', "c_failure"),
+                               ('{"c_status":0,"size":999}', "consumer_failure")):
+            with patch("integrations.device_history.v1.subprocess.run") as process:
+                process.return_value.stdout = stdout
+                value = estimate_v1(r, executable)
+            self.assertEqual(value.status, reason)
+            self.assertEqual(value.history, {"c_status": 7} if reason == "c_failure" else None)
+
     def test_installed_v1_values_and_states(self):
         executable = FilePath(os.environ["PROBSPAN_DEVICE_CONSUMER"])
         for events, total, expected_state in ((0, 0, "NO_HISTORY"), (18, 20, "INSUFFICIENT"),

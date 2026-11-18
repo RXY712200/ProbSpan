@@ -1,6 +1,6 @@
 # Preview 调用方参考：100 小时设备历史证据
 
-这是隔离的参考实现，供验证 [Phase I 证据规则](HISTORICAL_EVIDENCE_RESEARCH.zh-CN.md) 和 [Phase II 模型比较](PREVIEW_PROBABILITY_MODELS.zh-CN.md) 的窄范围用例。基线为 `5778633615f90c8ee1b134e5f61e46301cdccc39`。接口随 Preview 审查演进。稳定 C11 库的安装、行为、模型、ABI 与数值语义由 [现行契约](API.md) 定义。
+这是隔离的参考实现，供验证 [Phase I 证据规则](HISTORICAL_EVIDENCE_RESEARCH.zh-CN.md) 和 [Phase II 模型比较](PREVIEW_PROBABILITY_MODELS.zh-CN.md) 的窄范围用例。原始实现提交为 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，经 PR #14 合入 `27d18c0611a73b96596552ad967b94222b24a5ad`。原实现起点是 `5778633615f90c8ee1b134e5f61e46301cdccc39`。接口随 Preview 审查演进。稳定 C11 库的安装、行为、模型、ABI 与数值语义由 [现行契约](API.md) 定义。函数、实际断言、故障注入与 CI 分工见[验证地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)。
 
 ## 输入和纳入规则
 
@@ -21,8 +21,10 @@
 |---|---|---|
 | supported | `eligible_under_supplied_assumptions` | 可用计数，仍须处理 v1 gate 或数值失败 |
 | conditional | `declaration_conditional`、`incomplete_outcome`、`unmodelled_dependence`、`missing_stratum_support` | 显式弃权 |
-| incompatible | `endpoint_mismatch`、`scope_regime_mismatch`、`observation_regime_mismatch`、`observation_conflict`、`source_target_overlap`、`assumption_mismatch`、`invalid_weights` | 显式拒绝 |
-| unknown | `scope_unknown`、`observation_identity_unknown`、`availability_time_unknown`、`weights_unknown`、`declaration_unknown` | 缺证据，显式弃权 |
+| incompatible | `declaration_incompatible`、`assumption_mismatch`、`strict_disallows_source`、`scope_regime_mismatch`、`weights_require_standardization`、`invalid_weights`、`unknown_stratum`、`endpoint_mismatch`、`observation_regime_mismatch`、`invalid_outcome`、`invalid_observation_time`、`source_target_overlap`、`observation_conflict`、`count_range` | 显式拒绝 |
+| unknown | `cutoff_unknown`、`scope_unknown`、`declaration_evidence_unknown`、`declaration_unknown`、`source_required`、`availability_time_unknown`、`observation_identity_unknown`、`observation_context_unknown`、`weights_unknown` | 缺证据，显式弃权 |
+
+`declaration_evidence_unknown` 表示声明枚举、引用或证据类别缺失/无效。`declaration_unknown` 专指格式有效但调用方明确声明 `Applicability.UNKNOWN` 的情况。检查顺序为截止、范围/声明/路径、权重、逐记录可用时刻、字段校验、身份/依赖、支持或计数范围。输入使用定义的 Python 类型；它不是任意 JSON 的校验器。
 
 ## 三条路径和结果含义
 
@@ -34,7 +36,7 @@
 
 v1 返回自己的产品、ABI、历史模型和 gate 版本。已审查的空目标历史可以真正传 (0,0) 而返回 `NO_HISTORY`，其中估计为 JSON null。非空且 gate 不达给 `INSUFFICIENT` 和数值，达标给 `VALID`。证据不可用时不会调用 C。进程失败、无兼容协议返回 `consumer_failure`；稳定 C API 错误为 `c_failure` 及其数字状态。消费者文件必须是调用方信任、由指定安装构建的本地执行文件。
 
-标准化没有 v1 gate，也没有给出未来单次或批量结果的预测区间。它返回的中央 95% 区间是参数 q 的后验分位数，不能当作主观范围。v1 历史分析从计数重建单个 Beta，严禁将此结果塞入 `probspan_analyze_historical()`。如果未来有正 EV 尾概率需求，须从对应 q 后验另行计算。当前实现不提供 EV 接口。
+标准化没有 v1 gate，也没有给出未来单次或批量结果的预测区间。它返回的中央 95% 区间是参数 q 的后验分位数，不能当作主观范围。v1 历史分析从计数重建单个 Beta，严禁将此结果塞入 `probspan_analyze_historical()`。如果未来有正 EV 尾概率需求，须从对应 q 后验另行计算。当前实现不提供 EV 接口。两路径调用错误或回执不可用时返回 `unavailable_review`。标准化的 `estimate` 仅在 `ok` 时存在；`invalid_numerical_budget`、`numerical_range`、`numerical_budget_exhausted`、`beta_grid_failure`、`beta_quantile_failure`、`cdf_failure`、`cdf_bracket_failure`、`invalid_numeric_result` 保留回执并隐藏估计。
 
 ## 标准化数学与失败
 

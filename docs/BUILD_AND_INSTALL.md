@@ -67,6 +67,13 @@ MinGW lacks these runtime libraries; the Linux sanitizer job supplies coverage.
 
 ## Production integration notes
 
+The [Preview device-history reference](PREVIEW_DEVICE_HISTORY.zh-CN.md) is
+available in a source checkout under `integrations/device_history/`.
+Build its consumer separately against a clean installed ProbSpan 1.0.0
+prefix if exercising the strict or pooled path. NumPy and SciPy support
+the caller-side standardization and reference tests. The root CMake build
+installs only the C static library, public header and package configuration.
+
 1. Pin a released Git commit or version tag and run the installed consumer test before integrating with a different compiler, CRT, architecture, or target ABI.
 2. For downstream CMake projects, prefer an installed prefix with `find_package(ProbSpan 1.0 CONFIG REQUIRED)` and `ProbSpan::probspan`; do not include headers from `src/` or treat private numerical helpers as public.
 3. Preserve binary64 and safe floating-point compiler options. The library is reentrant for independent calls, but a caller must not concurrently mutate the same output struct.

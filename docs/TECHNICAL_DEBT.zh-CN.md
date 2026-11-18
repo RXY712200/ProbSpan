@@ -4,6 +4,8 @@
 
 基线为正式 v1.0.0 源码 `fdfaddfb58486004ee1cc02c0f4a5c640cd17c7c`，审查日期 2026-11-16。本文记录 **48 个固定候选 A01–E48，另加 4 个修复历史 R01–R04，共 52 条**。编号含义固定，不因状态变化删除或复用。条目不是自动批准的 backlog；没有实现的算法和模块均为提案。优先级是本文供审查的建议，未经所有者批准，不构成排期；除已有 v1 能力/完成修复外，目标版本一律 TBD。
 
+在原稳定源码之外，RC 复核以 PR #14 合并提交 `27d18c0611a73b96596552ad967b94222b24a5ad` 审查已合入的调用方参考。它不属于 v1.0.0 安装物。下文原稳定基线、原问题、历史证据与目标版本决定保留。
+
 先读 [源码导读](IMPLEMENTATION_WALKTHROUGH.zh-CN.md)，接口见 [API 全表](IMPLEMENTATION_API_REFERENCE.zh-CN.md)，数学与调用见 [内部实现](IMPLEMENTATION_INTERNALS.zh-CN.md)，断言/实际执行见 [验证地图](IMPLEMENTATION_VALIDATION.zh-CN.md)。权威公共声明与现行契约优先于说明： [公共头](../include/probspan/probspan.h)、[API.md](API.md)、[行为](BEHAVIOR_SPEC.md)、[数值契约](NUMERICAL_CONTRACT.md)、[兼容性](COMPATIBILITY.md)。发现矛盾须定位报告，不能以本账本提案改写 v1。
 
 ## 状态词典与统计口径
@@ -22,7 +24,7 @@
 
 A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支持的限定任务，不表示真实世界概率已认证。GitHub open/closed 与上述研究状态不同。R 条目记录真实已完成修复，不把第三方示例算成本项目实现。
 
-统计：48 个候选中 RESOLVED 4、PARTIAL 10、OPEN 4、RESEARCH 18、PROPOSED 6、DEFERRED 2、OUT_OF_SCOPE 1、FUNDAMENTAL_LIMIT 3；加上 4 条 RESOLVED 修复历史后，共 52 条、RESOLVED 总数 8。状态是本次基于证据的归类，不代替所有者批准产品范围或发布排期。
+统计：48 个候选中 RESOLVED 4、PARTIAL 16、OPEN 1、RESEARCH 15、PROPOSED 6、DEFERRED 2、OUT_OF_SCOPE 1、FUNDAMENTAL_LIMIT 3；加上 4 条 RESOLVED 修复历史后，共 52 条、RESOLVED 总数 8。状态是本次基于证据的归类，不代替所有者批准产品范围或发布排期。
 
 ## 三类历史不能混用
 
@@ -34,9 +36,9 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 
 **Phase I 研究补充（2026-11-18）**：见[历史证据基础与架构研究](HISTORICAL_EVIDENCE_RESEARCH.zh-CN.md)。全文对 A08、B13、B14、B19–B21、D37、D38 给出独立的证据类型、适用性/依赖闸口及外部快照建议，逐项列出全部 52 个 ID 的前提与返工风险。候选结果形状和 Phase II 验证设计尚待审查；没有改变账本状态、优先级、版本或修复历史。
 
-**Preview 第二研究单元补充**：见[概率模型比较与数学验证](PREVIEW_PROBABILITY_MODELS.zh-CN.md)。B13/B14/D37 的准入边界先于借用强度。B18/B21 的总体权变化对照支持有条件的外部分层。B19/B20/D40 的簇、重叠和漂移对照显示点分数可掩盖错误确定性。B15–B17/C23 的 EB、层级与稳健借用仍属外部研究。D38/D39/E46/E47 的证据版本和区间语义须随已证明的分析需求设计，E45 不构成前置要求。既有条目及状态历史保留。
+**Preview 第二研究单元补充**：见[概率模型比较与数学验证](PREVIEW_PROBABILITY_MODELS.zh-CN.md)。B13/B14/D37 的准入边界先于借用强度。B18/B21 的总体权变化对照支持有条件的外部分层。B19/B20/D40 的簇、重叠和漂移对照显示点分数可掩盖错误确定性。B15–B17/C23 的 EB、层级与稳健借用仍属外部研究。D38/D39/E46/E47 的证据版本和区间语义须随已证明的分析需求设计，E45 不构成前置要求。该段保留第二单元当时的判断。
 
-**Preview 第三工作单元实现证据**：见[设备历史证据与两层标准化参考](PREVIEW_DEVICE_HISTORY.zh-CN.md)。B13/B14/B19/B20/D37 获得固定端点下的调用方检查和显式弃权；B18/B21/D39 获得固定目标权重、两独立层的确定性后验估计。D38/E47 只增加可复验收据所需字段，真实快照及保存仍归调用方。E46 只需分离 v1 结果与标准化参数后验，无需通用路由。B15–B17/C23/E45 保持研究/延期，52 条 ID、历史、优先级和账本状态保留。合成测试未解决真实适用性或未观测依赖。
+**Preview 第三工作单元实现证据**：见[设备历史证据与两层标准化参考](PREVIEW_DEVICE_HISTORY.zh-CN.md)。B13/B14/B19/B20/D37 获得固定端点下的调用方检查和显式弃权；B18/B21/D39 获得固定目标权重、两独立层的确定性后验估计。D38/E47 只增加可复验收据所需字段，真实快照及保存仍归调用方。E46 只需分离 v1 结果与标准化参数后验，无需通用路由。B15–B17/C23/E45 保持研究/延期，该段保留第三单元当时的结论。RC 状态更新见下表与条目，52 条 ID、优先级与既有修复记录保留。合成测试未解决真实适用性或未观测依赖。
 
 ## GitHub 调查索引（2026-11-16 实际读取）
 
@@ -69,15 +71,15 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 | [B10](#b10) | 不同主体的可比历史 | RESEARCH |
 | [B11](#b11) | 跨领域或上下文迁移 | RESEARCH |
 | [B12](#b12) | 完全不相关的历史数据 | FUNDAMENTAL_LIMIT |
-| [B13](#b13) | 事件定义不兼容 | OPEN |
-| [B14](#b14) | 历史适用性未知 | OPEN |
+| [B13](#b13) | 事件定义不兼容 | PARTIAL |
+| [B14](#b14) | 历史适用性未知 | PARTIAL |
 | [B15](#b15) | 稀疏主体的经验贝叶斯 | RESEARCH |
 | [B16](#b16) | 分层贝叶斯部分汇聚 | RESEARCH |
 | [B17](#b17) | 历史与目标冲突的稳健借用 | RESEARCH |
-| [B18](#b18) | 群体汇总与辛普森悖论 | RESEARCH |
-| [B19](#b19) | 相关观察与重复用户 | RESEARCH |
-| [B20](#b20) | 重复证据与重叠查询 | OPEN |
-| [B21](#b21) | 抽样偏差与目标总体变化 | RESEARCH |
+| [B18](#b18) | 群体汇总与辛普森悖论 | PARTIAL |
+| [B19](#b19) | 相关观察与重复用户 | PARTIAL |
+| [B20](#b20) | 重复证据与重叠查询 | PARTIAL |
+| [B21](#b21) | 抽样偏差与目标总体变化 | PARTIAL |
 | [C22](#c22) | 无历史的结构化专家判断 | RESEARCH |
 | [C23](#c23) | 参考群体先验与新主体更新 | RESEARCH |
 | [C24](#c24) | 收到新证据后的贝叶斯更新 | RESEARCH |
@@ -311,19 +313,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：同一设备升级软件后，想借用升级前的成功率。
 4. **发生原因**：主体 ID 相同不能保证结果机制、操作条件和总体不变。
 5. **当前 v1.0.0 行为**：仅处理输入计数，不知道升级日期或条件；不会自动打折旧历史。
-6. **现有支持程度**：无条件匹配能力；调用者应先分层或排除不适用历史。
+6. **现有支持程度**：实际参考拒绝已记录的工艺不匹配，同一物理设备时也如此。版本字段无法发现未标记的风险变化。
 7. **候选算法/处置**：明确新旧 estimand、条件分层、漂移检查与敏感性分析。
-8. **可能接口/模块（提案）**：外部 context/matching 审核模块为提案。
+8. **可能接口/模块（提案）**：窄范围实现为 [evidence.py](../integrations/device_history/evidence.py) 的 `_validate / _check_declaration`。后续推断仍属原提案范围。
 9. **数学假设与风险**：概念漂移时只重加权协变量不足以恢复条件结果机制。
 10. **源码与证据**：[Issue #10](https://github.com/RXY712200/ProbSpan/issues/10)、[River](https://riverml.xyz/latest/api/drift/ADWIN/)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：未来按升级时间留出目标标签，测试无重叠/未知条件的拒绝。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)列出 `test_definitions_regime_censoring_and_identity、test_declaration_and_zero_target` 的现行行为。
 12. **依赖关系**：B14、D40；通过后才 B17 借用。
-13. **状态及理由**：RESEARCH；算法方向可信，但适用假设与目标验证尚未完成。
+13. **状态及理由**：RESEARCH。保持 RESEARCH，用于研究跨条件关系，而非否认窄范围拒绝已经存在。
 14. **建议优先级（未批准）**：P2（用例明确后研究）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：输出可辩护适用范围和不能迁移的情况，不自动沿用同主体标签。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需定义变化字段和允许的机制稳定假设。
+17. **解决证据/剩余限制**：窄范围证据首次见合并的 Preview 源码 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006` 和 [原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)。实际参考拒绝已记录的工艺不匹配，同一物理设备时也如此。版本字段无法发现未标记的风险变化。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需定义变化字段和允许的机制稳定假设。 RC 复核保留原 RESEARCH 状态。上述已合入参考不代表新增产品版本决定。
 
 <a id="b10"></a>
 
@@ -336,19 +338,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：新门店样本很少，但同地区同流程其他门店有大量记录。
 4. **发生原因**：主体不同不必然不相关，但交换性必须论证，不能任意求总数。
 5. **当前 v1.0.0 行为**：可计算调用者提供的聚合计数，不判断聚合是否正当。
-6. **现有支持程度**：计算层存在；跨主体可比性与借用规则未实现。
+6. **现有支持程度**：独立不同设备、同端点且有匹配的共享参数声明，可池化。共同版本字段不能认证一般群体可比性。
 7. **候选算法/处置**：严格可比 cohort、分层标准化、经验贝叶斯或部分汇聚。
-8. **可能接口/模块（提案）**：外部 cohort 声明与新借用模型均为提案，两个阶段分开。
+8. **可能接口/模块（提案）**：窄范围实现为 [evidence.py](../integrations/device_history/evidence.py) 的 `_check_declaration / _select / review`。后续推断仍属原提案范围。
 9. **数学假设与风险**：门店规模、客户组成和选择偏差会破坏完全汇聚假设。
 10. **源码与证据**：[Issue #9](https://github.com/RXY712200/ProbSpan/issues/9)、[Stan](https://mc-stan.org/learn-stan/case-studies/pool-binary-trials.html)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：未来比较 complete/no/partial pooling 的目标留出表现和覆盖。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)列出 `test_strict_and_pool_counts、test_declaration_and_zero_target` 的现行行为。
 12. **依赖关系**：B14→B15/B16，B18/B21。
-13. **状态及理由**：RESEARCH；算法方向可信，但适用假设与目标验证尚未完成。
+13. **状态及理由**：RESEARCH。保持 RESEARCH，用于研究如何取得可比证据，而非重新设计现有受限池化。
 14. **建议优先级（未批准）**：P2（用例明确后研究）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：先有可审计匹配理由，再量化借用偏差与方差权衡。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者先决定可比 cohort 的业务定义，不直接选权重常数。
+17. **解决证据/剩余限制**：窄范围证据首次见合并的 Preview 源码 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006` 和 [原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)。独立不同设备、同端点且有匹配的共享参数声明，可池化。共同版本字段不能认证一般群体可比性。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者先决定可比 cohort 的业务定义，不直接选权重常数。 RC 复核保留原 RESEARCH 状态。上述已合入参考不代表新增产品版本决定。
 
 <a id="b11"></a>
 
@@ -411,19 +413,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：两张表都叫成功，一张定义为下单，一张定义为 30 天未退款。
 4. **发生原因**：标签名称相同但观察窗、分母、完成条件不同。
 5. **当前 v1.0.0 行为**：API 只有 e/c，无法存事件定义或检查兼容性。
-6. **现有支持程度**：数值计数可接收，语义校验须外部完成；是集成限制而非 Beta 缺陷。
+6. **现有支持程度**：稳定 C 行为见第 5 项。已合入的独立 Preview 调用方参考：同一固定 100 小时端点及设备周期受到校验，错事件定义、观察单位、时距拒绝。
 7. **候选算法/处置**：定义事件 schema、观察单位/时距/版本，显式映射并保留不可映射状态。
-8. **可能接口/模块（提案）**：外部 event-definition manifest 与验证适配器未实现。
+8. **可能接口/模块（提案）**：[evidence.py](../integrations/device_history/evidence.py) 中的 `_validate / review` 为窄范围入口或相关类型。未纳入稳定 C 头或根安装导出。
 9. **数学假设与风险**：映射可能损失信息；未成熟观察不能当失败；定义版本不能静默覆盖。
-10. **源码与证据**：[Issue #8](https://github.com/RXY712200/ProbSpan/issues/8)、[Issue #10](https://github.com/RXY712200/ProbSpan/issues/10)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：未来测试不同时间窗、缺失结果、定义升级及混合标签拒绝。
+10. **源码与证据**：[Issue #8](https://github.com/RXY712200/ProbSpan/issues/8)、[Issue #10](https://github.com/RXY712200/ProbSpan/issues/10)。外部参考仅作研究，不是依赖或实现证据。 当前本项目源码：[evidence.py](../integrations/device_history/evidence.py)，`_validate / review`。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)中 `test_definitions_regime_censoring_and_identity` 验证有限用例。现有 C 断言仍以 v1 冻结参考为准。
 12. **依赖关系**：E45、D38，先于所有汇聚。
-13. **状态及理由**：OPEN；存在明确集成/表达限制，当前核心不承诺自动解决。
+13. **状态及理由**：PARTIAL。仅完成独立参考所声明的窄范围能力。任意事件映射、语义等价核实、现场标签认证尚无实现。
 14. **建议优先级（未批准）**：P1（先澄清语义/兼容边界）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：计数可追溯到明确事件版本，冲突映射被拒绝或显式转换。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需批准最小语义 schema 及其放置在核心还是适配器。
+17. **解决证据/剩余限制**：首次可用范围为仓库源码中的 Preview 第三单元，原实现 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，由 PR #14 合入。[原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)与[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)分列实际验证。任意事件映射、语义等价核实、现场标签认证尚无实现。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需批准最小语义 schema 及其放置在核心还是适配器。 RC 复核（基线 `27d18c0`）：原账本状态 OPEN，现为 PARTIAL。未确认后续发布版本。
 
 <a id="b14"></a>
 
@@ -436,19 +438,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：调用者只拿到总成功/失败数，不知道来源人群与采样条件。
 4. **发生原因**：数值充分并不提供外部可比性证据，未知不能当作已验证匹配。
 5. **当前 v1.0.0 行为**：gate 可能 VALID；无历史适用性枚举或准入器。
-6. **现有支持程度**：已有统计 gate，缺少集成层 admissibility/unknown 表达。
+6. **现有支持程度**：稳定 C 行为见第 5 项。已合入的独立 Preview 调用方参考：在计数前给出四态适用性及明确原因。声明来源可回查，同元数据不证明可交换。
 7. **候选算法/处置**：先审目标、来源、条件、覆盖与支持集，再给 accepted/rejected/unknown。
-8. **可能接口/模块（提案）**：外部匹配报告类型是提案，不修改现有 history_state 含义。
+8. **可能接口/模块（提案）**：[evidence.py](../integrations/device_history/evidence.py) 中的 `_check_declaration / review` 为窄范围入口或相关类型。未纳入稳定 C 头或根安装导出。
 9. **数学假设与风险**：自动相似度阈值可能误接受；不可识别时必须保留 unknown。
-10. **源码与证据**：[Issue #10](https://github.com/RXY712200/ProbSpan/issues/10)、[historical.c](../src/historical.c)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：未来测试 n 极大但来源缺失仍 unknown；区分匹配失败与统计不足。
+10. **源码与证据**：[Issue #10](https://github.com/RXY712200/ProbSpan/issues/10)、[historical.c](../src/historical.c)。外部参考仅作研究，不是依赖或实现证据。 当前本项目源码：[evidence.py](../integrations/device_history/evidence.py)，`_check_declaration / review`。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)中 `test_declaration_and_zero_target、test_missing_context_and_path_mismatch` 验证有限用例。现有 C 断言仍以 v1 冻结参考为准。
 12. **依赖关系**：B13、D37、D38；是 #9 的前置。
-13. **状态及理由**：OPEN；存在明确集成/表达限制，当前核心不承诺自动解决。
+13. **状态及理由**：PARTIAL。仅完成独立参考所声明的窄范围能力。自动判断域外可比性和隐藏机制未知，仍依赖调用方论证。
 14. **建议优先级（未批准）**：P1（先澄清语义/兼容边界）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：可用性与适用性成为两个明确维度，有拒绝理由与审计证据。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者先批准准入定义，再讨论借用量和数据库适配。
+17. **解决证据/剩余限制**：首次可用范围为仓库源码中的 Preview 第三单元，原实现 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，由 PR #14 合入。[原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)与[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)分列实际验证。自动判断域外可比性和隐藏机制未知，仍依赖调用方论证。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者先批准准入定义，再讨论借用量和数据库适配。 RC 复核（基线 `27d18c0`）：原账本状态 OPEN，现为 PARTIAL。未确认后续发布版本。
 
 <a id="b15"></a>
 
@@ -536,19 +538,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：A 方案在各难度层内都优于 B，但总体成功率因人群构成不同而反转。
 4. **发生原因**：混杂的组比例与目标总体不同，聚合率改变比较对象。
 5. **当前 v1.0.0 行为**：只看聚合 e/c，不识别分层或混杂。
-6. **现有支持程度**：可逐层调用历史估计，尚无标准化或调整比较工具。
+6. **现有支持程度**：稳定 C 行为见第 5 项。已合入的独立 Preview 调用方参考：按两个独立层的固定目标权计算加权参数后验，权重变化不会退回原样本构成。
 7. **候选算法/处置**：按目标总体分层标准化，必要时建条件模型，明确目标 estimand。
-8. **可能接口/模块（提案）**：外部分层聚合/标准化报告为提案。
+8. **可能接口/模块（提案）**：[standardization.py](../integrations/device_history/standardization.py) 中的 `standardize / _moments / _quantile_brackets` 为窄范围入口或相关类型。未纳入稳定 C 头或根安装导出。
 9. **数学假设与风险**：层间稀疏、未测混杂、权重选择和无支持层会使调整不可靠。
-10. **源码与证据**：[Issue #9](https://github.com/RXY712200/ProbSpan/issues/9)、[Issue #10](https://github.com/RXY712200/ProbSpan/issues/10)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：未来构造已知反转案例、权重变化、空层及目标总体切换测试。
+10. **源码与证据**：[Issue #9](https://github.com/RXY712200/ProbSpan/issues/9)、[Issue #10](https://github.com/RXY712200/ProbSpan/issues/10)。外部参考仅作研究，不是依赖或实现证据。 当前本项目源码：[standardization.py](../integrations/device_history/standardization.py)，`standardize / _moments / _quantile_brackets`。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)中 `test_known_heterogeneous_and_population_change、test_phase_two_mix_shift` 验证有限用例。现有 C 断言仍以 v1 冻结参考为准。
 12. **依赖关系**：B13、B21、C25。
-13. **状态及理由**：RESEARCH；算法方向可信，但适用假设与目标验证尚未完成。
+13. **状态及理由**：PARTIAL。仅完成独立参考所声明的窄范围能力。多层、未知权、采样机制与一般 Simpson 诊断仍未覆盖。
 14. **建议优先级（未批准）**：P2（用例明确后研究）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：汇总明确目标权重并解释总体/分层差异，不将简单求和认作调整。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需决定是否支持多层报告及必须提供哪些总体字段。
+17. **解决证据/剩余限制**：首次可用范围为仓库源码中的 Preview 第三单元，原实现 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，由 PR #14 合入。[原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)与[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)分列实际验证。多层、未知权、采样机制与一般 Simpson 诊断仍未覆盖。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需决定是否支持多层报告及必须提供哪些总体字段。 RC 复核（基线 `27d18c0`）：原账本状态 RESEARCH，现为 PARTIAL。未确认后续发布版本。
 
 <a id="b19"></a>
 
@@ -561,19 +563,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：一百名用户每人点击一百次，被当作一万独立样本。
 4. **发生原因**：同用户相关性使独立 Bernoulli 信息量被夸大。
 5. **当前 v1.0.0 行为**：接受计数，不接收 cluster ID 或估计相关结构。
-6. **现有支持程度**：没有相关性修正；不能通过 gate 证明独立性。
+6. **现有支持程度**：稳定 C 行为见第 5 项。已合入的独立 Preview 调用方参考：同物理设备的不同周期或共同簇观察不被误折叠。以不支持依赖为由整次请求弃权。
 7. **候选算法/处置**：按独立单位计数、群集模型、分层随机效应或专门不确定性估计。
-8. **可能接口/模块（提案）**：外部 cluster-aware 汇总或独立模型为提案。
+8. **可能接口/模块（提案）**：[evidence.py](../integrations/device_history/evidence.py) 中的 `_select / review` 为窄范围入口或相关类型。未纳入稳定 C 头或根安装导出。
 9. **数学假设与风险**：有效样本量不是随意缩放常数，相关结构和观察选择必须明确。
-10. **源码与证据**：[Issue #9](https://github.com/RXY712200/ProbSpan/issues/9)、[PyMC](https://www.pymc.io/projects/examples/en/latest/case_studies/hierarchical_partial_pooling.html)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：未来按 cluster 留出、模拟相关强度与覆盖；避免同用户泄漏。
+10. **源码与证据**：[Issue #9](https://github.com/RXY712200/ProbSpan/issues/9)、[PyMC](https://www.pymc.io/projects/examples/en/latest/case_studies/hierarchical_partial_pooling.html)。外部参考仅作研究，不是依赖或实现证据。 当前本项目源码：[evidence.py](../integrations/device_history/evidence.py)，`_select / review`。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)中 `test_unmodelled_dependence_preserves_records` 验证有限用例。现有 C 断言仍以 v1 冻结参考为准。
 12. **依赖关系**：B20、B16、E45。
-13. **状态及理由**：RESEARCH；算法方向可信，但适用假设与目标验证尚未完成。
+13. **状态及理由**：PARTIAL。仅完成独立参考所声明的窄范围能力。未披露依赖和相关结局模型仍无支持。
 14. **建议优先级（未批准）**：P2（用例明确后研究）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：观察单位/相关性假设可审计，在相关数据上不夸大区间精度。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需确定单位是用户、会话还是事件，才能选择模型。
+17. **解决证据/剩余限制**：首次可用范围为仓库源码中的 Preview 第三单元，原实现 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，由 PR #14 合入。[原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)与[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)分列实际验证。未披露依赖和相关结局模型仍无支持。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需确定单位是用户、会话还是事件，才能选择模型。 RC 复核（基线 `27d18c0`）：原账本状态 RESEARCH，现为 PARTIAL。未确认后续发布版本。
 
 <a id="b20"></a>
 
@@ -586,19 +588,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：应用把最近 30 天与最近 7 天计数相加，重复计算同一事件。
 4. **发生原因**：汇总后失去事件键和集合重叠信息，计数无法恢复去重关系。
 5. **当前 v1.0.0 行为**：仅存 e/c，不去重或检测查询重叠。
-6. **现有支持程度**：核心计算正确但集成可重复计证；provenance 暴露标记不解决去重。
+6. **现有支持程度**：稳定 C 行为见第 5 项。已合入的独立 Preview 调用方参考：单一角色内规范键相同、仅查询不同的记录去重。冲突和跨源/目标重叠拒绝。
 7. **候选算法/处置**：稳定观察 ID、集合级去重、查询来源与不相交证明。
-8. **可能接口/模块（提案）**：外部 evidence-set/查询清单适配器为提案。
+8. **可能接口/模块（提案）**：[evidence.py](../integrations/device_history/evidence.py) 中的 `_select / review` 为窄范围入口或相关类型。未纳入稳定 C 头或根安装导出。
 9. **数学假设与风险**：隐私匿名化、键重用与迟到更新可能破坏去重；不能仅减一个估算 overlap。
-10. **源码与证据**：[Issue #8](https://github.com/RXY712200/ProbSpan/issues/8)、[Issue #9](https://github.com/RXY712200/ProbSpan/issues/9)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：未来测试窗口包含/交叠、重复导入、结果修订及幂等聚合。
+10. **源码与证据**：[Issue #8](https://github.com/RXY712200/ProbSpan/issues/8)、[Issue #9](https://github.com/RXY712200/ProbSpan/issues/9)。外部参考仅作研究，不是依赖或实现证据。 当前本项目源码：[evidence.py](../integrations/device_history/evidence.py)，`_select / review`。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)中 `test_duplicates_and_conflicts、test_cutoff_excludes_later_outcome_even_on_same_identity` 验证有限用例。现有 C 断言仍以 v1 冻结参考为准。
 12. **依赖关系**：E45、D38、B13。
-13. **状态及理由**：OPEN；存在明确集成/表达限制，当前核心不承诺自动解决。
+13. **状态及理由**：PARTIAL。仅完成独立参考所声明的窄范围能力。无跨命名空间的身份推断、修订对账、数据库快照验证。
 14. **建议优先级（未批准）**：P1（先澄清语义/兼容边界）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：计数可追溯、重复输入幂等、无法证明不重叠时拒绝自动合并。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需批准事件身份与修订规则，不给核心增加数据库连接。
+17. **解决证据/剩余限制**：首次可用范围为仓库源码中的 Preview 第三单元，原实现 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，由 PR #14 合入。[原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)与[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)分列实际验证。无跨命名空间的身份推断、修订对账、数据库快照验证。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需批准事件身份与修订规则，不给核心增加数据库连接。 RC 复核（基线 `27d18c0`）：原账本状态 OPEN，现为 PARTIAL。未确认后续发布版本。
 
 <a id="b21"></a>
 
@@ -611,19 +613,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：只收集愿意反馈的成功用户，却预测所有用户的成功率。
 4. **发生原因**：样本纳入机制与结果相关，数量大不消除选择偏差。
 5. **当前 v1.0.0 行为**：不接收抽样权重、纳入概率或目标总体结构。
-6. **现有支持程度**：能估样本内后验，不能自动推广到总体。
+6. **现有支持程度**：稳定 C 行为见第 5 项。已合入的独立 Preview 调用方参考：已知固定目标权重且正权层有支持时，可用分层后验表达不同总体混合。未知权／缺支持弃权。
 7. **候选算法/处置**：抽样设计审查、后分层/加权、缺失机制分析与敏感性界限。
-8. **可能接口/模块（提案）**：外部 sampling manifest/目标总体适配器仅为提案。
+8. **可能接口/模块（提案）**：[standardization.py](../integrations/device_history/standardization.py) 中的 `standardize / evidence._weight_pair / evidence._select` 为窄范围入口或相关类型。未纳入稳定 C 头或根安装导出。
 9. **数学假设与风险**：权重需要可识别纳入机制和 overlap，未观察混杂不可凭数据量消除。
-10. **源码与证据**：[Issue #10](https://github.com/RXY712200/ProbSpan/issues/10)、[SKADA](https://github.com/scikit-adaptation/skada)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：未来以已知选择机制模拟、目标留出与极端权重稳定性验证。
+10. **源码与证据**：[Issue #10](https://github.com/RXY712200/ProbSpan/issues/10)、[SKADA](https://github.com/scikit-adaptation/skada)。外部参考仅作研究，不是依赖或实现证据。 当前本项目源码：[standardization.py](../integrations/device_history/standardization.py)，`standardize / evidence._weight_pair / evidence._select`。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)中 `test_target_weights_and_support、test_phase_two_mix_shift` 验证有限用例。现有 C 断言仍以 v1 冻结参考为准。
 12. **依赖关系**：B14、B18、B11。
-13. **状态及理由**：RESEARCH；算法方向可信，但适用假设与目标验证尚未完成。
+13. **状态及理由**：PARTIAL。仅完成独立参考所声明的窄范围能力。选择概率与缺失机制不验证，不估计权重或校正未知抽样偏差。
 14. **建议优先级（未批准）**：P2（用例明确后研究）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：明确目标总体和采样假设，报告无法识别的偏差而非伪精确。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需提供实际抽样过程与可获得的总体信息。
+17. **解决证据/剩余限制**：首次可用范围为仓库源码中的 Preview 第三单元，原实现 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，由 PR #14 合入。[原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)与[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)分列实际验证。选择概率与缺失机制不验证，不估计权重或校正未知抽样偏差。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需提供实际抽样过程与可获得的总体信息。 RC 复核（基线 `27d18c0`）：原账本状态 RESEARCH，现为 PARTIAL。未确认后续发布版本。
 
 <a id="c22"></a>
 
@@ -1011,19 +1013,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：用户看到 VALID 就认为历史已证明可用于当前改变条件的新任务。
 4. **发生原因**：样本量/区间宽度检验内部精度，不检验目标联系和选择机制。
 5. **当前 v1.0.0 行为**：statistically_ready 与 state 仅由冻结 gate 算出，没有 applicability 字段。
-6. **现有支持程度**：统计门槛明确实现；真实适用性只在文档提醒，尚无审核类型。
+6. **现有支持程度**：稳定 C 行为见第 5 项。已合入的独立 Preview 调用方参考：调用方适用性和真实 v1 统计 gate 分开。拒绝无计数，合格空历史为 NO_HISTORY。
 7. **候选算法/处置**：保留统计维度，外部另列 admissibility 与依据，不混成一个绿色信号。
-8. **可能接口/模块（提案）**：外部适用性报告提案，不重定义 PROBSPAN_VALID。
+8. **可能接口/模块（提案）**：[v1.py](../integrations/device_history/v1.py) 中的 `estimate_v1 / evidence.review` 为窄范围入口或相关类型。未纳入稳定 C 头或根安装导出。
 9. **数学假设与风险**：大样本错误迁移尤其危险，未知不能由精度替代。
-10. **源码与证据**：[historical.c](../src/historical.c)、[Issue #10](https://github.com/RXY712200/ProbSpan/issues/10)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：现有 check_history 验 gate；未来测试大 n 不匹配历史仍不可迁移。
+10. **源码与证据**：[historical.c](../src/historical.c)、[Issue #10](https://github.com/RXY712200/ProbSpan/issues/10)。外部参考仅作研究，不是依赖或实现证据。 当前本项目源码：[v1.py](../integrations/device_history/v1.py)，`estimate_v1 / evidence.review`。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)中 `test_installed_v1_values_and_states、test_declaration_and_zero_target` 验证有限用例。现有 C 断言仍以 v1 冻结参考为准。
 12. **依赖关系**：B14、B13、D38。
-13. **状态及理由**：PARTIAL；上述现有能力可用，但所列更广场景仍欠缺。
+13. **状态及理由**：PARTIAL。仅完成独立参考所声明的窄范围能力。适用性仍是有边界的调用方声明。实际部署前提未实证。
 14. **建议优先级（未批准）**：P1（先澄清语义/兼容边界）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：UI/API 文档维度分明；若新报告获批，能保留 unknown 与失败理由。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者决定适用性由谁审核，v1 gate 不改名不扩义。
+17. **解决证据/剩余限制**：首次可用范围为仓库源码中的 Preview 第三单元，原实现 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，由 PR #14 合入。[原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)与[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)分列实际验证。适用性仍是有边界的调用方声明。实际部署前提未实证。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者决定适用性由谁审核，v1 gate 不改名不扩义。 RC 复核（基线 `27d18c0`）：原账本状态 PARTIAL，现为 PARTIAL。未确认后续发布版本。
 
 <a id="d38"></a>
 
@@ -1036,19 +1038,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：审计者要知道概率来自主观、真实事件、特征模型还是模拟，以及用户何时看过证据。
 4. **发生原因**：来源谱系与暴露因果是不同层次，两个布尔值装不下完整证据图。
 5. **当前 v1.0.0 行为**：provenance 仅记录实际暴露与后续修订；结果保留独立模型版本。
-6. **现有支持程度**：暴露规则已完成，完整来源/任务/数据集 lineage 没有实现。
+6. **现有支持程度**：稳定 C 行为见第 5 项。已合入的独立 Preview 调用方参考：快照范围、证据类别与引用、截止、纳入计数、目标和算法版本有结构化回执。保留 C 暴露事实的原语义。
 7. **候选算法/处置**：外部 typed source manifest、不可变修订与证据集合引用。
-8. **可能接口/模块（提案）**：外部 provenance schema 是提案，不能改变当前两个 bool 的因果顺序。
+8. **可能接口/模块（提案）**：[evidence.py](../integrations/device_history/evidence.py) 中的 `review / Scope / Declaration / Audit` 为窄范围入口或相关类型。未纳入稳定 C 头或根安装导出。
 9. **数学假设与风险**：隐私、重复证据、来源真实性、schema 兼容与历史重放。
-10. **源码与证据**：[provenance.c](../src/provenance.c)、[PROVENANCE](PROVENANCE.md)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：现有 check_provenance/check_provenance_invariant；未来验证来源类型、修订不可变与去重引用。
+10. **源码与证据**：[provenance.c](../src/provenance.c)、[PROVENANCE](PROVENANCE.md)。外部参考仅作研究，不是依赖或实现证据。 当前本项目源码：[evidence.py](../integrations/device_history/evidence.py)，`review / Scope / Declaration / Audit`。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)中 `test_strict_and_pool_counts、test_declaration_and_zero_target、test_cutoff_excludes_later_outcome_even_on_same_identity` 验证有限用例。现有 C 断言仍以 v1 冻结参考为准。
 12. **依赖关系**：B20、E47、C28、A04。
-13. **状态及理由**：PARTIAL；上述现有能力可用，但所列更广场景仍欠缺。
+13. **状态及理由**：PARTIAL。仅完成独立参考所声明的窄范围能力。没有通用谱系图、事实认证或外部资产签名。
 14. **建议优先级（未批准）**：P1（先澄清语义/兼容边界）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：完整来源可审计且与暴露状态分开，现有粘滞语义持续兼容。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需决定最小元数据及存储归属，当前不是已具证据图系统。
+17. **解决证据/剩余限制**：首次可用范围为仓库源码中的 Preview 第三单元，原实现 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，由 PR #14 合入。[原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)与[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)分列实际验证。没有通用谱系图、事实认证或外部资产签名。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需决定最小元数据及存储归属，当前不是已具证据图系统。 RC 复核（基线 `27d18c0`）：原账本状态 PARTIAL，现为 PARTIAL。未确认后续发布版本。
 
 <a id="d39"></a>
 
@@ -1061,19 +1063,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：用户把主观 logit 区间、Jeffreys 可信区间和外部预测区间放在同一图上比较。
 4. **发生原因**：参数不确定性、启发式信念范围和未来观察噪声指向不同量。
 5. **当前 v1.0.0 行为**：有主观模型区间和历史 95% posterior interval，二者不互换。
-6. **现有支持程度**：当前两类解释可用，其他模型区间及通用标签未实现。
+6. **现有支持程度**：稳定 C 行为见第 5 项。已合入的独立 Preview 调用方参考：加权目标参数的中央 95% 后验区间有独立结果标记、数值包络、预算和失败状态。
 7. **候选算法/处置**：每种结果明确 estimand、区间类型、水平、假设与是否具覆盖解释。
-8. **可能接口/模块（提案）**：外部 interval metadata/未来模型专属结果为提案。
+8. **可能接口/模块（提案）**：[standardization.py](../integrations/device_history/standardization.py) 中的 `standardize / StandardizedRisk` 为窄范围入口或相关类型。未纳入稳定 C 头或根安装导出。
 9. **数学假设与风险**：可信水平不等于频率覆盖，conformal 边际覆盖不等于逐条件后验。
-10. **源码与证据**：[数值契约](NUMERICAL_CONTRACT.md)、[MAPIE](https://mapie.readthedocs.io/en/stable/content/getting-started/quick-start/)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：现有上下界与 gate 回归；未来按区间类型做模拟覆盖/预测检查，禁止混标签。
+10. **源码与证据**：[数值契约](NUMERICAL_CONTRACT.md)、[MAPIE](https://mapie.readthedocs.io/en/stable/content/getting-started/quick-start/)。外部参考仅作研究，不是依赖或实现证据。 当前本项目源码：[standardization.py](../integrations/device_history/standardization.py)，`standardize / StandardizedRisk`。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)中 `test_known_heterogeneous_and_population_change、test_boundary_and_budget_failure、test_numerical_faults_do_not_expose_estimates` 验证有限用例。现有 C 断言仍以 v1 冻结参考为准。
 12. **依赖关系**：A08、C31/C33、E46。
-13. **状态及理由**：PARTIAL；上述现有能力可用，但所列更广场景仍欠缺。
+13. **状态及理由**：PARTIAL。仅完成独立参考所声明的窄范围能力。预报区间、任意模型的通用语义、跨浮点库形式保证仍不覆盖。
 14. **建议优先级（未批准）**：P2（用例明确后研究）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：图表和接口解释不混淆，各新模型提供自己的验证与版本。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者决定是否新增元数据；不能用统一 interval 名称抹掉语义差别。
+17. **解决证据/剩余限制**：首次可用范围为仓库源码中的 Preview 第三单元，原实现 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，由 PR #14 合入。[原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)与[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)分列实际验证。预报区间、任意模型的通用语义、跨浮点库形式保证仍不覆盖。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者决定是否新增元数据；不能用统一 interval 名称抹掉语义差别。 RC 复核（基线 `27d18c0`）：原账本状态 PARTIAL，现为 PARTIAL。未确认后续发布版本。
 
 <a id="d40"></a>
 
@@ -1086,19 +1088,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：服务上线后成功率逐月下降，旧大样本 gate 仍显示就绪。
 4. **发生原因**：静态后验假设目标参数稳定，而时间漂移影响外部适用性。
 5. **当前 v1.0.0 行为**：无时间索引、漂移检测或自动遗忘。
-6. **现有支持程度**：可以分别计算人工窗口；无数据驱动漂移处置。
+6. **现有支持程度**：已记录工艺差异可拒绝，截止后才可得的行排除。现有参考不检测漂移，也不证明历史机制稳定。
 7. **候选算法/处置**：ADWIN 等序列检测、窗口诊断、目标标签监控与重新建模。
-8. **可能接口/模块（提案）**：外部 drift monitor/窗口建议模块仅为提案。
+8. **可能接口/模块（提案）**：窄范围实现为 [evidence.py](../integrations/device_history/evidence.py) 的 `_validate / _visible / _check_declaration`。后续推断仍属原提案范围。
 9. **数学假设与风险**：检测误报、延迟标签、季节性与多重检验；检测到变化不说明原因或正确替代模型。
 10. **源码与证据**：[River ADWIN](https://riverml.xyz/latest/api/drift/ADWIN/)、[Issue #10](https://github.com/RXY712200/ProbSpan/issues/10)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：未来平稳误报、突变/渐变检测延迟、季节假警报、漂移后校准测试。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)列出 `test_definitions_regime_censoring_and_identity、test_cutoff_excludes_later_outcome_even_on_same_identity` 的现行行为。
 12. **依赖关系**：B09、C34、B14、E47。
-13. **状态及理由**：RESEARCH；算法方向可信，但适用假设与目标验证尚未完成。
+13. **状态及理由**：RESEARCH。保持 RESEARCH，未知机制变化和真实时间留出仍未验证。
 14. **建议优先级（未批准）**：P2（用例明确后研究）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：监控与更新策略预先定义，变化后可弃答且保存旧分析事实。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者决定监控责任和可容忍误报，不批准隐式改变 v1 先验。
+17. **解决证据/剩余限制**：窄范围证据首次见合并的 Preview 源码 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006` 和 [原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)。已记录工艺差异可拒绝，截止后才可得的行排除。现有参考不检测漂移，也不证明历史机制稳定。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者决定监控责任和可容忍误报，不批准隐式改变 v1 先验。 RC 复核保留原 RESEARCH 状态。上述已合入参考不代表新增产品版本决定。
 
 <a id="d41"></a>
 
@@ -1234,19 +1236,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：应用希望按输入类型调用历史、主观或未来外部模型，而不是伪造统一 struct。
 4. **发生原因**：不同模型的输入、不确定性与版本独立，泛型容器可能隐去语义。
 5. **当前 v1.0.0 行为**：13 个明确函数已有估计/分析分层，只有两类冻结模型。
-6. **现有支持程度**：现有路由由调用者选择；无自动识别或未来模型注册系统。
+6. **现有支持程度**：稳定 C 行为见第 5 项。已合入的独立 Preview 调用方参考：显式三条调用方入口选择，v1_history 与 target_parameter_posterior 各自保留意义。
 7. **候选算法/处置**：先用明确函数与类型；确有新增模型时再设计判别联合/独立接口。
-8. **可能接口/模块（提案）**：未来 model descriptor/router 仅为提案，避免提前搭插件框架。
+8. **可能接口/模块（提案）**：[evidence.py](../integrations/device_history/evidence.py) 中的 `review / v1.estimate_v1 / standardization.standardize` 为窄范围入口或相关类型。未纳入稳定 C 头或根安装导出。
 9. **数学假设与风险**：ABI 扩展、无效联合状态、类型擦除和版本混淆。
-10. **源码与证据**：[公共头](../include/probspan/probspan.h)、[架构](ARCHITECTURE.md)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：现有 API/consumer 测试；未来新增模型接受/拒绝矩阵与二进制兼容审查。
+10. **源码与证据**：[公共头](../include/probspan/probspan.h)、[架构](ARCHITECTURE.md)。外部参考仅作研究，不是依赖或实现证据。 当前本项目源码：[evidence.py](../integrations/device_history/evidence.py)，`review / v1.estimate_v1 / standardization.standardize`。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)中 `test_missing_context_and_path_mismatch、test_installed_v1_values_and_states、test_phase_two_mix_shift` 验证有限用例。现有 C 断言仍以 v1 冻结参考为准。
 12. **依赖关系**：A08、D39、E47。
-13. **状态及理由**：PARTIAL；上述现有能力可用，但所列更广场景仍欠缺。
+13. **状态及理由**：PARTIAL。仅完成独立参考所声明的窄范围能力。当前范围不需要通用路由。新模型接口仍须具体需求与单独决定。
 14. **建议优先级（未批准）**：P2（用例明确后研究）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：每个支持模型有清晰入口/结果/错误与版本，不支持的任务被拒绝。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者批准具体新模型后再决定抽象，避免纯假设性框架。
+17. **解决证据/剩余限制**：首次可用范围为仓库源码中的 Preview 第三单元，原实现 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，由 PR #14 合入。[原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)与[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)分列实际验证。当前范围不需要通用路由。新模型接口仍须具体需求与单独决定。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者批准具体新模型后再决定抽象，避免纯假设性框架。 RC 复核（基线 `27d18c0`）：原账本状态 PARTIAL，现为 PARTIAL。未确认后续发布版本。
 
 <a id="e47"></a>
 
@@ -1259,19 +1261,19 @@ A01、A06、A07、D43 的 RESOLVED 仅指输入前提成立时当前 API 已支�
 3. **第三方场景**：审计系统需在数年后查看当时原始输入、版本和计算事实。
 4. **发生原因**：结构内存布局不是长期格式，新模型重算也不能代表旧决策事实。
 5. **当前 v1.0.0 行为**：组合返回独立版本及有意义结果，调用者拥有存储；无数据库/文件 schema。
-6. **现有支持程度**：事实值与版本基础已存在，持久化与升级策略未实现且非 v1 核心职责。
+6. **现有支持程度**：稳定 C 行为见第 5 项。已合入的独立 Preview 调用方参考：回放所需声明、范围、时间、权重、版本与结果可按有意义字段输出，示例打印 JSON。
 7. **候选算法/处置**：外部显式 schema、版本字段、不可变修订、迁移与读取兼容策略。
-8. **可能接口/模块（提案）**：外部 analysis record codec 为提案，不直接 dump struct，不新增核心数据库。
+8. **可能接口/模块（提案）**：[example.py](../integrations/device_history/example.py) 中的 `main / evidence.Review / standardization.Standardization` 为窄范围入口或相关类型。未纳入稳定 C 头或根安装导出。
 9. **数学假设与风险**：padding/字节序/枚举宽度、数值编码、旧模型可得性与历史覆盖。
-10. **源码与证据**：[公共头](../include/probspan/probspan.h)、[兼容性](COMPATIBILITY.md)。外部参考仅作研究，不是依赖或实现证据。
-11. **测试/后续验证**：现有 state_parity 检查组合字段；未来跨 schema round-trip、旧版本读取与未知版本拒绝。
+10. **源码与证据**：[公共头](../include/probspan/probspan.h)、[兼容性](COMPATIBILITY.md)。外部参考仅作研究，不是依赖或实现证据。 当前本项目源码：[example.py](../integrations/device_history/example.py)，`main / evidence.Review / standardization.Standardization`。
+11. **测试/后续验证**：[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)中 `test_strict_and_pool_counts、test_numerical_range_failure_preserves_review；可执行示例 JSON` 验证有限用例。现有 C 断言仍以 v1 冻结参考为准。
 12. **依赖关系**：D38、E46、E45。
-13. **状态及理由**：PARTIAL；上述现有能力可用，但所列更广场景仍欠缺。
+13. **状态及理由**：PARTIAL。仅完成独立参考所声明的窄范围能力。不承诺保存、迁移、版本独立序列化或丢失快照重建。
 14. **建议优先级（未批准）**：P2（用例明确后研究）；不构成实现或排期授权。
 15. **目标版本**：TBD，未经所有者批准；不自动分配 v1.1/v2。
 16. **完成条件**：长期记录保留原事实/可用性/独立版本，升级不静默改写旧结果。
-17. **解决证据/剩余限制**：不适用：本条未完全解决；已有部分实现不能替代上述完成条件或第三方验证。
-18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需决定存储边界和支持年限；不把 struct 注释误读为已实现存储系统。
+17. **解决证据/剩余限制**：首次可用范围为仓库源码中的 Preview 第三单元，原实现 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，由 PR #14 合入。[原 Preview CI](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759)与[RC 断言地图](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)分列实际验证。不承诺保存、迁移、版本独立序列化或丢失快照重建。
+18. **决定历史与下一所有者决定**：2026-11-16 基于源码/Issues 建账，不冒充新产品批准。所有者需决定存储边界和支持年限；不把 struct 注释误读为已实现存储系统。 RC 复核（基线 `27d18c0`）：原账本状态 PARTIAL，现为 PARTIAL。未确认后续发布版本。
 
 <a id="e48"></a>
 
