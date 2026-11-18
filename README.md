@@ -15,6 +15,8 @@
 
 [永久技术债务与研究账本](docs/TECHNICAL_DEBT.zh-CN.md) 保留已完成修复、已知限制、研究方向、48 个候选改进、未来所有者决定及不绑定版本的规划记录。账本不是实施或发布授权。维护规则见 [CONTRIBUTING.md](CONTRIBUTING.md) 与 [AGENTS.md](AGENTS.md)。
 
+[可选 Preview 设备历史参考](docs/PREVIEW_DEVICE_HISTORY.zh-CN.md) 提供调用方证据审查、v1 安装库消费者和两层标准化。固定 100 小时端点与合成测试独立于稳定 C11 安装。
+
 ProbSpan combines an independent **subjective probability**, **historical event counts**, and **gross-return odds** into clearly separated uncertainty estimates, expected-value intervals, threshold probabilities, and model-relationship classifications. It does **not** combine the two probability models into a supposed best estimate, place bets, or make decisions on the caller's behalf.
 
 ```text

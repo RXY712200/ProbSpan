@@ -1,0 +1,42 @@
+name: Preview device history
+on:
+  push:
+    branches: ['preview/**']
+    paths:
+      - 'integrations/device_history/**'
+      - 'research/preview_history.py'
+      - '.github/workflows/device-history-preview.yml'
+  pull_request:
+    paths:
+      - 'integrations/device_history/**'
+      - 'research/preview_history.py'
+      - '.github/workflows/device-history-preview.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  optional-reference:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Install optional reference dependencies
+        run: python -m pip install -r integrations/device_history/requirements.txt
+      - name: Build installed v1 library and separate consumer
+        run: |
+          cmake -S . -B "$RUNNER_TEMP/core" -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/core" --parallel 2
+          cmake --install "$RUNNER_TEMP/core" --prefix "$RUNNER_TEMP/install"
+          cmake -S integrations/device_history -B "$RUNNER_TEMP/device" -DCMAKE_PREFIX_PATH="$RUNNER_TEMP/install"
+          cmake --build "$RUNNER_TEMP/device" --parallel 2
+      - name: Verify optional reference and example
+        run: |
+          export PROBSPAN_DEVICE_CONSUMER="$RUNNER_TEMP/device/device-history-v1"
+          python -B -m unittest -v integrations.device_history.test_device_history
+          python -B -m integrations.device_history.example "$PROBSPAN_DEVICE_CONSUMER"
