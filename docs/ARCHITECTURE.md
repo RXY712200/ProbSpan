@@ -64,6 +64,12 @@ There is no singleton, hidden state, lock, automatic migration, or reset policy.
 
 ## Execution flow and invariants
 
+The [Preview device-history reference](PREVIEW_DEVICE_HISTORY.zh-CN.md) runs
+outside the installed library. It reviews row identity, declared scope and
+applicability before producing counts. The optional C consumer links the
+installed public target for strict and pooled estimates. Two-stratum
+standardization returns a separate parameter posterior in Python.
+
 `probspan_compose_analysis` is a value composer. It obtains the independent subjective and historical estimates, validates both odds, delegates to the two side analyzers, and classifies each relation. It does not mutate provenance or call a persistence adapter. The caller may separately invoke `probspan_provenance_transition` with observed information-exposure facts.
 
 The **numerical evaluation boundary** is private: Beta functions, gamma normalization, logit integration and decimal midpoint logic cannot be called through the installed public header. This prevents consumers from depending on internal numerical strategies that may legitimately change while the v1 decision contract stays fixed.

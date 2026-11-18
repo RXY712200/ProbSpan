@@ -1,5 +1,7 @@
 # ProbSpan 验证地图与可复现证据
 
+独立的 [Preview 设备历史参考测试](PREVIEW_DEVICE_HISTORY.zh-CN.md) 包含调用方证据准入、自适应积分参考及已安装 v1 消费者。它采用单独依赖与 CI 工作流，下面仍记录 v1 证据与冻结验证边界。
+
 ## 1. 审查基线和证据等级
 
 源码基线 `fdfaddfb58486004ee1cc02c0f4a5c640cd17c7c`，v1.0.0；文档审查/本地执行日期 2026-11-16。本篇与 [导读](IMPLEMENTATION_WALKTHROUGH.zh-CN.md)、[API 参考](IMPLEMENTATION_API_REFERENCE.zh-CN.md)、[内部实现](IMPLEMENTATION_INTERNALS.zh-CN.md)、[永久账本](TECHNICAL_DEBT.zh-CN.md) 交叉使用。权威数值要求在 [NUMERICAL_CONTRACT.md](NUMERICAL_CONTRACT.md) 和 [numerical_policy.json](../oracle/numerical_policy.json)，不是本篇另定容差。
