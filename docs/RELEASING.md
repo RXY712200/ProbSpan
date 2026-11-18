@@ -23,7 +23,7 @@ This file is maintainer guidance. Tagging and publishing a GitHub Release are se
 
 ## v1.1.0-rc.1 candidate preparation
 
-The approved candidate includes the optional [device-history reference](PREVIEW_DEVICE_HISTORY.zh-CN.md) in the source distribution. Its product string is `1.1.0-rc.1`. The intended tag, subject to separate publication authorization, is `v1.1.0-rc.1`. CMake sees numeric package version `1.1.0`. The optional consumer checks both the numeric package version at configure time and the full product string and v1 protocol versions at run time. ABI, model, gate, and analysis versions remain 1. The root install contains the static C package.
+The approved candidate includes the optional [device-history reference](PREVIEW_DEVICE_HISTORY.zh-CN.md) in the source distribution. Its product string is `1.1.0-rc.1`. Its corresponding Git tag name is `v1.1.0-rc.1`. CMake sees numeric package version `1.1.0`. The optional consumer checks both the numeric package version at configure time and the full product string and v1 protocol versions at run time. ABI, model, gate, and analysis versions remain 1. The root install contains the static C package.
 
 Before publication, verify the clean install, both consumers, frozen fixtures, and both CI workflows on the approved full SHA. Relevant `main` pushes trigger optional CI. To replay an existing run, use `gh run rerun <run-id>` after checking its head SHA. Once the dispatch trigger is present on the default branch, an authorized maintainer can bypass path filters after setting `approved_sha` to the full approved commit SHA.
 

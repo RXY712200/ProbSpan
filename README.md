@@ -29,7 +29,7 @@ historical event counts -> Jeffreys posterior ----/        |               |
 
 Released version **1.0.0** established the public contract: C11, static linking, 13 functions, one installed public header, no heavy runtime dependencies. The detailed numerical and behavioral contracts are versioned separately from the library's ABI.
 
-This branch prepares the unpublished **1.1.0-rc.1** source candidate. It includes the optional device-history reference as a Preview integration and preserves the v1 C contracts and ABI. The installed CMake package uses numeric version **1.1.0**. See [release preparation](docs/RELEASING.md#v110-rc1-candidate-preparation).
+The **1.1.0-rc.1** source candidate includes the optional device-history reference as a Preview integration. The C library preserves the v1 contracts, ABI generation 1, and independent model, gate, and analysis versions at 1. The installed CMake package uses numeric version **1.1.0**. The optional reference is distributed with the source and stays outside the C installation. See [release preparation](docs/RELEASING.md#v110-rc1-candidate-preparation).
 
 ## Capabilities and limits
 

@@ -2,7 +2,7 @@
 
 This file tracks published source/API contracts and significant compatibility corrections. Experimental fixture and reference changes do not implicitly create new model versions.
 
-## 1.1.0-rc.1 (unpublished candidate)
+## 1.1.0-rc.1 (release candidate)
 
 - Include the optional 100-hour device-history reference in the source distribution, with caller-side eligibility, strict and declared-compatible pooled history, and two-stratum standardization.
 - Validate the optional consumer against the candidate installation. Relevant main pushes run the optional workflow. The installed C library has no Python dependency.
