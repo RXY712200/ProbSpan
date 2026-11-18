@@ -53,7 +53,7 @@ target_link_libraries(app PRIVATE ProbSpan::probspan)
 ```
 
 The imported target supplies the installed include directory, C11 feature, archive,
-and required math linkage. Version config permits compatible same-major requests.
+and required math linkage. Version config permits compatible same-major requests. CMake sees numeric package version `1.1.0`. Use `PROBSPAN_VERSION_STRING` to identify `1.1.0-rc.1` and keep candidate and stable installs in separate prefixes.
 No source include directory is embedded in exported targets. The committed
 consumer test uses only `<probspan/probspan.h>` and the installed package; it
 neither adds source-tree include paths nor includes ProbSpan via add_subdirectory.
@@ -66,6 +66,12 @@ and give the installed consumer the corresponding sanitizer linkage. Local
 MinGW lacks these runtime libraries; the Linux sanitizer job supplies coverage.
 
 ## Production integration notes
+
+The [Preview device-history reference](PREVIEW_DEVICE_HISTORY.zh-CN.md) is
+available in a source checkout under `integrations/device_history/`.
+Build its consumer separately against a clean candidate prefix for the strict or pooled path. The CMake consumer requires `1.1.0 EXACT` and the Python adapter checks the full product string `1.1.0-rc.1`. NumPy and SciPy support
+the caller-side standardization and reference tests. The root CMake build
+installs only the C static library, public header and package configuration.
 
 1. Pin a released Git commit or version tag and run the installed consumer test before integrating with a different compiler, CRT, architecture, or target ABI.
 2. For downstream CMake projects, prefer an installed prefix with `find_package(ProbSpan 1.0 CONFIG REQUIRED)` and `ProbSpan::probspan`; do not include headers from `src/` or treat private numerical helpers as public.

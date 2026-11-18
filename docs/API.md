@@ -13,9 +13,9 @@ provenance specifically supports `result == previous`.
 | Identifier | Value and meaning |
 |---|---|
 | `PROBSPAN_VERSION_MAJOR` | 1, product major release |
-| `PROBSPAN_VERSION_MINOR` | 0, product minor release |
+| `PROBSPAN_VERSION_MINOR` | 1, product minor version |
 | `PROBSPAN_VERSION_PATCH` | 0, product patch release |
-| `PROBSPAN_VERSION_STRING` | `"1.0.0"`, product version |
+| `PROBSPAN_VERSION_STRING` | `"1.1.0-rc.1"`, candidate product identity |
 | `probspan_abi_version()` | unsigned 1, ABI contract generation; no arguments/errors |
 
 Product/ABI versions do not replace independent result versions: subjective

@@ -2,9 +2,13 @@
 
 ## 1. 基线与依赖方向
 
+候选版调整产品标识与消费版本校验；ABI、模型及数值实现沿用 v1.0.0。见 [兼容说明](COMPATIBILITY.md)。
+
 本篇审查 v1.0.0 源码 `fdfaddfb58486004ee1cc02c0f4a5c640cd17c7c`，日期 2026-11-16。配套：[导读](IMPLEMENTATION_WALKTHROUGH.zh-CN.md)、[API](IMPLEMENTATION_API_REFERENCE.zh-CN.md)、[验证](IMPLEMENTATION_VALIDATION.zh-CN.md)、[账本](TECHNICAL_DEBT.zh-CN.md)。现行边界由 [架构](ARCHITECTURE.md)、[行为规范](BEHAVIOR_SPEC.md)、[数值契约](NUMERICAL_CONTRACT.md) 和公共头共同约束。
 
 依赖从组合/公共适配向模型与决策，再向数学原语流动；数值求解器不认识 UI、provenance 或产品工作流。源码的模块分工不是“一文件一种未来模型”的插件框架，而是围绕已存在的独立职责形成边界。
+
+合并的 [Preview 设备历史参考](PREVIEW_DEVICE_HISTORY.zh-CN.md) 引入独立调用方依赖图：`evidence.py` 只用 Python 标准库，筛选后返回计数或不可用回执；`v1.py` 通过有时限的子进程调用 `v1_consumer.c`，后者只链接已安装的公共 C 档案；`standardization.py` 使用 NumPy/SciPy 完成等质量分箱的 CDF 包络。两条估计路径从已审查的回执出发，Python 无需调用 C 私有 Beta。标准 C 构建、公共头和 CMake 导出均不依赖此目录。测试才借用 Phase II 生成器重放 mix-shift；独立的有理数矩和直接积分另外核验。v1 Beta、十进制转换与 provenance 的下列实现事实仍按原源码基线解释。
 
 ```text
 analysis_composition.c → subjective.c / historical.c / odds.c

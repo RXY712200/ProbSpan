@@ -10,7 +10,7 @@ This file is maintainer guidance. Tagging and publishing a GitHub Release are se
 - [LICENSE](../LICENSE): MIT; preserve attribution in distributions.
 - Frozen origin: `RXY712200/probability-calibration-tool` at `a581f84ccd217ed45789b3566347255f56ffbeac`.
 
-## Pre-tag review
+## Historical v1.0.0 pre-tag review
 
 1. Confirm current `main` HEAD and inspect its diff against the accepted release candidate.
 2. Confirm all public docs and README describe a **released** library rather than an unapproved candidate; verify every documentation link exists and accurately describes the public header.
@@ -20,6 +20,18 @@ This file is maintainer guidance. Tagging and publishing a GitHub Release are se
 6. Review pending issues: close only completed implementation issues; leave design records and unresolved limitations open with clear scope.
 7. Create an annotated tag `v1.0.0` pointing to the verified commit, then publish a GitHub Release using that exact tag and [Changelog](../CHANGELOG.md). Avoid moving an existing public release tag.
 8. Verify tag target, Release page, source archives, and links. Record the final SHA and CI run URL.
+
+## v1.1.0-rc.1 candidate preparation
+
+The approved candidate includes the optional [device-history reference](PREVIEW_DEVICE_HISTORY.zh-CN.md) in the source distribution. Its product string is `1.1.0-rc.1`. Its corresponding Git tag name is `v1.1.0-rc.1`. CMake sees numeric package version `1.1.0`. The optional consumer checks both the numeric package version at configure time and the full product string and v1 protocol versions at run time. ABI, model, gate, and analysis versions remain 1. The root install contains the static C package.
+
+Before publication, verify the clean install, both consumers, frozen fixtures, and both CI workflows on the approved full SHA. Relevant `main` pushes trigger optional CI. To replay an existing run, use `gh run rerun <run-id>` after checking its head SHA. Once the dispatch trigger is present on the default branch, an authorized maintainer can bypass path filters after setting `approved_sha` to the full approved commit SHA.
+
+```sh
+gh workflow run device-history-preview.yml --ref main -f candidate_sha="$approved_sha"
+```
+
+For a manual run, inspect the `Verify tested revision` step. The event SHA identifies the workflow ref and can differ from the checked-out candidate SHA. Record both the run URL and the tested source SHA. Preserve the original v1.0.0 tag and release history.
 
 ## Later maintenance
 

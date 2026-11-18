@@ -4,7 +4,7 @@
 int main(void) {
     probspan_analysis result;
     probspan_provenance state = {false, false};
-    if (strcmp(PROBSPAN_VERSION_STRING, "1.0.0") != 0 || probspan_abi_version() != 1u) { return 1; }
+    if (strcmp(PROBSPAN_VERSION_STRING, "1.1.0-rc.1") != 0 || probspan_abi_version() != 1u) { return 1; }
     if (probspan_compose_analysis(60, 19, 1, 2.0, 2.0, &result) != PROBSPAN_OK) { return 2; }
     if (!result.historical_analysis.available || result.subjective.model_version != 1u ||
         result.history.model_version != 1u || result.history.gate_version != 1u ||

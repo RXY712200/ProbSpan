@@ -8,9 +8,11 @@
 
 头文件包含 `stdbool.h`、`stdint.h`，C++ 使用 `extern "C"` 链接。实现为 C11 静态库，无可变全局模型状态；不同对象调用可重入。线程安全不包括调用者共享对象的数据竞争，也不等于任意 libm、舍入模式或 fast-math 下数学结果逐位相同。十进制转换的精确位契约与一般超越函数的容差契约不同。
 
+[合并的设备历史参考](PREVIEW_DEVICE_HISTORY.zh-CN.md) 提供源码树内的 Python 调用方入口和另行构建的 C 消费程序。它们不占公共头的 13 个函数，也不加入安装导出。严格/池化回执分别保留 `applicability`、消费进程状态以及 C 结果中的 `NO_HISTORY`、`INSUFFICIENT`、`VALID`。仅在有估计时读取 C 数值。标准化回执的 `target_parameter_posterior` 有自身算法 ID 和端点包络，不能转换为 `probspan_history_result` 交给历史 EV 入口。Python 回执的字段供调用方复验，长期存档须独立定义格式。完整失败码与输出约束见该参考。
+
 ## 2. 版本宏、枚举完整目录
 
-四个产品宏：`PROBSPAN_VERSION_MAJOR=1`、`PROBSPAN_VERSION_MINOR=0`、`PROBSPAN_VERSION_PATCH=0`、`PROBSPAN_VERSION_STRING="1.0.0"`。头保护宏不是产品配置入口。ABI 通过函数查询；结果版本字段不应从产品字符串推断。
+v1.0.0 历史基线的四个产品宏：`PROBSPAN_VERSION_MAJOR=1`、`PROBSPAN_VERSION_MINOR=0`、`PROBSPAN_VERSION_PATCH=0`、`PROBSPAN_VERSION_STRING="1.0.0"`。候选分支的数值宏为 `1,1,0`，字符串为 `"1.1.0-rc.1"`，CMake 包数字版本为 `1.1.0`。头保护宏不是产品配置入口。ABI 通过函数查询；结果版本字段不应从产品字符串推断。
 
 | 枚举类型 | 全部枚举值与含义 |
 | --- | --- |

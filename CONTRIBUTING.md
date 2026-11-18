@@ -21,7 +21,7 @@ cmake --build consumer-build
 ctest --test-dir consumer-build --output-on-failure
 ```
 
-Adapt multi-config commands on MSVC. For a pure C build set `-DCMAKE_DISABLE_FIND_PACKAGE_Python3=TRUE`; Python, SciPy and mpmath are development-only oracle tools. Reference/check commands, tool versions, and precision rules are in [Testing](docs/TESTING.md). Avoid unsafe floating flags such as `-ffast-math`.
+Adapt multi-config commands on MSVC. For a pure C build set `-DCMAKE_DISABLE_FIND_PACKAGE_Python3=TRUE`. The installed library requires no Python. Python supports development checks, and the [optional device-history reference](docs/PREVIEW_DEVICE_HISTORY.zh-CN.md) uses a separate NumPy/SciPy environment. Reference/check commands, tool versions, and precision rules are in [Testing](docs/TESTING.md). Avoid unsafe floating flags such as `-ffast-math`.
 
 ## Review expectations
 

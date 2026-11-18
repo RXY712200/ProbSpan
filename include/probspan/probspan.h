@@ -6,9 +6,9 @@
 
 /* Product release version; independent of ABI and model/gate versions. */
 #define PROBSPAN_VERSION_MAJOR 1
-#define PROBSPAN_VERSION_MINOR 0
+#define PROBSPAN_VERSION_MINOR 1
 #define PROBSPAN_VERSION_PATCH 0
-#define PROBSPAN_VERSION_STRING "1.0.0"
+#define PROBSPAN_VERSION_STRING "1.1.0-rc.1"
 
 #ifdef __cplusplus
 extern "C" {

@@ -22,6 +22,18 @@ Fixtures and references from accepted Steps 1–4 are preserved. Discrete values
 must match exactly; numeric tolerances remain in `oracle/numerical_policy.json`.
 Do not regenerate oracle values from C or change expectations to fit a failure.
 
+## Optional device-history reference
+
+The [device-history guide](PREVIEW_DEVICE_HISTORY.zh-CN.md) describes how
+to build a separate executable linked to the installed public library and
+run the isolated Python tests and example. This suite is outside the root
+CTest count and uses pinned dependencies specific to the reference.
+The [assertion map](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)
+identifies the synthetic records, independent numerical references and
+fault injections. The optional workflow tests the exact PR head or push SHA.
+Relevant C source, package/version, optional reference, and documentation changes
+trigger it on main pushes and PRs. See [exact-revision verification](RELEASING.md#v110-rc1-candidate-preparation) for reruns and manual validation.
+
 ## Exact development tools
 
 Local candidate environment: Windows x64, GCC 16.2.0 (MSYS2 UCRT64), CMake 4.4.4,
