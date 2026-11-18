@@ -319,7 +319,7 @@ class InstalledV1Tests(unittest.TestCase):
                    declaration(Assumption.TARGET_SHARED), cutoff_hour=100)
         payload = subprocess.check_output([str(executable), "1", "2"], text=True)
         history = json.loads(payload)
-        for field, incompatible in (("product_version", "1.0.0"), ("product_version", "1.1.0"),
+        for field, incompatible in (("product_version", "1.0.0"), ("product_version", "1.1.0-rc.1"),
                                     ("abi_version", 2), ("model_version", 2), ("gate_version", 2)):
             with self.subTest(field=field, incompatible=incompatible):
                 with patch("integrations.device_history.v1.subprocess.run") as process:

@@ -21,11 +21,11 @@ This file is maintainer guidance. Tagging and publishing a GitHub Release are se
 7. Create an annotated tag `v1.0.0` pointing to the verified commit, then publish a GitHub Release using that exact tag and [Changelog](../CHANGELOG.md). Avoid moving an existing public release tag.
 8. Verify tag target, Release page, source archives, and links. Record the final SHA and CI run URL.
 
-## v1.1.0-rc.1 candidate preparation
+## v1.1.0 Stable preparation
 
-The approved candidate includes the optional [device-history reference](PREVIEW_DEVICE_HISTORY.zh-CN.md) in the source distribution. Its product string is `1.1.0-rc.1`. Its corresponding Git tag name is `v1.1.0-rc.1`. CMake sees numeric package version `1.1.0`. The optional consumer checks both the numeric package version at configure time and the full product string and v1 protocol versions at run time. ABI, model, gate, and analysis versions remain 1. The root install contains the static C package.
+The v1.1.0 source distribution includes the optional [device-history reference](PREVIEW_DEVICE_HISTORY.zh-CN.md) in the source distribution. Its product string is `1.1.0` and the eventual Stable tag name is `v1.1.0`. The [published prerelease](https://github.com/RXY712200/ProbSpan/releases/tag/v1.1.0-rc.1) remains historical evidence. The Stable release uses GitHub-generated source ZIP and tar.gz archives with zero uploaded binaries. Publication requires separate approval of the exact final commit. CMake sees numeric package version `1.1.0`. The optional consumer checks both the numeric package version at configure time and the full product string and v1 protocol versions at run time. ABI, model, gate, and analysis versions remain 1. The root install contains the static C package.
 
-Before publication, verify the clean install, both consumers, frozen fixtures, and both CI workflows on the approved full SHA. Relevant `main` pushes trigger optional CI. To replay an existing run, use `gh run rerun <run-id>` after checking its head SHA. Once the dispatch trigger is present on the default branch, an authorized maintainer can bypass path filters after setting `approved_sha` to the full approved commit SHA.
+Before publication, verify the clean install, both consumers, frozen fixtures, and both CI workflows on the approved full SHA. Relevant `main` pushes trigger optional CI. To replay an existing run, use `gh run rerun <run-id>` after checking its head SHA. An authorized maintainer can bypass path filters after setting `approved_sha` to the full approved commit SHA.
 
 ```sh
 gh workflow run device-history-preview.yml --ref main -f candidate_sha="$approved_sha"

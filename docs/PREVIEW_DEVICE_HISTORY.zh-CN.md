@@ -73,7 +73,7 @@ python -B -m integrations.device_history.example $env:PROBSPAN_DEVICE_CONSUMER
 python -B -m unittest -v integrations.device_history.test_device_history
 ```
 
-候选源码附带的消费者从干净前缀查找 `ProbSpan 1.1.0 EXACT`。适配器检查产品字符串 `1.1.0-rc.1`，ABI、历史模型与 gate 各为 1。任一不符返回 `consumer_failure`，数值结果不可用。根安装不引入 Python、NumPy 或 SciPy。
+v1.1.0 源码附带的消费者从干净前缀查找 `ProbSpan 1.1.0 EXACT`。适配器检查产品字符串 `1.1.0`，ABI、历史模型与 gate 各为 1。任一不符返回 `consumer_failure`，数值结果不可用。根安装不引入 Python、NumPy 或 SciPy。
 
 Linux 可用默认 CMake 生成器，消费者文件名没有 `.exe`。Visual Studio 多配置生成器需在 build/install/test 时选同一配置，消费者在相应配置子目录。合成示例会输出 audit、版本、两次 v1 数值和标准化估计。独立参考及候选实现为 [测试](../integrations/device_history/test_device_history.py) 和 [标准化](../integrations/device_history/standardization.py)。候选版本提交 `66973bc55c5b36360d6e06e58a93ab7cfa9b9877`（2026-11-18）的本地验证环境为 Windows x64、GCC 16.2.0 UCRT64、CMake 4.4.3、Python 3.13.14、NumPy 2.4.4、SciPy 1.17.1。主库 Release 14 项（含 9 个 C 执行及 5 个 fixture 检查），既有安装消费者 1 项，可选参考测试 15 项和三路径示例均实跑。提交对应的 CI 与此前验证见[第 14 节](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)。
 

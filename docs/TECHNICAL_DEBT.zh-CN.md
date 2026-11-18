@@ -4,7 +4,7 @@
 
 基线为正式 v1.0.0 源码 `fdfaddfb58486004ee1cc02c0f4a5c640cd17c7c`，审查日期 2026-11-16。本文记录 **48 个固定候选 A01–E48，另加 4 个修复历史 R01–R04，共 52 条**。编号含义固定，不因状态变化删除或复用。条目不是自动批准的 backlog；没有实现的算法和模块均为提案。优先级是本文供审查的建议，未经所有者批准，不构成排期；尚未批准的债务扩展目标版本为 TBD。
 
-在原稳定源码之外，RC 复核以 PR #14 合并提交 `27d18c0611a73b96596552ad967b94222b24a5ad` 审查已合入的调用方参考。它不属于 v1.0.0 安装物。所有者批准将既有可选参考纳入 `v1.1.0-rc.1` 候选源码分发范围，根安装仍仅提供 C 库。此次元数据与 CI 调整不改变各项的实现边界、状态、原始证据或未来扩展决定。
+在原稳定源码之外，RC 复核以 PR #14 合并提交 `27d18c0611a73b96596552ad967b94222b24a5ad` 审查已合入的调用方参考。它不属于 v1.0.0 安装物。所有者批准将既有可选参考纳入 `v1.1.0-rc.1` 候选源码分发范围，根安装仍仅提供 C 库。v1.1.0 发布准备保留这一源码范围及根安装边界，各项状态、原始证据与未来扩展决定保持原样。
 
 先读 [源码导读](IMPLEMENTATION_WALKTHROUGH.zh-CN.md)，接口见 [API 全表](IMPLEMENTATION_API_REFERENCE.zh-CN.md)，数学与调用见 [内部实现](IMPLEMENTATION_INTERNALS.zh-CN.md)，断言/实际执行见 [验证地图](IMPLEMENTATION_VALIDATION.zh-CN.md)。权威公共声明与现行契约优先于说明： [公共头](../include/probspan/probspan.h)、[API.md](API.md)、[行为](BEHAVIOR_SPEC.md)、[数值契约](NUMERICAL_CONTRACT.md)、[兼容性](COMPATIBILITY.md)。发现矛盾须定位报告，不能以本账本提案改写 v1。
 

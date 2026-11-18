@@ -8,7 +8,7 @@
 #define PROBSPAN_VERSION_MAJOR 1
 #define PROBSPAN_VERSION_MINOR 1
 #define PROBSPAN_VERSION_PATCH 0
-#define PROBSPAN_VERSION_STRING "1.1.0-rc.1"
+#define PROBSPAN_VERSION_STRING "1.1.0"
 
 #ifdef __cplusplus
 extern "C" {

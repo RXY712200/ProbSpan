@@ -2,6 +2,11 @@
 
 This file tracks published source/API contracts and significant compatibility corrections. Experimental fixture and reference changes do not implicitly create new model versions.
 
+## 1.1.0
+
+- Carry forward the optional device-history reference evaluated in `v1.1.0-rc.1`. The installed static C library is separate.
+- Set the public product string and both installed-consumer checks to `1.1.0`. The optional adapter rejects prerelease identities. CMake package version remains `1.1.0`, and ABI, model, gate, and analysis versions remain 1.
+
 ## 1.1.0-rc.1 (release candidate)
 
 - Include the optional 100-hour device-history reference in the source distribution, with caller-side eligibility, strict and declared-compatible pooled history, and two-stratum standardization.
