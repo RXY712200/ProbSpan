@@ -1,0 +1,27 @@
+# 搜索与筛选轨迹
+
+[研究导航](README.zh-CN.md) · [源登记](source-register.tsv) · [完整性复核](verification-and-handoff.zh-CN.md)
+
+日期为 2026-11-18 UTC。搜索用 Web 查询、精确 URL 打开、公开 DOI/Crossref 元数据、机构文库、GitHub API 和固定树的原始文件。下面是实际搜索概念（个别分组内多个词组代表多次查询），没有记录服务端排位全集，因此不给命中总数或系统综述流程计数。
+
+| 轮次 | 渠道及实际检索词组 | 发现、筛选、排除及下一步 |
+|---|---|---|
+| 广扫 1 | Web/出版索引，`Brown Cai DasGupta interval estimation binomial proportion Hanley zero numerator Wilson`；`Jeffreys theory probability Bayesian reference priors Bernardo Manski partial identification`；`二项比例 置信区间 Wilson 零事件 历史数据 借用 贝叶斯` | Brown/Cai/DasGupta、Wilson、Hanley 和 Manski；舍弃同文的 Scilit、Lacuna 和二手教程镜像作为独立项，把 Wilson/零事件转入原作者版本追查。 |
+| 广扫 2 | `forecast evaluation proper scoring Gneiting Raftery calibration sharpness conformal impossibility Barber`；`Cooke expert judgment classical model calibration empirical validation Mellers superforecasters`；`Kaplan Meier Fine Gray competing risk NegBin regression Cameron Trivedi` | 得到 UW 论文、proper scores、Mellers 竞赛、Colson/Cooke、Kaplan–Meier 与 Fine–Gray。由不同 coverage 语义和竞争风险推进反例。 |
+| 广扫 3 | `ECMWF ensemble forecast skill 20 years Buizza Richardson operational verification`；`US National Water Model retrospective evaluation streamflow ensemble HEFS validation`；`GEFCom2014 probabilistic load forecasting Hong benchmark quantile scores`；`FluSight multimodel ensemble prospective Reich COVID Forecast Hub Cramer evaluation WIS`；`中国 气象 集合预报 概率 检验 Brier 评分 国家气象中心 辛普森 悖论` | 纳入 ECMWF、HEFS、USGS、GEFCom、FluSight、COVID 及中文业务实测/规范；排除仅短期演示或纯合成呼吸道结果对实际部署的推断。HEFS 原站 403 时保留索引摘要，另核 USGS 的 Copernicus 全文。 |
+| 广扫 4 | `Backblaze drive stats AFR failure days SMART Google Pinheiro field study`；`NIST ... lithography line width control charts`；`AWS S3 service disruption February 28 2017 summary cascading service availability`；`CAS insurance claim frequency severity ... French motor insurance` | 年度 AFR、NIST 工艺、AWS 事故与 freMTPL。直接初报和后来事故合集并非独立根因证明；公司 IR 重复 Drive Stats 正文不另计。 |
+| 广扫 5 | `Obermeyer racial bias health algorithm Science external validation Epic sepsis Wong`；`Basel market risk backtesting ... VaR`；`Mellers forecasting tournament ... prediction market prices favorite longshot bias bookmaker` | 纳入两个不同医疗任务、Basel 历史框架及桌级回测、预测竞赛和市场研究。独立后续脓毒症研究涉及更新版本，不能当对 2021 研究同版本复制。 |
+| 引文追查 1 | 从 Brown 区间导向 Wilson 和 Hanley；`Hanley Lippman Hand 1983 3/n zero numerator pdf`；`Wilson 1927 probable inference law succession pdf`；`Brier 1950 verification ...` | 源刊拒绝的 Wilson、Hanley 用 McGill 文件补查。Crossref 批处理中误写的首个 Hanley DOI 返回 404，JAMA 定位正确 DOI 后再核。Brier 源刊拒绝时留书目、独立评分论文及中文核验。 |
+| 引文追查 2 | `historical controls dynamic borrowing robust MAP priors Schmidli Viele negative transfer`；`Hobbs commensurate priors Ibrahim Chen power prior Neuenschwander normalized power prior`；`Pocock 1976 combining randomized historical controls`；`Efron Morris 1975 data analysis using Stein estimator batting averages` | 看 MAP 与 commensurate/power 的目标与冲突反应，追到归一化处理和实际棒球基准。预印本和正式元数据按同篇合并；有限现场或同主体赛季验证条件另记。 |
+| 引文追查 3 | `Pearl Bareinboim external validity transportability Simpson paradox Berkeley Bickel`；`Sugiyama covariate shift importance weighted cross validation Lipton label shift`；`Tibshirani conformal covariate shift NeurIPS conformal exchangeability` | 因果迁移、监督预测不同目标；读 PMLR、JMLR、NeurIPS 原文与 Berkeley revisiting；旧文章只取得元数据时用可访问独立工作检查，而非声称读全文。 |
+| 缺口 1 | `DLMF incomplete beta continued fraction NIST 8.17 MPFR glibc strtod R TOMS708 implementation`；`Boost ibeta TOMS 708 R pbeta scipy betaincinv issues large beta mpfr strtod`；`Algorithm 708 ... netlib 708` | 取得 SciPy、Boost、R、mpmath、glibc 等精确 Git 版本；按对应测试与路径辨别共享后端。Netlib/FSU 算法页面为定位材料，R 源码不能冒充读过原论文全文。 |
+| 缺口 2 | `FDA external controls clinical trials guidance ICH E9 estimands PROBAST TRIPOD external validation`；`EFSA guidance expert knowledge elicitation Sheffield SHELF IPCC uncertainty guidance`；`Cox Regression Models Life Tables 1972 full text` | 准入、删失定义、区域分组与专家信念沟通。FDA 草案按草案标出；TRIPOD 与 PROBAST 目的不同，本登记取风险/适用性工具。 |
+| 缺口 3 | `Manski identification problems social sciences bounds missing data`；`selective labels Kleinberg human decisions machine predictions`；`Kaufman Rosset leakage in data mining paper DOI Kapoor Narayanan leakage`；`Sequentially monitoring forecasters Brier scores ... confidence sequences`；`decision theory expected value sample information` | 调查识别集、选择性验证及持续监控，形成 NEW-A-001–004、007；读 DOI、PMC、KDD 和 arXiv。原批处理中按猜测检索的部分 DOI 对应无关作品或 429，未进入登记。 |
+| 对抗核验 1 | `github scipy beta ppf very large parameters betainc incorrect precision issue`；`Cross Validated zero successes rule of three`；`site:github.com scikit-learn TimeSeriesSplit leakage gap issue` | 追查 #21725、#17631、Boost #1198、MAPIE #799、分组及滚动切分。Beta-prime 和非中心 F 只算关联讨论。只见 issue 请求时将其视为限制线索，代码和历史参考独立。 |
+| 对抗核验 2 | `Do Prediction Markets Produce Well-Calibrated Probability Forecasts Page Clemen results`；`sports bookmaker probability validation margins Štrumbelj`；`cross validation classical model structured expert judgment ... equal weights`；`precision geophysical climate Milly stationarity is dead` | 防止把隐含赔率直接作意见或把 ensemble/表现加权当必然优势。重新检查题目、作者与结果。相反证据来自季节变化、独立筛选失败以及可证明界限，未选定产品方法。 |
+
+## 筛选和停止
+
+以作品 DOI、稳定任务/数据及源提交判定重复。文献的作者稿、PubMed、DOI 与 publisher 归在同一行，版本及注册状态单列。只在标题/元数据可确认时保留低证据等级，不用其论文结果支撑数值主张。软件后端共享单列，例如 Stan Math 和 SciPy 的 Boost 路径不当作独立三重验证。
+
+后续按精确题名/已知 DOI 查询，多数补回机构稿、重定位同一工作或修正元数据，并未改变已有区分（指标 vs 目标、资格 vs 借用、表示误差 vs 数学）。新的高影响缺口已列出，需要真实目标数据、记录权属或新的工况验证；追加泛化的工具条目无法填补。当前覆盖为研究地图，不能给出穷尽性、出版偏差或领域叙述的无偏性保证。行业数值复现和多软件运行受数据规模与环境影响，具体执行范围见复核。
