@@ -3,6 +3,7 @@
 from dataclasses import replace
 from fractions import Fraction as F
 from math import asin, cos, exp, lgamma, pi, sin, sqrt
+import json
 import os
 from pathlib import Path as FilePath
 import subprocess
@@ -316,6 +317,16 @@ class InstalledV1Tests(unittest.TestCase):
             self.assertEqual(completed.stdout, b"")
         r = review(Path.STRICT, device_batch("target", [(1, 2), (0, 0)]),
                    declaration(Assumption.TARGET_SHARED), cutoff_hour=100)
+        payload = subprocess.check_output([str(executable), "1", "2"], text=True)
+        history = json.loads(payload)
+        for field, incompatible in (("product_version", "1.0.0"), ("product_version", "1.1.0"),
+                                    ("abi_version", 2), ("model_version", 2), ("gate_version", 2)):
+            with self.subTest(field=field, incompatible=incompatible):
+                with patch("integrations.device_history.v1.subprocess.run") as process:
+                    process.return_value.stdout = json.dumps({**history, field: incompatible})
+                    value = estimate_v1(r, executable)
+                self.assertEqual(value.status, "consumer_failure")
+                self.assertIsNone(value.history)
         for stdout, reason in (('{"c_status":7,"estimate":{"mean":1}}', "c_failure"),
                                ('{"c_status":0,"size":999}', "consumer_failure")):
             with patch("integrations.device_history.v1.subprocess.run") as process:

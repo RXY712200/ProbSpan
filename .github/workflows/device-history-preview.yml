@@ -1,20 +1,57 @@
 name: Preview device history
 on:
   push:
-    branches: ['preview/**', 'docs/rc-stabilization']
+    branches: ['main', 'preview/**', 'docs/rc-stabilization']
     paths:
       - 'integrations/device_history/**'
       - 'research/preview_history.py'
       - 'docs/PREVIEW_DEVICE_HISTORY.zh-CN.md'
-      - 'docs/IMPLEMENTATION_VALIDATION.zh-CN.md'
+      - 'src/**'
+      - 'include/**'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'docs/API.md'
+      - 'docs/BUILD_AND_INSTALL.md'
+      - 'docs/COMPATIBILITY.md'
+      - 'docs/NUMERICAL_CONTRACT.md'
+      - 'docs/BEHAVIOR_SPEC.md'
+      - 'tests/api_contract.c'
+      - 'tests/consumer/**'
+      - 'docs/RELEASING.md'
+      - 'docs/TESTING.md'
+      - 'docs/IMPLEMENTATION_*.zh-CN.md'
       - '.github/workflows/device-history-preview.yml'
   pull_request:
     paths:
       - 'integrations/device_history/**'
       - 'research/preview_history.py'
       - 'docs/PREVIEW_DEVICE_HISTORY.zh-CN.md'
-      - 'docs/IMPLEMENTATION_VALIDATION.zh-CN.md'
+      - 'src/**'
+      - 'include/**'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'docs/API.md'
+      - 'docs/BUILD_AND_INSTALL.md'
+      - 'docs/COMPATIBILITY.md'
+      - 'docs/NUMERICAL_CONTRACT.md'
+      - 'docs/BEHAVIOR_SPEC.md'
+      - 'tests/api_contract.c'
+      - 'tests/consumer/**'
+      - 'docs/RELEASING.md'
+      - 'docs/TESTING.md'
+      - 'docs/IMPLEMENTATION_*.zh-CN.md'
       - '.github/workflows/device-history-preview.yml'
+
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Full approved candidate commit SHA to test
+        type: string
+        required: true
 
 permissions:
   contents: read
@@ -25,14 +62,21 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ inputs.candidate_sha || github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Verify tested revision
+        env:
+          EXPECTED_SHA: ${{ inputs.candidate_sha || github.event.pull_request.head.sha || github.sha }}
+        run: |
+          actual=$(git rev-parse HEAD)
+          printf 'Expected %s\nTested   %s\n' "$EXPECTED_SHA" "$actual"
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ && "$actual" == "$EXPECTED_SHA" ]]
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
       - name: Install optional reference dependencies
         run: python -m pip install -r integrations/device_history/requirements.txt
-      - name: Build installed v1 library and separate consumer
+      - name: Build installed candidate library and separate consumer
         run: |
           cmake -S . -B "$RUNNER_TEMP/core" -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release
           cmake --build "$RUNNER_TEMP/core" --parallel 2

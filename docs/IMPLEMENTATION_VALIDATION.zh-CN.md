@@ -18,7 +18,7 @@
 
 ## 2. CMake 构建图与测试数量
 
-[根 CMake](../CMakeLists.txt) 最低 3.16，项目版本 1.0.0，`probspan` 为 STATIC、C11 required、关闭 C extensions。构建树 alias 与安装导出名均为 `ProbSpan::probspan`。非 MSVC 公共链接 m；警告选项 MSVC /W4，其他 -Wall -Wextra -Wpedantic。安装仅导出公共头、静态 archive、CMake targets/config/version，版本配置 SameMajorVersion；私有头不安装。
+v1.0.0 基线的 [根 CMake](../CMakeLists.txt) 最低 3.16，项目版本 1.0.0，`probspan` 为 STATIC、C11 required、关闭 C extensions。构建树 alias 与安装导出名均为 `ProbSpan::probspan`。非 MSVC 公共链接 m；警告选项 MSVC /W4，其他 -Wall -Wextra -Wpedantic。安装仅导出公共头、静态 archive、CMake targets/config/version，版本配置 SameMajorVersion；私有头不安装。
 
 `BUILD_TESTING` 由 CTest 控制，默认 ON；`PROBSPAN_BUILD_EXAMPLES` 默认 OFF。Python3 Interpreter 仅影响五个 fixture freshness 测试，不影响 C 库本身。七个基本 C 测试始终在 BUILD_TESTING 下注册；examples ON 再加两个，发现 Python 再加五个。因此常规 examples ON+Python=14；C-only examples ON=9；C-only examples OFF=7。consumer 是独立 CMake 工程，另有 1 个 CTest，不能与根测试数混算。
 
@@ -442,9 +442,9 @@ assert sum(int(r[7]) for r in rows) / len(rows) >= 0.90
 | --- | --- | --- |
 | 安装的稳定核心 | 唯一公共头、13 个函数、ABI 1、14 个 C 实现和 9 个私有头。根 CMake 为静态 C11，仅标准 C 与所需数学库 | 相对稳定标签，`src/`、`include/`、根 CMake/`cmake/`、`tests/`、`oracle/`、`examples/` 和数学契约无差异。原有 14 CTest 及独立安装消费者复验。 |
 | 冻结模型与参考 | Jeffreys 与 readiness、主观宽度、赔率转换、EV 和 provenance 沿用 v1。冻结历史与大形状例外见[数值契约](NUMERICAL_CONTRACT.md) | 运行已提交夹具的 C 断言，并对五份 C 夹具执行 freshness。未重建冻结上游、未改独立高精度政策或容差。 |
-| 调用方参考 | `integrations/device_history/`。证据审查与进程适配用 Python 标准库，两层后验用固定 NumPy 2.4.4 / SciPy 1.17.1。独立消费者使用安装的 1.0.0 公共包 | 可选工作流 checkout 精确 PR 头，先安装根包，再单独构建消费者、执行 Python 断言和示例。根安装没有此模块、解释器或 Python 包。 |
+| 调用方参考 | `integrations/device_history/`。证据审查与进程适配用 Python 标准库，两层后验用固定 NumPy 2.4.4 / SciPy 1.17.1。候选的独立消费者要求安装包数字版本 `1.1.0 EXACT`，Python 另检查 `1.1.0-rc.1` 与 ABI、历史模型、gate 均为 1 | 可选工作流 checkout 精确 PR 头、push 提交或手动指定的完整 SHA，先安装根包，再单独构建消费者、执行 Python 断言和示例。根安装没有此模块、解释器或 Python 包。 |
 | 研究证据 | `research/preview_history.py` 与已记录 JSON。Phase II 生成器可复现，原结果不作为 v1 oracle | 参考测试重放 mix-shift 首个合成重复，不重跑全套 Phase II 研究。现场适用性、跨未披露群集的独立性、采样校正、估计权重及通用可移植数值保证仍未验证。 |
-| 部署与发布 | 根安装包含档案、公共头和 CMake config/version/targets。源码分发才包含研究与可选集成。既有 v1.0.0 Release 公开、非预发行，无上传平台二进制 | [发布说明](RELEASING.md)列出候选版本选择与精确 1.0.0 消费者的元数据依赖。没有发现需要改动稳定源码的阻断。候选命名与产品打包范围待决定。 |
+| 部署与发布 | 根安装包含档案、公共头和 CMake config/version/targets。源码分发才包含研究与可选集成。既有 v1.0.0 Release 公开、非预发行，无上传平台二进制 | [发布说明](RELEASING.md)记录未发布候选 `v1.1.0-rc.1` 和精确版本复核办法。可选参考包含在候选源码范围，根安装维持原边界。 |
 
 ### 生产函数与具体断言
 
@@ -459,7 +459,7 @@ assert sum(int(r[7]) for r in rows) / len(rows) >= 0.90
 | [standardization.py](../integrations/device_history/standardization.py) `standardize/_shapes/_moments` | `test_known_heterogeneous_and_population_change` 对 (2,18)/(9,11) 和两组固定权用 Fraction 核对两次均值和方差。 `test_boundary_and_budget_failure` 核对均值 .5、方差 .03125、镜像区间、零权重直接 Beta。 `test_numerical_range_failure_preserves_review`：10,001 条保留有效回执但无估计。 |
 | `_inverse_grid/_invert/_quantile_brackets` 的数值成功 | `test_known_heterogeneous_and_population_change`、`test_boundary_and_budget_failure`：半整数 Beta 递推、变换后的独立积分和求根得到的两端落在精度包络内，零权重用独立单 Beta 求根。 `test_phase_two_mix_shift`：种子 902618 的首重复，目标 20、来源 320、生成真值 .09。与相同记录的 Phase II Monte Carlo 核对均值和两端；这项比对不替代独立求根。 |
 | `standardize/_inverse_grid/_invert/_quantile_brackets` 的数值拒绝 | `test_boundary_and_budget_failure` 将可求解样例限于 256 个分箱，确认 `numerical_budget_exhausted` 且无估计。 `test_numerical_faults_do_not_expose_estimates` 拒绝超下限预算，并注入网格、单 Beta、后续 CDF 故障，分别核对 `beta_grid_failure`、`beta_quantile_failure`、`cdf_failure`。 `cdf_bracket_failure`、`invalid_numeric_result` 是静态检查的内部结果防线。 |
-| [v1.py](../integrations/device_history/v1.py) `estimate_v1/_check_payload`，以及 [v1_consumer.c](../integrations/device_history/v1_consumer.c) `main/state_name/read_count` | `test_installed_v1_values_and_states` 真正调用已安装档案，空结果无估计，18/2 和 19/1 分别为 INSUFFICIENT 与 VALID，核对均值与 readiness，池化 29/1。 `test_consumer_input_and_failure_boundary` 执行缺参数、负数、语法和超限请求且无 stdout，通过 mock 核对 C 错误无估计、畸形 JSON 对象为消费失败。C 内部错误在适配层用协议注入，未声称 C 求解器实际失败。版本、超时、损坏输出的其他分支源码检查。 |
+| [v1.py](../integrations/device_history/v1.py) `estimate_v1/_check_payload`，以及 [v1_consumer.c](../integrations/device_history/v1_consumer.c) `main/state_name/read_count` | `test_installed_v1_values_and_states` 真正调用已安装档案，空结果无估计，18/2 和 19/1 分别为 INSUFFICIENT 与 VALID，核对均值与 readiness，池化 29/1。 `test_consumer_input_and_failure_boundary` 执行缺参数、负数、语法和超限请求且无 stdout，通过 mock 核对 C 错误无估计、畸形 JSON 对象为消费失败。C 内部错误在适配层用协议注入，未声称 C 求解器实际失败。同一测试分别替换产品、ABI、模型与 gate 版本，确认不匹配时为 `consumer_failure` 且不返回估计。超时等其他分支为源码检查。 |
 | `example.py` `device_batch/main` 与独立 CMake | 可执行示例脚本同时走三条路径，stdout 为结构化回执和估计。测试复用可重复的设备/周期/层生成器。CI 为 CMake 配置独立安装前缀并执行真实程序。 |
 
 ### RC 实际运行与未验证边界

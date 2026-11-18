@@ -20,7 +20,7 @@ class V1History:
 def _check_payload(history, size):
     if (type(history["size"]) is not int or history["size"] != size
             or (history["product_version"], history["abi_version"],
-                history["model_version"], history["gate_version"]) != ("1.0.0", 1, 1, 1)):
+                history["model_version"], history["gate_version"]) != ("1.1.0-rc.1", 1, 1, 1)):
         raise ValueError("incompatible result")
     state, ready, estimate = (history[k] for k in ("state", "statistically_ready", "estimate"))
     if size == 0:

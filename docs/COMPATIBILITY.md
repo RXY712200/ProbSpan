@@ -27,7 +27,7 @@ representable-x limitations; numerical failures are explicit status values.
 
 ## Compatibility commitments
 
-Product version macros identify 1.0.0; ABI query identifies generation 1.
+Candidate product macros identify `1.1.0-rc.1` with numeric components 1, 1, 0. ABI, model, gate, and analysis versions remain 1. Released v1.0.0 is the compatibility baseline.
 Result model/gate/analysis versions are independent and remain 1. Final v1
 source/API names and meanings are frozen after release audit. Future changes
 must distinguish implementation corrections from model changes and avoid

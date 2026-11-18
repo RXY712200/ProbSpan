@@ -30,8 +30,9 @@ run the isolated Python tests and example. This suite is outside the root
 CTest count and uses pinned dependencies specific to the reference.
 The [assertion map](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-validation)
 identifies the synthetic records, independent numerical references and
-fault injections. The optional workflow checks the PR head itself and
-includes the two detailed reference/validation guides in its path filters.
+fault injections. The optional workflow tests the exact PR head or push SHA.
+Relevant C source, package/version, optional reference, and documentation changes
+trigger it on main pushes and PRs. See [exact-revision verification](RELEASING.md#v110-rc1-candidate-preparation) for reruns and manual validation.
 
 ## Exact development tools
 

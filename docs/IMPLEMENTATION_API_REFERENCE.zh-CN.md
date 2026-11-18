@@ -12,7 +12,7 @@
 
 ## 2. 版本宏、枚举完整目录
 
-四个产品宏：`PROBSPAN_VERSION_MAJOR=1`、`PROBSPAN_VERSION_MINOR=0`、`PROBSPAN_VERSION_PATCH=0`、`PROBSPAN_VERSION_STRING="1.0.0"`。头保护宏不是产品配置入口。ABI 通过函数查询；结果版本字段不应从产品字符串推断。
+v1.0.0 历史基线的四个产品宏：`PROBSPAN_VERSION_MAJOR=1`、`PROBSPAN_VERSION_MINOR=0`、`PROBSPAN_VERSION_PATCH=0`、`PROBSPAN_VERSION_STRING="1.0.0"`。候选分支的数值宏为 `1,1,0`，字符串为 `"1.1.0-rc.1"`，CMake 包数字版本为 `1.1.0`。头保护宏不是产品配置入口。ABI 通过函数查询；结果版本字段不应从产品字符串推断。
 
 | 枚举类型 | 全部枚举值与含义 |
 | --- | --- |

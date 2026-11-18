@@ -81,12 +81,15 @@ static void check_precedence_and_safety(void) {
 }
 
 int main(void) {
-    CHECK(PROBSPAN_VERSION_MAJOR == 1 && PROBSPAN_VERSION_MINOR == 0 && PROBSPAN_VERSION_PATCH == 0);
-    CHECK(strcmp(PROBSPAN_VERSION_STRING, "1.0.0") == 0 && probspan_abi_version() == 1u);
+    CHECK(PROBSPAN_VERSION_MAJOR == 1 && PROBSPAN_VERSION_MINOR == 1 && PROBSPAN_VERSION_PATCH == 0);
+    CHECK(strcmp(PROBSPAN_VERSION_STRING, "1.1.0-rc.1") == 0);
+    CHECK(probspan_abi_version() == 1u);
     probspan_analysis analysis;
     CHECK(probspan_compose_analysis(60, 19, 1, 2, 2, &analysis) == PROBSPAN_OK);
-    CHECK(analysis.subjective.model_version == 1u && analysis.history.model_version == 1u &&
-        analysis.history.gate_version == 1u && analysis.subjective_analysis.analysis_version == 1u);
+    CHECK(analysis.subjective.model_version == 1u);
+    CHECK(analysis.history.model_version == 1u);
+    CHECK(analysis.history.gate_version == 1u);
+    CHECK(analysis.subjective_analysis.analysis_version == 1u);
     check_provenance_invariant();
     check_precedence_and_safety();
     puts("Public API contract: versions, malformed provenance, aliasing, safety and status precedence passed");
