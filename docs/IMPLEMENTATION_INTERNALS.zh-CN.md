@@ -2,7 +2,7 @@
 
 ## 1. 基线与依赖方向
 
-候选版调整产品标识与消费版本校验；ABI、模型及数值实现沿用 v1.0.0。见 [兼容说明](COMPATIBILITY.md)。
+v1.1.0 沿用候选版的打包方式，并调整产品标识与消费版本校验；ABI、模型及数值实现沿用 v1.0.0。见 [兼容说明](COMPATIBILITY.md)。
 
 本篇审查 v1.0.0 源码 `fdfaddfb58486004ee1cc02c0f4a5c640cd17c7c`，日期 2026-11-16。配套：[导读](IMPLEMENTATION_WALKTHROUGH.zh-CN.md)、[API](IMPLEMENTATION_API_REFERENCE.zh-CN.md)、[验证](IMPLEMENTATION_VALIDATION.zh-CN.md)、[账本](TECHNICAL_DEBT.zh-CN.md)。现行边界由 [架构](ARCHITECTURE.md)、[行为规范](BEHAVIOR_SPEC.md)、[数值契约](NUMERICAL_CONTRACT.md) 和公共头共同约束。
 

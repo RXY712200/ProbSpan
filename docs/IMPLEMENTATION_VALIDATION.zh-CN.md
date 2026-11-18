@@ -432,20 +432,21 @@ assert sum(int(r[7]) for r in rows) / len(rows) >= 0.90
 
 ## 14. RC 审查：最终源码清单与调用方参考的断言地图
 
-### 四个证据基线
+### 版本与证据基线
 
 1. 稳定源码 `fdfaddfb58486004ee1cc02c0f4a5c640cd17c7c` 为 v1.0.0 标签目标。PR #11 引入经审查的四篇源码指南。第 1–13 节原有执行、覆盖计数和说明以各自记录的提交为准。
 2. Preview 第一、二单元由 PR #12/#13 引入，分别留下适用性框架和合成研究。第三单元实现提交为 `47e7ca52616e1eeabe2ddeba1fbbe8382101b006`，PR #14 合并为本次起点 `27d18c0611a73b96596552ad967b94222b24a5ad`。原 [Portable C11](https://github.com/RXY712200/ProbSpan/actions/runs/44270682085) 和 [可选参考](https://github.com/RXY712200/ProbSpan/actions/runs/44270682759) push 运行对应实现提交，不作为 RC 的 CI。合并提交的 [Portable C11](https://github.com/RXY712200/ProbSpan/actions/runs/44280313554) 成功，旧的可选工作流过滤条件没有在该 main push 产生运行。
 3. 2026-11-18，PR #15 的初次文档协调提交 `cfcdf304ef9d337f99b17a1558be7df4cffd6784` 补充了可选参考的边界、断言映射、回归测试与 CI 路径过滤。此时产品仍标识为 `1.0.0`，模型未改。
 4. 同日，PR #15 的后续提交 `66973bc55c5b36360d6e06e58a93ab7cfa9b9877` 将产品标识调整为 `1.1.0-rc.1`，CMake 包数字版本调整为 `1.1.0`，同步消费者和版本断言，并补上 main push 与手动验证入口。下文按提交记录执行证据；较新的文档修订以实际 PR HEAD 和该 HEAD 的运行验证。
+5. 已发布的 `v1.1.0-rc.1` 指向 `409d545970ffd1ddf39403fe805943555f35a0af`，其完整树等于合并后的 `a237028765cefe9306b8d04861b2030d72c0d4c5`。合并后运行见 [Portable C11](https://github.com/RXY712200/ProbSpan/actions/runs/44299028313) 和 [可选参考](https://github.com/RXY712200/ProbSpan/actions/runs/44299028325)。这些运行保留为 RC 证据。v1.1.0 的执行记录须绑定其实际评审提交。
 
 | 范围 | 实际源码、构建、依赖 | 验证与限制 |
 | --- | --- | --- |
 | 安装的稳定核心 | 唯一公共头、13 个函数、ABI 1、14 个 C 实现和 9 个私有头。根 CMake 为静态 C11，仅标准 C 与所需数学库 | 相对 v1.0.0 标签，`src/`、`cmake/`、`oracle/`、`examples/`、冻结夹具、[行为规范](BEHAVIOR_SPEC.md) 与 [数值契约](NUMERICAL_CONTRACT.md) 保持原样。`include/probspan/probspan.h` 仅调整产品 minor 宏及字符串，函数签名、结构布局、ABI 和各独立模型、gate、分析版本保持原值。`CMakeLists.txt` 的项目与生成包版本为 `1.1.0`。`tests/api_contract.c` 核对新产品版本和各独立版本，`tests/consumer/main.c` 期望新产品字符串。 |
 | 冻结模型与参考 | Jeffreys 与 readiness、主观宽度、赔率转换、EV 和 provenance 沿用 v1。冻结历史与大形状例外见[数值契约](NUMERICAL_CONTRACT.md) | 运行已提交夹具的 C 断言，并对五份 C 夹具执行 freshness。未重建冻结上游、未改独立高精度政策或容差。 |
-| 调用方参考 | `integrations/device_history/`。证据审查与进程适配用 Python 标准库，两层后验用固定 NumPy 2.4.4 / SciPy 1.17.1。`integrations/device_history/CMakeLists.txt` 要求安装包数字版本 `1.1.0 EXACT`，`integrations/device_history/v1.py` 另检查 `1.1.0-rc.1` 与 ABI、历史模型、gate 均为 1 | 可选工作流 checkout 精确 PR 头、push 提交或手动指定的完整 SHA，先安装根包，再单独构建消费者、执行 Python 断言和示例。根安装没有此模块、解释器或 Python 包。 |
+| 调用方参考 | `integrations/device_history/`。证据审查与进程适配用 Python 标准库，两层后验用固定 NumPy 2.4.4 / SciPy 1.17.1。`integrations/device_history/CMakeLists.txt` 要求安装包数字版本 `1.1.0 EXACT`，`integrations/device_history/v1.py` 另检查 `1.1.0` 与 ABI、历史模型、gate 均为 1 | 可选工作流 checkout 精确 PR 头、push 提交或手动指定的完整 SHA，先安装根包，再单独构建消费者、执行 Python 断言和示例。根安装没有此模块、解释器或 Python 包。 |
 | 研究证据 | `research/preview_history.py` 与已记录 JSON。Phase II 生成器可复现，原结果不作为 v1 oracle | 参考测试重放 mix-shift 首个合成重复，不重跑全套 Phase II 研究。现场适用性、跨未披露群集的独立性、采样校正、估计权重及通用可移植数值保证仍未验证。 |
-| 部署与发布 | 根安装包含档案、公共头和 CMake config/version/targets。源码分发才包含研究与可选集成。既有 v1.0.0 Release 公开、非预发行，无上传平台二进制 | [发布说明](RELEASING.md)记录候选 `v1.1.0-rc.1` 和精确版本复核办法。可选参考包含在候选源码范围，根安装维持原边界。 |
+| 部署与发布 | 根安装包含档案、公共头和 CMake config/version/targets。源码分发才包含研究与可选集成。既有 v1.0.0 Release 公开、非预发行，无上传平台二进制 | [发布说明](RELEASING.md)记录 `v1.1.0` 的发布准备和精确版本复核办法。可选参考包含在源码分发范围，根安装维持原边界。 |
 
 ### 生产函数与具体断言
 
@@ -467,4 +468,4 @@ assert sum(int(r[7]) for r in rows) / len(rows) >= 0.90
 
 2026-11-18，先在初次协调提交 `cfcdf304ef9d337f99b17a1558be7df4cffd6784` 验证 `1.0.0` 安装与消费者，再在候选版本提交 `66973bc55c5b36360d6e06e58a93ab7cfa9b9877` 用干净安装验证 `1.1.0-rc.1` 与数字包 `1.1.0`。两轮均在 Windows x64、UCRT64 GCC 16.2.0、CMake 4.4.3、Python 3.13.14、上述固定依赖的临时环境，按[参考构建命令](PREVIEW_DEVICE_HISTORY.zh-CN.md)用 MinGW Makefiles 构建 Release 并启用 examples/Python。实际退出结果为根 CTest 14/14、安装原消费者 1/1、独立参考 unittest 15/15，可执行示例三个状态为 ok。参考消费者以 `-Wall -Wextra -Wpedantic -Werror` 构建。实查安装只有公共头、静态 archive 和四个 CMake 文件。旧模型 readiness、provenance、十进制与浮点断言仍来自 v1 专项测试。新故障注入独立于冻结 fixtures。
 
-可选 CI 在 Ubuntu 执行上述参考断言，根 Portable C11 跑 Windows MSVC、Linux GCC/Clang、macOS AppleClang 和 Linux GNU ASan/UBSan，以及各自安装消费者。初次协调的分支 push 运行见 [Portable C11](https://github.com/RXY712200/ProbSpan/actions/runs/44284631126) 与[可选参考](https://github.com/RXY712200/ProbSpan/actions/runs/44284631127)。候选版本提交的分支 push 运行见 [Portable C11](https://github.com/RXY712200/ProbSpan/actions/runs/44289270933) 与[可选参考](https://github.com/RXY712200/ProbSpan/actions/runs/44289271424)。两组均成功；后者的可选运行日志记录精确 SHA、15 项测试与候选产品字符串。现行工作流对相关源码、头文件、打包、参考和文档路径的 PR 与 main/Preview/RC 分支 push 生效；默认分支具备该入口后可按[发布说明](RELEASING.md#v110-rc1-candidate-preparation)手动指定完整候选 SHA。上述运行验证了分支 push；main push 与手动启动不是这些运行的证据。没有实测可选消费者的 MSVC/macOS 运行，没有验证部署数据或任意 SciPy/浮点配置。首次 RC 归因以提交与可复现结果为准，本地自审和绿色 CI 不代替独立接受。
+可选 CI 在 Ubuntu 执行上述参考断言，根 Portable C11 跑 Windows MSVC、Linux GCC/Clang、macOS AppleClang 和 Linux GNU ASan/UBSan，以及各自安装消费者。初次协调的分支 push 运行见 [Portable C11](https://github.com/RXY712200/ProbSpan/actions/runs/44284631126) 与[可选参考](https://github.com/RXY712200/ProbSpan/actions/runs/44284631127)。候选版本提交的分支 push 运行见 [Portable C11](https://github.com/RXY712200/ProbSpan/actions/runs/44289270933) 与[可选参考](https://github.com/RXY712200/ProbSpan/actions/runs/44289271424)。两组均成功；后者的可选运行日志记录精确 SHA、15 项测试与候选产品字符串。现行工作流对相关源码、头文件、打包、参考和文档路径的 PR 与 main/Preview/RC 分支 push 生效；默认分支具备该入口后可按[发布说明](RELEASING.md#v110-stable-preparation)手动指定完整候选 SHA。上述运行验证了分支 push；main push 与手动启动不是这些运行的证据。没有实测可选消费者的 MSVC/macOS 运行，没有验证部署数据或任意 SciPy/浮点配置。首次 RC 归因以提交与可复现结果为准，本地自审和绿色 CI 不代替独立接受。

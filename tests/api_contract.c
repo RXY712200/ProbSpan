@@ -82,7 +82,7 @@ static void check_precedence_and_safety(void) {
 
 int main(void) {
     CHECK(PROBSPAN_VERSION_MAJOR == 1 && PROBSPAN_VERSION_MINOR == 1 && PROBSPAN_VERSION_PATCH == 0);
-    CHECK(strcmp(PROBSPAN_VERSION_STRING, "1.1.0-rc.1") == 0);
+    CHECK(strcmp(PROBSPAN_VERSION_STRING, "1.1.0") == 0);
     CHECK(probspan_abi_version() == 1u);
     probspan_analysis analysis;
     CHECK(probspan_compose_analysis(60, 19, 1, 2, 2, &analysis) == PROBSPAN_OK);

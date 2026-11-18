@@ -32,7 +32,7 @@ The [assertion map](IMPLEMENTATION_VALIDATION.zh-CN.md#preview-device-history-va
 identifies the synthetic records, independent numerical references and
 fault injections. The optional workflow tests the exact PR head or push SHA.
 Relevant C source, package/version, optional reference, and documentation changes
-trigger it on main pushes and PRs. See [exact-revision verification](RELEASING.md#v110-rc1-candidate-preparation) for reruns and manual validation.
+trigger it on main pushes and PRs. See [exact-revision verification](RELEASING.md#v110-stable-preparation) for reruns and manual validation.
 
 ## Exact development tools
 
