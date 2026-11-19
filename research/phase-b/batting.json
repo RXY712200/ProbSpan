@@ -1,0 +1,93 @@
+{
+  "B-E007": {
+    "input_sha256": "cd0f074d7e4acd394e5a538314eec04f0d332d764211b889dc62bc81a3a55d5e",
+    "players": 18,
+    "early_at_bats": 810,
+    "late_at_bats": 6970,
+    "late_hits": 1952,
+    "metrics": {
+      "no_pool": {
+        "brier": {
+          "at_bat_weighted": 0.20546458220892672,
+          "player_weighted": 0.19977311120573787
+        },
+        "log": {
+          "at_bat_weighted": 0.602966819417667,
+          "player_weighted": 0.5903273733073549
+        }
+      },
+      "pool": {
+        "brier": {
+          "at_bat_weighted": 0.20183077031631008,
+          "player_weighted": 0.1967688929975572
+        },
+        "log": {
+          "at_bat_weighted": 0.5935283318192015,
+          "player_weighted": 0.5825476116262694
+        }
+      },
+      "eb": {
+        "brier": {
+          "at_bat_weighted": 0.2018392947928361,
+          "player_weighted": 0.19671222616890152
+        },
+        "log": {
+          "at_bat_weighted": 0.5935524941209346,
+          "player_weighted": 0.5824036144762356
+        }
+      },
+      "hierarchical": {
+        "brier": {
+          "at_bat_weighted": 0.20185938195035733,
+          "player_weighted": 0.1966595446584145
+        },
+        "log": {
+          "at_bat_weighted": 0.5936189970390422,
+          "player_weighted": 0.5822780302822046
+        }
+      },
+      "hierarchical_wider_prior": {
+        "brier": {
+          "at_bat_weighted": 0.20182120949161547,
+          "player_weighted": 0.19666958709948223
+        },
+        "log": {
+          "at_bat_weighted": 0.5935118669148626,
+          "player_weighted": 0.5822982258381446
+        }
+      }
+    },
+    "grid_diagnostics": [
+      {
+        "resolution": 121,
+        "prior_max_concentration": 2048,
+        "ml_mean": 0.265,
+        "ml_concentration": 789.6119426088659,
+        "ml_on_grid_edge": false,
+        "posterior_mass_last_concentration_decile_log_grid": 0.20641524213597062
+      },
+      {
+        "resolution": 241,
+        "prior_max_concentration": 2048,
+        "ml_mean": 0.265,
+        "ml_concentration": 789.6119426088659,
+        "ml_on_grid_edge": false,
+        "posterior_mass_last_concentration_decile_log_grid": 0.2109432360554183
+      },
+      {
+        "resolution": 241,
+        "prior_max_concentration": 16384,
+        "ml_mean": 0.265,
+        "ml_concentration": 789.6119426088659,
+        "ml_on_grid_edge": false,
+        "posterior_mass_last_concentration_decile_log_grid": 0.1664537986151564
+      }
+    ],
+    "grid_refinement_max_prediction_change": 1.7673094332426587e-07,
+    "wider_prior_max_prediction_change": 0.007566012929595078,
+    "hier_minus_pool_drop_one_test_brier_range": [
+      -6.739151012993827e-05,
+      0.0002010364918607066
+    ]
+  }
+}
