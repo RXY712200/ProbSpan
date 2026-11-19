@@ -77,3 +77,8 @@ The **numerical evaluation boundary** is private: Beta functions, gamma normaliz
 **Review checklist for any change:** identify whether it affects (a) formula/branch semantics, (b) a private numerical implementation, (c) API/ABI/source compatibility, or (d) development tooling only. An implementation correction must leave frozen datasets intact unless a separate, explicitly documented high-precision reference exception has been authorized. Avoid broadening the library with unrelated general statistics or application workflow machinery.
 
 Development Python utilities read the frozen source checkout or independent high-precision references. They do not run during installed-library use; generated C fixtures allow the runtime tests to compile without a Python interpreter.
+
+
+## D2.2 Models
+
+The independently configured Models archive routes the fixed-n interval entry point to Wilson score inversion or an enclosed binomial-tail solver. It links platform math and uses its own numerical code. See the [Models numerical design](../models/API.md#numerical-implementation-and-bounds).

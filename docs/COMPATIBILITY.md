@@ -56,3 +56,8 @@ that archive. Legacy ProbSpan 1.1.0 still provides ProbSpan::probspan and its
 existing ABI 1. Same-major package matching is evaluated independently for
 each package. The C targets require no Python runtime. See the
 [installation matrix and same-toolchain object check](../models/README.md).
+
+
+## D2.2 Models
+
+Models ABI generation 1 includes the additive D2.2 interval API in its own namespace. The legacy package's 13 APIs and ABI are documented independently. See the [Models contract](../models/API.md).

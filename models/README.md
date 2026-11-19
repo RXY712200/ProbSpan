@@ -4,8 +4,7 @@ This standalone C11 static package is the D2.1 foundation for the future
 ProbSpan v2.0.0 source distribution. Its installed header is
 `<probspan_models/version.h>`. It exposes the product string
 `PROBSPAN_MODELS_VERSION_STRING` and the compiled ABI query
-`ps2_abi_version()`, which returns generation 1. Planned models are future
-work. The legacy package retains its separate version and ABI.
+`ps2_abi_version()`, which returns generation 1. D2.2 provides [fixed-n binomial intervals](API.md). F002–F005 are future work. The legacy package retains its separate version and ABI.
 
 ```sh
 cmake -S models -B build-models -DCMAKE_BUILD_TYPE=Release
@@ -22,7 +21,7 @@ target_link_libraries(app PRIVATE ProbSpanModels::models)
 ```
 
 The archive, public header, and CMake exports can share an install prefix with
-ProbSpan 1.1.0. The Models target has no package or Python dependency.
+ProbSpan 1.1.0. The Models target propagates platform math linkage and has no Python or legacy-package dependency.
 
 Run the repeatable tests from a Git checkout with Python and GCC available:
 

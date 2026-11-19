@@ -87,3 +87,8 @@ project at models/. Configure and install it independently. The legacy
 ProbSpan 1.1.0 install and ProbSpan::probspan target remain independently
 usable. Both packages can occupy one prefix. See the
 [Models build and consumer instructions](../models/README.md).
+
+
+## D2.2 Models
+
+The standalone Models archive installs `probspan_models/binomial_interval.h`. Its exported target carries platform math linkage and exposes the fixed-n interval API. See the [Models contract and example](../models/API.md).
