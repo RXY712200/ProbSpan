@@ -469,3 +469,8 @@ assert sum(int(r[7]) for r in rows) / len(rows) >= 0.90
 2026-11-18，先在初次协调提交 `cfcdf304ef9d337f99b17a1558be7df4cffd6784` 验证 `1.0.0` 安装与消费者，再在候选版本提交 `66973bc55c5b36360d6e06e58a93ab7cfa9b9877` 用干净安装验证 `1.1.0-rc.1` 与数字包 `1.1.0`。两轮均在 Windows x64、UCRT64 GCC 16.2.0、CMake 4.4.3、Python 3.13.14、上述固定依赖的临时环境，按[参考构建命令](PREVIEW_DEVICE_HISTORY.zh-CN.md)用 MinGW Makefiles 构建 Release 并启用 examples/Python。实际退出结果为根 CTest 14/14、安装原消费者 1/1、独立参考 unittest 15/15，可执行示例三个状态为 ok。参考消费者以 `-Wall -Wextra -Wpedantic -Werror` 构建。实查安装只有公共头、静态 archive 和四个 CMake 文件。旧模型 readiness、provenance、十进制与浮点断言仍来自 v1 专项测试。新故障注入独立于冻结 fixtures。
 
 可选 CI 在 Ubuntu 执行上述参考断言，根 Portable C11 跑 Windows MSVC、Linux GCC/Clang、macOS AppleClang 和 Linux GNU ASan/UBSan，以及各自安装消费者。初次协调的分支 push 运行见 [Portable C11](https://github.com/RXY712200/ProbSpan/actions/runs/44284631126) 与[可选参考](https://github.com/RXY712200/ProbSpan/actions/runs/44284631127)。候选版本提交的分支 push 运行见 [Portable C11](https://github.com/RXY712200/ProbSpan/actions/runs/44289270933) 与[可选参考](https://github.com/RXY712200/ProbSpan/actions/runs/44289271424)。两组均成功；后者的可选运行日志记录精确 SHA、15 项测试与候选产品字符串。现行工作流对相关源码、头文件、打包、参考和文档路径的 PR 与 main/Preview/RC 分支 push 生效；默认分支具备该入口后可按[发布说明](RELEASING.md#v110-stable-preparation)手动指定完整候选 SHA。上述运行验证了分支 push；main push 与手动启动不是这些运行的证据。没有实测可选消费者的 MSVC/macOS 运行，没有验证部署数据或任意 SciPy/浮点配置。首次 RC 归因以提交与可复现结果为准，本地自审和绿色 CI 不代替独立接受。
+
+
+## D2.2 Models
+
+D2.2 的 [Models 资格记录](../models/tests/QUALIFICATION.md) 区分编译结果、高精度尾部复核和固定 n 覆盖枚举。其 CTest 与历史 legacy oracle 分开。

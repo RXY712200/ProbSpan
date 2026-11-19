@@ -128,3 +128,8 @@ Most mathematical outputs are checked against committed reference values within 
 Reproducibility is strongest for the exact decimal parser and discrete policy states. Credible intervals, positive-EV posterior probabilities and S scores depend on standard libm and the accepted tolerance contract. High-precision reference fixtures explicitly distinguish exact integer-count Beta parameters from already-rounded binary64 arguments; mixing the two is especially misleading near extreme concentrated posterior thresholds.
 
 The independently observed finite-precision **quantile-resolution limit** remains a known constraint, not a change to the Jeffreys distribution. Tracking additional extreme architectures and environments should occur as explicitly scoped follow-up issues, without relaxing the currently accepted parity tolerances.
+
+
+## D2.2 Models
+
+D2.2 Models confidence endpoints have a separate [numerical contract](../models/API.md#numerical-implementation-and-bounds). The v1 parity tolerances above govern legacy behavior.

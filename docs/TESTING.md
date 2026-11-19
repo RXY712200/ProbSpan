@@ -137,3 +137,8 @@ Release work should keep a reproducible trail: the final source SHA, a successfu
 **Triage when a job fails:** (1) reproduce its configure/build command; (2) identify whether behavior or a compiler/ABI/locale assumption differs; (3) check discrete states separately from elementary and Beta tolerances; (4) preserve all frozen datasets; (5) repair source or platform integration rather than removing the failing target. If frozen SciPy is internally inconsistent in an extreme numeric region, follow the separately documented high-precision reference exception—not a silent oracle overwrite.
 
 For contributions, follow [CONTRIBUTING.md](../CONTRIBUTING.md). For tagging and a GitHub Release, follow [RELEASING.md](RELEASING.md).
+
+
+## D2.2 Models
+
+For D2.2, the [independent qualifier](../models/tests/QUALIFICATION.md) checks the compiled Models probe with exact rational and high-precision references. The install matrix also executes the interval through the installed exported target.

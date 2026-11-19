@@ -297,3 +297,8 @@ int main(void) {
 ProbSpan 1.1.0。Models 2.0.0 目前只提供版本字符串及 ABI 1 查询，
 计划模型尚未实现。两个包可共用安装前缀，设备历史参考仍属于调用方工具。
 见 [Models 构建和安装验证](../models/README.md)。
+
+
+## D2.2 Models
+
+D2.2 在独立 Models 包提供固定样本二项置信区间。使用方按资料的同质性和采样条件选择 Wilson 或 Clopper–Pearson，再显式指定单双侧。见 [接口及例子](../models/API.md)。
