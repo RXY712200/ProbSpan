@@ -79,3 +79,11 @@ installs only the C static library, public header and package configuration.
 4. Linking the static archive copies code into the consumer binary; no ProbSpan service, runtime Python environment, database, or assets are required.
 
 The root project installs only the public header, static archive and CMake package. License and contributor information live in the source release: [LICENSE](../LICENSE), [Contributing](../CONTRIBUTING.md). The development/release workflow is described in [RELEASING](RELEASING.md).
+
+## Standalone Models package
+
+The future ProbSpan v2.0.0 source distribution includes a separate CMake
+project at models/. Configure and install it independently. The legacy
+ProbSpan 1.1.0 install and ProbSpan::probspan target remain independently
+usable. Both packages can occupy one prefix. See the
+[Models build and consumer instructions](../models/README.md).

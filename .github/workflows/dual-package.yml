@@ -1,0 +1,21 @@
+name: Dual-package installation
+on:
+  push:
+    paths: ['models/**', '.github/workflows/dual-package.yml']
+  pull_request:
+    paths: ['models/**', '.github/workflows/dual-package.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  install-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - run: git rev-parse HEAD
+      - run: python3 models/tests/install_matrix.py --generator 'Unix Makefiles'

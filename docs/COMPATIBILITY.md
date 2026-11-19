@@ -47,3 +47,12 @@ The exact decimal parser has its own bit-exact contract, including tests under a
 External language bindings should preserve `int32_t`, `int64_t`, `uint64_t`, `bool`, `double` and explicit enum mappings; they should not marshal whole structs as a version-independent binary serialization format. ABI version 1 describes this library's public contract generation, **not** universal C struct layout identity.
 
 Current release support is a **static C11 library**. Shared/DLL distribution, non-default floating environments and additional target architectures are future work only if testing justifies a concrete supported contract; these capabilities are not silently promised by v1.0.
+
+## Models package compatibility
+
+ProbSpanModels 2.0.0 uses its own ABI generation 1, header namespace and
+ProbSpanModels::models target. The compiled ps2_abi_version query refers to
+that archive. Legacy ProbSpan 1.1.0 still provides ProbSpan::probspan and its
+existing ABI 1. Same-major package matching is evaluated independently for
+each package. The C targets require no Python runtime. See the
+[installation matrix and same-toolchain object check](../models/README.md).
