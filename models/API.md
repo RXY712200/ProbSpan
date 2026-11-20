@@ -203,5 +203,55 @@ The function makes no inference about transportability or covariance
 between estimated risks and weights. See
 [exact arithmetic and qualification](tests/STANDARDIZE_QUALIFICATION.md).
 
-F004 and F005 are future work, F006 is excluded, and the future ProbSpan
-v2.0.0 source release is unpublished.
+
+
+## Competing-risk cumulative incidence
+
+Use `<probspan_models/incidence.h>` and link `ProbSpanModels::models`.
+
+```c
+const ps2_incidence_row exits[] = {{1, 2, 3, 0}, {2, 1, 0, 0}};
+const ps2_incidence_request cohort = {10, 2, exits, 2, 2};
+ps2_incidence_result result;
+ps2_incidence_status status = ps2_cumulative_incidence(&cohort, &result);
+/* If OK, S is approximately .4, F is approximately .3, and four remain. */
+```
+
+A request has a common-origin initial count (1 through 2^53), an
+observable follow-up cutoff, at most 1000000 rows, and an inclusive
+horizon. Ticks are nonnegative integer offsets in a single caller-selected
+unit. Tick zero is the origin and is included when h=0. A zero-length
+row list with positive initial count asserts observable follow-up with
+zero exits up to the cutoff. Each row gives target terminal, other
+terminal, and lost counts, all as numbers of people or observation units.
+Ticks increase strictly. Both terminal counts use the same pre-exit Y.
+Loss contributes no event and only reduces the next Y. All-zero rows
+are legal even after depletion and do not extend support. Positive exits
+after depletion are invalid. The calculator cannot infer admission,
+independence, cause validity or non-informative censoring from these rows.
+
+The request and row array are borrowed, the result is caller-owned, and
+storage must not overlap. Validation checks required pointers, then
+EMPTY for an initial count of zero, then UNSUPPORTED for limits, then
+all rows for inconsistent ticks/cutoff or exits exceeding Y. A requested
+horizon beyond the cutoff, or beyond risk-set depletion with positive
+mathematical S, gives UNSUPPORTED_HORIZON. At the exact loss tick the
+result is valid and indicates SUPPORT_ENDS_AT_HORIZON. All-terminal
+depletion has exact S=0 and permits later horizons inside the cutoff.
+Remaining risk-set support is AT_RISK. The result reports the exact
+post-horizon count. Numerical environment validation follows input
+validation. Every failure preserves the output bytes.
+
+Success returns both S and target CIF as an approximate point with a
+certified numerical enclosure, and an integer-derived structural zero
+or positive diagnostic. POSITIVE_NEAR_ZERO is reserved for a positive
+quantity whose enclosure includes zero. A positive result is at least
+1/n0 in this fixed-origin count domain, so arithmetic underflow is not
+expected. These are error enclosures, not sampling intervals.
+
+The displayed cohort gives F=.2 at the first tick and .3 at the second.
+Censoring the competing events in 1−KM gives .36. The B-E004 population
+mechanism separately gives .24 for CIF versus .28 for 1−KM. See the
+[proof, reference, and limitations](tests/INCIDENCE_QUALIFICATION.md).
+
+F005 is future work. F006 is excluded. The v2.0.0 source release is unpublished.

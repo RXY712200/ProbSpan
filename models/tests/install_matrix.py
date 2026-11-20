@@ -70,7 +70,7 @@ def main():
         models_files = install(models, models_only)
         expected = {
             "include/probspan_models/version.h", "include/probspan_models/binomial_interval.h",
-            "include/probspan_models/beta_predict.h", "include/probspan_models/standardize.h", "lib/libprobspan_models.a",
+            "include/probspan_models/beta_predict.h", "include/probspan_models/standardize.h", "include/probspan_models/incidence.h", "lib/libprobspan_models.a",
             *(f"lib/cmake/ProbSpanModels/ProbSpanModels{name}.cmake"
               for name in ("Config", "ConfigVersion", "Targets", "Targets-release")),
         }

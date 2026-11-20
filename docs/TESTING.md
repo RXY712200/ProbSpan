@@ -152,3 +152,8 @@ The [D2.3 qualifier](../models/tests/BETA_QUALIFICATION.md) checks the productio
 ## D3.1 Models
 
 The Models workflow runs the [D3.1 Fraction qualifier](../models/tests/STANDARDIZE_QUALIFICATION.md) on the branch head alongside F001–F002 and CTest.
+
+
+## D3.2 Models
+
+The Models workflow runs the [D3.2 rational and Decimal qualifier](../models/tests/INCIDENCE_QUALIFICATION.md), CTest and the installed consumer alongside F001–F003.

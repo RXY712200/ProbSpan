@@ -92,3 +92,8 @@ D2.3 adds an independent explicit Beta update and a Beta–Binomial batch likeli
 ## D3.1 Models
 
 The Models fixed-weight standardizer has a private bounded integer accumulator and exact ratio encoder. It depends on neither the F001/F002 solvers nor legacy inference. See [D3.1 Models API](../models/API.md#fixed-weight-target-standardization).
+
+
+## D3.2 Models
+
+D3.2 adds a separate fixed-origin integer risk-set validator and directed binary64 Aalen–Johansen recurrence. See [Models API](../models/API.md#competing-risk-cumulative-incidence).

@@ -1,4 +1,5 @@
 #include <string.h>
+#include <probspan_models/incidence.h>
 #include <probspan_models/standardize.h>
 #include <probspan_models/beta_predict.h>
 #include <probspan_models/version.h>
@@ -26,6 +27,14 @@ int main(void)
         || risk.kind != PS2_STANDARDIZE_PARTIAL
         || risk.result.partial.lower.lower != .375 || risk.result.partial.upper.upper != .625) {
         return 3;
+    }
+    const ps2_incidence_row exits[] = {{1, 2, 3, 0}, {2, 1, 0, 0}};
+    const ps2_incidence_request cohort = {10, 2, exits, 2, 2};
+    ps2_incidence_result incidence;
+    if (ps2_cumulative_incidence(&cohort, &incidence) != PS2_INCIDENCE_OK
+        || incidence.target.lower > .3 || incidence.target.upper < .3
+        || incidence.target.upper > .300001 || incidence.at_risk_after_horizon != 4) {
+        return 4;
     }
     return strcmp(PROBSPAN_MODELS_VERSION_STRING, "2.0.0") != 0
         || ps2_abi_version() != 1u;

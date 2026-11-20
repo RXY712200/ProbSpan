@@ -304,3 +304,8 @@ C++ 工程可用 `project(... LANGUAGES CXX)` 并链接同一 C 库，公共头�
 ## D3.1 Models
 
 新增 F003 位于独立 Models 头文件。它使用带标签的结果联合及原子的失败规则。见 [Models API](../models/API.md#fixed-weight-target-standardization)。
+
+
+## D3.2 Models
+
+独立 Models 包新增竞争风险请求、支持状态与数值区间。见 [Models API](../models/API.md#competing-risk-cumulative-incidence)。

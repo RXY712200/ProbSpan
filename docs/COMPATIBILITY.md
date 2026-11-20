@@ -71,3 +71,8 @@ D2.3 adds two Models symbols and typed values under Models ABI 1. The legacy C A
 ## D3.1 Models
 
 Models ABI 1 gains the additive `ps2_standardize_fixed` symbol. Its two result modes are distinct from legacy v1 and the existing Models inference calls. See the [Models API](../models/API.md).
+
+
+## D3.2 Models
+
+Models ABI 1 adds `ps2_cumulative_incidence` in the independent Models header namespace. See [Models API](../models/API.md).

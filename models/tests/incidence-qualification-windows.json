@@ -1,0 +1,46 @@
+{
+  "input_sha256": "7e8a3738b4f31e66b51833da6bc91dc38bb7dff83b6d2f73aed6ea675e37bd15",
+  "status_counts": {
+    "2": 1,
+    "3": 1,
+    "4": 40,
+    "1": 4,
+    "0": 197
+  },
+  "groups": {
+    "empty": 1,
+    "oversized": 1,
+    "cutoff": 1,
+    "after-cutoff": 1,
+    "future-invalid": 1,
+    "duplicate": 1,
+    "overflow": 1,
+    "target": 15,
+    "other": 15,
+    "lost": 15,
+    "tied": 15,
+    "no-exits": 5,
+    "tick-zero": 1,
+    "ten-person": 1,
+    "phase-b-e004": 1,
+    "least-survival": 1,
+    "least-incidence": 1,
+    "support-loss-while-positive": 1,
+    "held-out": 160,
+    "long": 3,
+    "long-censor": 2
+  },
+  "max_absolute_error_S_F": [
+    3.7007397145368184e-11,
+    2.220446049250313e-16
+  ],
+  "max_relative_error_S_F": [
+    3.700739714810728e-11,
+    1.8503523951306022e-11
+  ],
+  "max_enclosure_width_S_F": [
+    2.2204471594733377e-10,
+    1.6653345369377348e-15
+  ],
+  "max_decimal_tier_difference": 3.870931265863772e-30
+}
