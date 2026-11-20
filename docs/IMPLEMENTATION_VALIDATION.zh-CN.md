@@ -479,3 +479,8 @@ D2.2 的 [Models 资格记录](../models/tests/QUALIFICATION.md) 区分编译结
 ## D2.3 Models
 
 D2.3 使用 96/192 位 log Beta、有理数和独立相邻质量递推。见 [资格记录](../models/tests/BETA_QUALIFICATION.md)。
+
+
+## D3.1 Models
+
+F003 的独立 Fraction 验证覆盖权重边界、分层排列、次正规数和部分识别。见 [资格记录](../models/tests/STANDARDIZE_QUALIFICATION.md)。

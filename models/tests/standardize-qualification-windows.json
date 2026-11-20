@@ -1,0 +1,69 @@
+{
+  "cases": 8371,
+  "input_sha256": "20cf3e4ef242ebacadb5857cf7fd362e9303083be7648d5d5931ab685f3af1b5",
+  "status_counts": {
+    "2": 1,
+    "1": 3,
+    "0": 1324,
+    "3": 7043
+  },
+  "groups": {
+    "empty": 1,
+    "bad": 2,
+    "all": 1,
+    "zero": 1,
+    "one": 1,
+    "missing": 1,
+    "product": 1,
+    "midpoint": 3,
+    "signed": 1,
+    "huge": 1,
+    "invalid": 1,
+    "policy": 4,
+    "encoding-neighbor": 30,
+    "phase": 1,
+    "simpson": 2,
+    "finite-grid": 8000,
+    "blind": 160,
+    "permuted": 160
+  },
+  "policy_boundary": {
+    "policy-1-0": {
+      "weights": [
+        "0x1.0000000000000p+0",
+        "0x1.19799812dea11p-40"
+      ],
+      "sign": -1,
+      "status": 0
+    },
+    "policy-1-1": {
+      "weights": [
+        "0x1.0000000000000p+0",
+        "0x1.19799812dea12p-40"
+      ],
+      "sign": 1,
+      "status": 3
+    },
+    "policy--1-0": {
+      "weights": [
+        "0x1.fffffffffc000p-1",
+        "0x1.cd0ccfda42bddp-41"
+      ],
+      "sign": 1,
+      "status": 3
+    },
+    "policy--1-1": {
+      "weights": [
+        "0x1.fffffffffc000p-1",
+        "0x1.cd0ccfda42bdep-41"
+      ],
+      "sign": -1,
+      "status": 0
+    }
+  },
+  "scientific_points": {
+    "phase-b-e003": 0.13,
+    "simpson-a": 0.55,
+    "simpson-b": 0.45
+  }
+}

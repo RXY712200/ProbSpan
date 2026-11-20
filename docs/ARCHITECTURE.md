@@ -87,3 +87,8 @@ The independently configured Models archive routes the fixed-n interval entry po
 ## D2.3 Models
 
 D2.3 adds an independent explicit Beta update and a Beta–Binomial batch likelihood using compensated log-factor sums. The Models source has no dependency on legacy inference or the F001 tail engine. See the [Models API](../models/API.md#explicit-beta-update-and-batch-prediction).
+
+
+## D3.1 Models
+
+The Models fixed-weight standardizer has a private bounded integer accumulator and exact ratio encoder. It depends on neither the F001/F002 solvers nor legacy inference. See [D3.1 Models API](../models/API.md#fixed-weight-target-standardization).

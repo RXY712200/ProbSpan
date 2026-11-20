@@ -51,7 +51,6 @@ All failures leave every byte of the output untouched. Successful values are
 finite and ordered in [0,1], with nonnegative zero. The function needs no heap,
 I/O or mutable shared state. Separate calls can use separate output objects.
 These confidence sets have no prior, readiness gate, or odds/EV interpretation.
-F002–F005 are future scope.
 
 ## Numerical implementation and bounds
 
@@ -149,4 +148,60 @@ reaches ROUNDED_ZERO. An unresolved sign near the half-smallest-subnormal
 midpoint produces NUMERICAL_FAILURE with no writeback. See the
 [reference methods and proposed budgets](tests/BETA_QUALIFICATION.md).
 
-F003–F005 are future work. ProbSpan v2.0.0 has not been published.
+
+
+## Fixed-weight target standardization
+
+Include `<probspan_models/standardize.h>` and link `ProbSpanModels::models`.
+
+```c
+const ps2_fixed_stratum strata[] = {
+    {.75, PS2_RISK_KNOWN, .5}, {.25, PS2_RISK_UNKNOWN, 0}
+};
+ps2_standardized_risk result;
+if (ps2_standardize_fixed(strata, 2, &result) == PS2_STANDARDIZE_OK
+    && result.kind == PS2_STANDARDIZE_PARTIAL) {
+    /* Outward interval: [.375, .625]. */
+    double lower = result.result.partial.lower.lower;
+    double upper = result.result.partial.upper.upper;
+    (void)lower;
+    (void)upper;
+}
+```
+
+Inputs and outputs are caller-owned and must not overlap. Inputs are
+borrowed for the call. Both signs of zero weight are accepted as zero.
+A known risk must be finite in [0,1] even at zero weight. Unknown risk
+storage is ignored and may be left unspecified.
+
+Validation precedence is null pointers, count zero (EMPTY), count above
+1024 (UNSUPPORTED), then invalid rows (INVALID_ARGUMENT) before an
+oversized weight (UNSUPPORTED). Unsupported rounding or lack of gradual
+underflow returns NUMERICAL_FAILURE before exact normalization. A weight
+above 2 can never fit the policy range. All other normalization decisions
+are exact, including zero total (UNSUPPORTED). Every unsuccessful call
+leaves the output bytes untouched.
+
+Let W be the exact sum of encoded weights, A the exact weighted sum of
+known risks and U the exact sum of unknown weights. Acceptance uses the
+closed interval |W−1| ≤ 1/10^12 as a decimal rational. At U=0 the exact
+target risk is A/W, returned as a nearest-even point and adjacent
+enclosure. EXACT means equal enclosure endpoints, ROUNDED means a
+nonexact nonzero point, and ROUNDED_ZERO denotes loss of a strictly
+positive exact point. At U>0 read only the partial result. The lower
+enclosure surrounds A/W and the upper enclosure surrounds (A+U)/W.
+Use the lower enclosure's lower value and upper enclosure's upper
+value for the outward sharp identification interval. Setting every
+unknown risk to 0 or every unknown risk to 1 attains the respective
+real endpoint. Zero-weight unknown rows do not affect identification.
+Tiny positive unknown weights preserve the partial state.
+
+These are fixed target weights over disjoint exhaustive strata with
+comparable endpoints and horizons. They are not sample pooling weights
+or inferred weights. The set is not a confidence or credible interval.
+The function makes no inference about transportability or covariance
+between estimated risks and weights. See
+[exact arithmetic and qualification](tests/STANDARDIZE_QUALIFICATION.md).
+
+F004 and F005 are future work, F006 is excluded, and the future ProbSpan
+v2.0.0 source release is unpublished.

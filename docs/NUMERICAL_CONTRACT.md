@@ -138,3 +138,8 @@ D2.2 Models confidence endpoints have a separate [numerical contract](../models/
 ## D2.3 Models
 
 D2.3 uses a distinct encoded-shape reference, positive-mass representation states and proposed log, moment and PMF budgets. See the [Beta qualification](../models/tests/BETA_QUALIFICATION.md).
+
+
+## D3.1 Models
+
+D3.1 verifies exact decimal-rational policy membership and adjacent binary64 encodings. See the [proof and verification](../models/tests/STANDARDIZE_QUALIFICATION.md). Legacy numerical contracts above apply independently.

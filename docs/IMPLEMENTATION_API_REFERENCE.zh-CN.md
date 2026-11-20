@@ -299,3 +299,8 @@ C++ 工程可用 `project(... LANGUAGES CXX)` 并链接同一 C 库，公共头�
 ## D2.3 Models
 
 独立 Models 包新增 Beta 后验与预测类型，区分可信的结构一致性、批次概率表示与失败。见 [Models API](../models/API.md#explicit-beta-update-and-batch-prediction)。
+
+
+## D3.1 Models
+
+新增 F003 位于独立 Models 头文件。它使用带标签的结果联合及原子的失败规则。见 [Models API](../models/API.md#fixed-weight-target-standardization)。

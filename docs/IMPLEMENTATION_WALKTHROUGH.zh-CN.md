@@ -307,3 +307,8 @@ D2.2 在独立 Models 包提供固定样本二项置信区间。使用方按资�
 ## D2.3 Models
 
 D2.3 新增显式先验更新与未来批次计数预测。零历史保留先验，批量为空时质量为 1。见 [Models API](../models/API.md#explicit-beta-update-and-batch-prediction)。
+
+
+## D3.1 Models
+
+固定目标层权支持点识别；未知正权层给锐界。读取结果前先检查类别。见 [Models API](../models/API.md#fixed-weight-target-standardization)。

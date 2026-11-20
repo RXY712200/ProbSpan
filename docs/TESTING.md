@@ -147,3 +147,8 @@ For D2.2, the [independent qualifier](../models/tests/QUALIFICATION.md) checks t
 ## D2.3 Models
 
 The [D2.3 qualifier](../models/tests/BETA_QUALIFICATION.md) checks the production probe against rational masses, high-precision log Beta and an independent recurrence. The package workflow runs it separately from the preserved D2.2 qualifier.
+
+
+## D3.1 Models
+
+The Models workflow runs the [D3.1 Fraction qualifier](../models/tests/STANDARDIZE_QUALIFICATION.md) on the branch head alongside F001–F002 and CTest.
