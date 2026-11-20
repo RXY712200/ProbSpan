@@ -82,3 +82,8 @@ Development Python utilities read the frozen source checkout or independent high
 ## D2.2 Models
 
 The independently configured Models archive routes the fixed-n interval entry point to Wilson score inversion or an enclosed binomial-tail solver. It links platform math and uses its own numerical code. See the [Models numerical design](../models/API.md#numerical-implementation-and-bounds).
+
+
+## D2.3 Models
+
+D2.3 adds an independent explicit Beta update and a Beta–Binomial batch likelihood using compensated log-factor sums. The Models source has no dependency on legacy inference or the F001 tail engine. See the [Models API](../models/API.md#explicit-beta-update-and-batch-prediction).

@@ -23,11 +23,12 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
-      - run: python -m pip install -r models/tests/qualification-requirements.txt
+      - run: python -m pip install -r models/tests/qualification-requirements.txt -r models/tests/beta-requirements.txt
       - run: |
           cmake -S models -B "$RUNNER_TEMP/qualified-models" -DCMAKE_BUILD_TYPE=Release
           cmake --build "$RUNNER_TEMP/qualified-models" --parallel 4
           python models/tests/qualify_interval.py "$RUNNER_TEMP/qualified-models/models_interval_probe"
+          python models/tests/qualify_beta.py "$RUNNER_TEMP/qualified-models/models_beta_probe"
       - run: |
           cmake -S models -B "$RUNNER_TEMP/sanitized-models" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS="-Wall -Wextra -Wpedantic -fsanitize=undefined,address -fno-omit-frame-pointer -fno-pie" -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=undefined,address -no-pie"
           cmake --build "$RUNNER_TEMP/sanitized-models" --parallel 4

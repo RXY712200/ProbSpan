@@ -302,3 +302,8 @@ ProbSpan 1.1.0。Models 2.0.0 目前只提供版本字符串及 ABI 1 查询，
 ## D2.2 Models
 
 D2.2 在独立 Models 包提供固定样本二项置信区间。使用方按资料的同质性和采样条件选择 Wilson 或 Clopper–Pearson，再显式指定单双侧。见 [接口及例子](../models/API.md)。
+
+
+## D2.3 Models
+
+D2.3 新增显式先验更新与未来批次计数预测。零历史保留先验，批量为空时质量为 1。见 [Models API](../models/API.md#explicit-beta-update-and-batch-prediction)。

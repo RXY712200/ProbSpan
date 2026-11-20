@@ -318,3 +318,8 @@ provenance 先读完整旧值并形成局部 next，再赋 *result；这是支�
 ## D2.2 Models
 
 D2.2 的 Wilson 使用正态生存函数反演及稳定 score 根。CP 通过二项权的尾和包围决定二分方向。见 [独立 Models 数值设计](../models/API.md#numerical-implementation-and-bounds)。
+
+
+## D2.3 Models
+
+D2.3 的对数质量来自上升乘积与组合系数，使用补偿加法，空间 O(1)。见 [Models API](../models/API.md#explicit-beta-update-and-batch-prediction)。

@@ -1,0 +1,29 @@
+{
+  "grid": {
+    "calls": 2104,
+    "rounded_zero": 306,
+    "subnormal": 0,
+    "ambiguous_rejected": 0,
+    "max_log_abs": 3.5419834610614515e-12,
+    "max_normal_relative": 4.5288140608102506e-14,
+    "max_mean_relative": 1.4970658393613498e-16,
+    "max_variance_relative": 3.3696022551022144e-16,
+    "max_subnormal_grid_steps": 0
+  },
+  "challenge": {
+    "calls": 7,
+    "rounded_zero": 2,
+    "subnormal": 1,
+    "ambiguous_rejected": 1,
+    "max_log_abs": 9.773783751508099e-14,
+    "max_normal_relative": 2.401086944656401e-14,
+    "max_mean_relative": 1.279408010647199e-16,
+    "max_variance_relative": 4.786183321480728e-16,
+    "max_subnormal_grid_steps": 0
+  },
+  "normalization_abs": [
+    0.0,
+    0.0,
+    6.328271240363392e-15
+  ]
+}
