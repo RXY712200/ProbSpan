@@ -143,3 +143,8 @@ D2.3 uses a distinct encoded-shape reference, positive-mass representation state
 ## D3.1 Models
 
 D3.1 verifies exact decimal-rational policy membership and adjacent binary64 encodings. See the [proof and verification](../models/tests/STANDARDIZE_QUALIFICATION.md). Legacy numerical contracts above apply independently.
+
+
+## D3.2 Models
+
+D3.2 uses a separate [directed-enclosure proof](../models/tests/INCIDENCE_QUALIFICATION.md) for the S and target-CIF estimates. Its ranges are numerical rather than sampling intervals.

@@ -312,3 +312,8 @@ D2.3 新增显式先验更新与未来批次计数预测。零历史保留先验
 ## D3.1 Models
 
 固定目标层权支持点识别；未知正权层给锐界。读取结果前先检查类别。见 [Models API](../models/API.md#fixed-weight-target-standardization)。
+
+
+## D3.2 Models
+
+D3.2 用同起点队列和明确的观察截止/评估时点求竞争风险累计发生率。见 [Models API](../models/API.md#competing-risk-cumulative-incidence)。

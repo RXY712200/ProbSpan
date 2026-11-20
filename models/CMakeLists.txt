@@ -4,7 +4,7 @@ project(ProbSpanModels VERSION 2.0.0 LANGUAGES C)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-add_library(probspan_models STATIC src/version.c src/binomial_interval.c src/beta_predict.c src/standardize.c)
+add_library(probspan_models STATIC src/version.c src/binomial_interval.c src/beta_predict.c src/standardize.c src/incidence.c)
 add_library(ProbSpanModels::models ALIAS probspan_models)
 set_target_properties(probspan_models PROPERTIES
   EXPORT_NAME models C_STANDARD 11 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
@@ -23,7 +23,7 @@ endif()
 set(package_dir "${CMAKE_INSTALL_LIBDIR}/cmake/ProbSpanModels")
 install(TARGETS probspan_models EXPORT ProbSpanModelsTargets
   ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-install(FILES include/probspan_models/version.h include/probspan_models/binomial_interval.h include/probspan_models/beta_predict.h include/probspan_models/standardize.h
+install(FILES include/probspan_models/version.h include/probspan_models/binomial_interval.h include/probspan_models/beta_predict.h include/probspan_models/standardize.h include/probspan_models/incidence.h
   DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/probspan_models")
 configure_package_config_file(cmake/ProbSpanModelsConfig.cmake.in
   "${CMAKE_CURRENT_BINARY_DIR}/ProbSpanModelsConfig.cmake"
@@ -46,6 +46,11 @@ if(BUILD_TESTING)
   add_executable(models_binomial_test tests/binomial_interval.c)
   target_link_libraries(models_binomial_test PRIVATE ProbSpanModels::models)
   add_test(NAME models_binomial COMMAND models_binomial_test)
+  add_executable(models_incidence_test tests/incidence.c)
+  target_link_libraries(models_incidence_test PRIVATE ProbSpanModels::models)
+  add_test(NAME models_incidence COMMAND models_incidence_test)
+  add_executable(models_incidence_probe tests/incidence_probe.c)
+  target_link_libraries(models_incidence_probe PRIVATE ProbSpanModels::models)
   add_executable(models_standardize_test tests/standardize.c)
   target_link_libraries(models_standardize_test PRIVATE ProbSpanModels::models)
   add_test(NAME models_standardize COMMAND models_standardize_test)

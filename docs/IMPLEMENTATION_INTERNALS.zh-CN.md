@@ -328,3 +328,8 @@ D2.3 的对数质量来自上升乘积与组合系数，使用补偿加法，空
 ## D3.1 Models
 
 F003 用 2⁻²¹⁴⁸ 整数单位累计并按整型长除法编码。见 [数值证明](../models/tests/STANDARDIZE_QUALIFICATION.md)。
+
+
+## D3.2 Models
+
+D3.2 先用整数验证退出人数，再用双端定向计算包围 S 与 F。删失只改变下一个风险集。见 [数值证明](../models/tests/INCIDENCE_QUALIFICATION.md)。

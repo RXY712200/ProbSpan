@@ -102,3 +102,8 @@ The Models export includes `<probspan_models/beta_predict.h>`. The installed con
 ## D3.1 Models
 
 The standalone Models install also exports `<probspan_models/standardize.h>`. The installed consumer exercises fixed-weight partial identification. See the [API example](../models/API.md#fixed-weight-target-standardization).
+
+
+## D3.2 Models
+
+The standalone package installs `<probspan_models/incidence.h>`. Its [Models API example](../models/API.md#competing-risk-cumulative-incidence) uses an explicit cohort and horizon.
