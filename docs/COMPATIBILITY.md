@@ -66,3 +66,8 @@ Models ABI generation 1 includes the additive D2.2 interval API in its own names
 ## D2.3 Models
 
 D2.3 adds two Models symbols and typed values under Models ABI 1. The legacy C ABI and F001 public contract retain their existing forms. See [Models API](../models/API.md).
+
+
+## D3.1 Models
+
+Models ABI 1 gains the additive `ps2_standardize_fixed` symbol. Its two result modes are distinct from legacy v1 and the existing Models inference calls. See the [Models API](../models/API.md).

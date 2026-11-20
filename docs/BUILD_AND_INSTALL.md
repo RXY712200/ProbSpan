@@ -97,3 +97,8 @@ The standalone Models archive installs `probspan_models/binomial_interval.h`. It
 ## D2.3 Models
 
 The Models export includes `<probspan_models/beta_predict.h>`. The installed consumer tests exercise an explicit update and a predictive probability. See [Models API](../models/API.md#explicit-beta-update-and-batch-prediction).
+
+
+## D3.1 Models
+
+The standalone Models install also exports `<probspan_models/standardize.h>`. The installed consumer exercises fixed-weight partial identification. See the [API example](../models/API.md#fixed-weight-target-standardization).

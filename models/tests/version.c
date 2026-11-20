@@ -1,4 +1,5 @@
 #include <string.h>
+#include <probspan_models/standardize.h>
 #include <probspan_models/beta_predict.h>
 #include <probspan_models/version.h>
 #include <probspan_models/binomial_interval.h>
@@ -18,6 +19,13 @@ int main(void)
         || posterior.event_probability != .4 || prediction.pmf < .399999
         || prediction.pmf > .400001) {
         return 2;
+    }
+    const ps2_fixed_stratum strata[] = {{.75, PS2_RISK_KNOWN, .5}, {.25, PS2_RISK_UNKNOWN, 0}};
+    ps2_standardized_risk risk;
+    if (ps2_standardize_fixed(strata, 2, &risk) != PS2_STANDARDIZE_OK
+        || risk.kind != PS2_STANDARDIZE_PARTIAL
+        || risk.result.partial.lower.lower != .375 || risk.result.partial.upper.upper != .625) {
+        return 3;
     }
     return strcmp(PROBSPAN_MODELS_VERSION_STRING, "2.0.0") != 0
         || ps2_abi_version() != 1u;

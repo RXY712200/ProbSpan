@@ -4,7 +4,7 @@ This standalone C11 static package is the D2.1 foundation for the future
 ProbSpan v2.0.0 source distribution. Its installed header is
 `<probspan_models/version.h>`. It exposes the product string
 `PROBSPAN_MODELS_VERSION_STRING` and the compiled ABI query
-`ps2_abi_version()`, which returns generation 1. D2.2 provides [fixed-n binomial intervals](API.md). D2.3 adds [explicit Beta update and prediction](API.md#explicit-beta-update-and-batch-prediction). F003–F005 are future work. The legacy package retains its separate version and ABI.
+`ps2_abi_version()`, which returns generation 1. D2.2 provides [fixed-n binomial intervals](API.md). D2.3 adds [explicit Beta update and prediction](API.md#explicit-beta-update-and-batch-prediction). D3.1 adds [fixed-weight standardization](API.md#fixed-weight-target-standardization). F004–F005 are future work and F006 is excluded. The legacy package retains its separate version and ABI.
 
 ```sh
 cmake -S models -B build-models -DCMAKE_BUILD_TYPE=Release

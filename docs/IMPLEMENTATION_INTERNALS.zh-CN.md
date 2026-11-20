@@ -323,3 +323,8 @@ D2.2 的 Wilson 使用正态生存函数反演及稳定 score 根。CP 通过二
 ## D2.3 Models
 
 D2.3 的对数质量来自上升乘积与组合系数，使用补偿加法，空间 O(1)。见 [Models API](../models/API.md#explicit-beta-update-and-batch-prediction)。
+
+
+## D3.1 Models
+
+F003 用 2⁻²¹⁴⁸ 整数单位累计并按整型长除法编码。见 [数值证明](../models/tests/STANDARDIZE_QUALIFICATION.md)。
