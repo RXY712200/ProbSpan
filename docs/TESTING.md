@@ -142,3 +142,8 @@ For contributions, follow [CONTRIBUTING.md](../CONTRIBUTING.md). For tagging and
 ## D2.2 Models
 
 For D2.2, the [independent qualifier](../models/tests/QUALIFICATION.md) checks the compiled Models probe with exact rational and high-precision references. The install matrix also executes the interval through the installed exported target.
+
+
+## D2.3 Models
+
+The [D2.3 qualifier](../models/tests/BETA_QUALIFICATION.md) checks the production probe against rational masses, high-precision log Beta and an independent recurrence. The package workflow runs it separately from the preserved D2.2 qualifier.

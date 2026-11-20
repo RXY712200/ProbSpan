@@ -101,3 +101,52 @@ while maintaining an outward bound. The qualification distinguishes these
 quantities.
 
 See the [qualification procedure and recorded evidence](tests/QUALIFICATION.md).
+
+
+## Explicit Beta update and batch prediction
+
+Include `<probspan_models/beta_predict.h>`. With the same ABI generation 1,
+`ps2_beta_update(ps2_beta_shapes prior, uint64_t events, uint64_t nonevents,
+ps2_beta_posterior *out)` stores the explicit prior, counts, updated shapes,
+single-event predictive mean and prior-only flag. Finite positive prior
+shapes must be in [0.5, 1000000], with at most 1000000 observations total.
+Beta(1,1) with 1 success and 2 failures gives Beta(2,3) and mean .4.
+Zero counts succeed with the prior and prior-only flag.
+
+`ps2_beta_predict(const ps2_beta_posterior *posterior, uint64_t future_n,
+uint64_t wanted_k, ps2_beta_prediction *out)` consumes an initialized
+posterior value produced by the update call, up to N=10000 and 0≤k≤N.
+It replays the update and requires exact field equality, including the
+evidence flag and predictive mean. A caller can reproduce the record by
+calling the updater with the original prior and counts. Matching fields
+check model consistency and cannot authenticate observations. Input and
+output objects belong to the caller and must not overlap.
+
+Validation order for update is pointers, finite positive prior,
+supported shape/count range, then floating environment. Predict checks
+pointers and k≤N first, propagates update validation, checks the
+posterior fields, then checks N and runs the solver. The scoped
+`ps2_beta_status` values are OK, INVALID_ARGUMENT, UNSUPPORTED and
+NUMERICAL_FAILURE. All errors preserve output bytes. As with fixed-n
+intervals, binary64 nearest-even and gradual underflow are required.
+
+Given encoded a,b, the batch PMF is choose(N,k) B(a+k,b+N−k)/B(a,b).
+For m=a/(a+b), the count mean is Nm and variance is
+Nm(1−m)(a+b+N)/(a+b+1). For N>1 the multiplier exceeds one because trials
+share the uncertain p. The inputs represent homogeneous, disjoint units
+under the same horizon and conditional independence. Evidence admission
+belongs to the caller. F002 has no source-borrowing or readiness rule.
+
+The implementation evaluates the rising-factor likelihood for one binary
+sequence and its binomial multiplicity via compensated log1p sums.
+It uses O(N) time, at most 1.5N terms, O(1) workspace and no heap or I/O.
+It evaluates normalized mathematical masses without adjusting returned
+probabilities. N=0,k=0 gives exact 1, log 0 and both moments zero.
+For nonempty batches the mass is mathematically positive. ENCODED and
+SUBNORMAL describe finite positive binary64 mass. ROUNDED_ZERO returns
+positive zero with finite log PMF. For example, Beta(.5,1000000) with N=k=10000
+reaches ROUNDED_ZERO. An unresolved sign near the half-smallest-subnormal
+midpoint produces NUMERICAL_FAILURE with no writeback. See the
+[reference methods and proposed budgets](tests/BETA_QUALIFICATION.md).
+
+F003–F005 are future work. ProbSpan v2.0.0 has not been published.

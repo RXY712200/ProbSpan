@@ -133,3 +133,8 @@ The independently observed finite-precision **quantile-resolution limit** remain
 ## D2.2 Models
 
 D2.2 Models confidence endpoints have a separate [numerical contract](../models/API.md#numerical-implementation-and-bounds). The v1 parity tolerances above govern legacy behavior.
+
+
+## D2.3 Models
+
+D2.3 uses a distinct encoded-shape reference, positive-mass representation states and proposed log, moment and PMF budgets. See the [Beta qualification](../models/tests/BETA_QUALIFICATION.md).

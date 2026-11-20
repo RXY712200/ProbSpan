@@ -61,3 +61,8 @@ each package. The C targets require no Python runtime. See the
 ## D2.2 Models
 
 Models ABI generation 1 includes the additive D2.2 interval API in its own namespace. The legacy package's 13 APIs and ABI are documented independently. See the [Models contract](../models/API.md).
+
+
+## D2.3 Models
+
+D2.3 adds two Models symbols and typed values under Models ABI 1. The legacy C ABI and F001 public contract retain their existing forms. See [Models API](../models/API.md).

@@ -294,3 +294,8 @@ C++ 工程可用 `project(... LANGUAGES CXX)` 并链接同一 C 库，公共头�
 ## D2.2 Models
 
 上述 13 个接口属于 legacy 包。D2.2 独立 Models 接口、结果和错误优先级见 [Models API](../models/API.md)。
+
+
+## D2.3 Models
+
+独立 Models 包新增 Beta 后验与预测类型，区分可信的结构一致性、批次概率表示与失败。见 [Models API](../models/API.md#explicit-beta-update-and-batch-prediction)。

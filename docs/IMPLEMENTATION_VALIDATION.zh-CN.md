@@ -474,3 +474,8 @@ assert sum(int(r[7]) for r in rows) / len(rows) >= 0.90
 ## D2.2 Models
 
 D2.2 的 [Models 资格记录](../models/tests/QUALIFICATION.md) 区分编译结果、高精度尾部复核和固定 n 覆盖枚举。其 CTest 与历史 legacy oracle 分开。
+
+
+## D2.3 Models
+
+D2.3 使用 96/192 位 log Beta、有理数和独立相邻质量递推。见 [资格记录](../models/tests/BETA_QUALIFICATION.md)。

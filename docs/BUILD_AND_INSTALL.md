@@ -92,3 +92,8 @@ usable. Both packages can occupy one prefix. See the
 ## D2.2 Models
 
 The standalone Models archive installs `probspan_models/binomial_interval.h`. Its exported target carries platform math linkage and exposes the fixed-n interval API. See the [Models contract and example](../models/API.md).
+
+
+## D2.3 Models
+
+The Models export includes `<probspan_models/beta_predict.h>`. The installed consumer tests exercise an explicit update and a predictive probability. See [Models API](../models/API.md#explicit-beta-update-and-batch-prediction).
